@@ -104,6 +104,7 @@ Editor.defaultConfig = {
 Editor
 	.create(document.getElementById('editor'))
 	.then(editor => {
+		window.CKEDITOR = editor;
 		editor.sourceElement.nextElementSibling.setAttribute("id", 'fullscreeneditor');
 		document.body.setAttribute("id", "fullscreenoverlay");
 	})

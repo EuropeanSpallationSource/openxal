@@ -17,23 +17,19 @@
  */
 package xal.plugin.olog;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -49,10 +45,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.json.JSONObject;
@@ -299,29 +292,19 @@ public class OlogClient {
 
     private String httpGet(String command) throws LogbookException {
         try {
-            URL url = new URL(new URL(serverUrl), command);
-            // Connect to the web server endpoint
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URL(new URL(serverUrl), command).toURI())
+                    .build();
 
-            int responseCode = urlConnection.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                return response.toString();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                return response.body();
+            } else {
+                // If the response code is not OK, then throw an exception.
+                throw new LogbookException("HTTP GET failed for URL: " + new URL(new URL(serverUrl), command).toString() + " with response code " + response.statusCode(), response.statusCode());
             }
-            // If the response code is not OK, then throw an exception.
-            throw new LogbookException("HTTP GET failed for URL: " + url.toString() + " with response code " + responseCode, responseCode);
-        } catch (IOException ex) {
+        } catch (URISyntaxException | IOException | InterruptedException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
             throw new LogbookException(ex);
         }
     }
@@ -343,116 +326,85 @@ public class OlogClient {
         if (credentials == null) {
             throw new LogbookException("User is not logged in.");
         }
-
         try {
-            URL url = new URL(new URL(serverUrl), command);
-            // Connect to the web server endpoint
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URL(new URL(serverUrl), command).toURI())
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .header("Authorization", credentials)
+                    .method("PUT", HttpRequest.BodyPublishers.ofString(params))
+                    .build();
 
-            urlConnection.setRequestMethod("PUT");
-
-            urlConnection.setRequestProperty("Authorization", credentials);
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setRequestProperty("Accept", "application/json");
-
-            urlConnection.setDoOutput(true);
-            try (OutputStream os = urlConnection.getOutputStream()) {
-                os.write(params.getBytes());
-                os.flush();
-            }
-
-            int responseCode = urlConnection.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) { //success
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                // print result
-                return response.toString();
-            } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                return response.body();
+            } else if (response.statusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                 throw new OlogUnauthorizedException();
             }
             // If the response code is not OK, then throw an exception.     
-            throw new LogbookException("HTTP PUT failed for URL: " + url.toString());
-        } catch (IOException ex) {
+            throw new LogbookException("HTTP PUT failed for URL: " + new URL(new URL(serverUrl), command).toString());
+        } catch (MalformedURLException | URISyntaxException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
+            throw new LogbookException(ex);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
             throw new LogbookException(ex);
         }
     }
 
     private String postAttachment(Long logId, OlogAttachment attachment) throws LogbookException, OlogUnauthorizedException {
-        try {
-            String boundaryString = "-----" + generateBoundary();
+        String boundaryString = "---" + generateBoundary();
 
-            URL url = new URL(new URL(serverUrl), "logs/attachments/" + logId.toString());
-            // Connect to the web server endpoint
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1"))) {
+            writer.write("--" + boundaryString + "\r\n");
+            writer.write("Content-Disposition: form-data; name=\"filename\"\r\n");
+            writer.write("Content-Type: application/json\r\n\r\n");
+            writer.write(attachment.getFileName() + "\r\n");
 
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundaryString);
+            writer.write("--" + boundaryString + "\r\n");
+            writer.write("Content-Disposition: form-data; name=\"fileMetadataDescription\"\r\n");
+            writer.write("Content-Type: application/json\r\n\r\n");
+            writer.write(attachment.getMimeType() + "\r\n");
 
-            urlConnection.setRequestProperty("Authorization", credentials);
-
-            urlConnection.setDoOutput(true);
-            try (OutputStream os = urlConnection.getOutputStream(); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "ISO-8859-1"))) {
+            if (attachment.hasUuid()) {
                 writer.write("--" + boundaryString + "\r\n");
-                writer.write("Content-Disposition: form-data; name=\"filename\"\r\n");
+                writer.write("Content-Disposition: form-data; name=\"id\"\r\n");
                 writer.write("Content-Type: application/json\r\n\r\n");
-                writer.write(attachment.getFileName() + "\r\n");
-
-                writer.write("--" + boundaryString + "\r\n");
-                writer.write("Content-Disposition: form-data; name=\"fileMetadataDescription\"\r\n");
-                writer.write("Content-Type: application/json\r\n\r\n");
-                writer.write(attachment.getMimeType() + "\r\n");
-
-                if (attachment.hasUuid()) {
-                    writer.write("--" + boundaryString + "\r\n");
-                    writer.write("Content-Disposition: form-data; name=\"id\"\r\n");
-                    writer.write("Content-Type: application/json\r\n\r\n");
-                    writer.write(attachment.getUuid() + "\r\n");
-                }
-
-                writer.write("--" + boundaryString + "\r\n");
-                writer.write("Content-Disposition: form-data; name=\"file\"; filename=\"" + attachment.getFileName() + "\"\r\n");
-                writer.write("Content-Type: application/octet-steam\r\n\r\n");
-                writer.flush();
-                attachment.getContent().writeTo(os);
-                os.flush();
-                writer.write("\r\n");
-
-                // Mark the end of the multipart http request
-                writer.write("\r\n--" + boundaryString + "--\r\n");
-                writer.flush();
+                writer.write(attachment.getUuid() + "\r\n");
             }
 
-            int responseCode = urlConnection.getResponseCode();
+            writer.write("--" + boundaryString + "\r\n");
+            writer.write("Content-Disposition: form-data; name=\"file\"; filename=\"" + attachment.getFileName() + "\"\r\n");
+            writer.write("Content-Type: application/octet-steam\r\n\r\n");
+            writer.flush();
+            attachment.getContent().writeTo(out);
+            out.flush();
+            writer.write("\r\n");
 
-            if (responseCode == HttpURLConnection.HTTP_OK) { //success
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
+            // Mark the end of the multipart http request
+            writer.write("\r\n--" + boundaryString + "--\r\n");
+            writer.flush();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URL(new URL(serverUrl), "logs/attachments/" + logId.toString()).toURI())
+                    .header("Content-Type", "multipart/form-data; boundary=" + boundaryString)
+                    .header("Authorization", credentials)
+                    .method("POST", HttpRequest.BodyPublishers.ofByteArray(out.toByteArray()))
+                    .build();
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                // print result
-                return response.toString();
-            } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                return response.body();
+            } else if (response.statusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                 throw new OlogUnauthorizedException();
             }
 
             // If the response code is not OK, then throw an exception.
-            throw new LogbookException("HTTP POST failed for URL: " + url.toString());
-        } catch (IOException ex) {
+            throw new LogbookException("HTTP POST failed for URL: " + new URL(new URL(serverUrl), "logs/attachments/" + logId.toString()).toString());
+        } catch (MalformedURLException | URISyntaxException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
+            throw new LogbookException(ex);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
             throw new LogbookException(ex);
         }
     }
