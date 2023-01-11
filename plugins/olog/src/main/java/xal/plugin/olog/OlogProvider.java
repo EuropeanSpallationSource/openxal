@@ -52,18 +52,22 @@ public class OlogProvider extends LogbookProvider {
     public static final String SUBJECT_STR = "Subject";
     public static final String PROPERTIES_STR = "Properties";
 
-    private OlogClient client = OlogClient.getClient();
+    private final OlogClient client = OlogClient.getClient();
 
     @Override
     public boolean login(String username, char[] password) {
-        client.setCredentials(username, password);
+        try {
+            return client.login(username, password);
+        } catch (OlogUnauthorizedException | LogbookException ex) {
+            Logger.getLogger(OlogProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        return true;
+        return false;
     }
 
     @Override
     public void logout() {
-        client.forgetCredentials();
+        client.logout();
     }
 
     @Override
@@ -85,7 +89,6 @@ public class OlogProvider extends LogbookProvider {
      */
     @Override
     public long post(String[] logbooks, Map<String, List<String>> fields, String textBody, List<Attachment> attachments) throws LogbookException {
-        OlogClient client = OlogClient.getClient();
         client.setServerUrl(getServer());
 
         if (!fields.containsKey(SUBJECT_STR)) {

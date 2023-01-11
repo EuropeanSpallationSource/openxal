@@ -17,8 +17,13 @@
  */
 package xal.plugin.olog;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +51,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -74,6 +80,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.util.converter.DefaultStringConverter;
+import netscape.javascript.JSObject;
 import org.commonmark.Extension;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,6 +99,13 @@ import org.commonmark.ext.image.attributes.ImageAttributesExtension;
  */
 public class OlogPostEntryController implements Initializable {
 
+    public class JavaBridge {
+
+        public void log(String text) {
+            LOGGER.log(Level.INFO, "JS console: {0}", text);
+        }
+    }
+    private final JavaBridge bridge = new JavaBridge();
     private static final Logger LOGGER = Logger.getLogger(OlogPostEntryController.class.getName());
 
     @FXML
@@ -124,6 +138,10 @@ public class OlogPostEntryController implements Initializable {
     private HBox HBoxPropertiesTitle;
     @FXML
     private Button addPropertyButton;
+    @FXML
+    private ButtonBar editorPreviewBB;
+    @FXML
+    private Button loginB;
 
     private static final OlogClient CLIENT = OlogClient.getClient();
 
@@ -168,8 +186,9 @@ public class OlogPostEntryController implements Initializable {
 
     private SplitPane editorSplitPane = new SplitPane();
     private WebEngine engine = previewWV.getEngine();
-    @FXML
-    private Button logoutB;
+
+    private static final double EDITOR_MIN_HEIGHT = 330;
+    private WebView editorWebView;
 
     /**
      * Initializes the controller class.
@@ -179,9 +198,21 @@ public class OlogPostEntryController implements Initializable {
         HBoxAttachmentsTitle.minWidthProperty().bind(titledPaneAttachments.widthProperty());
         HBoxPropertiesTitle.minWidthProperty().bind(titledPaneProperties.widthProperty());
 
-        if (CLIENT.isLoggedIn()) {
-            userLabel.setText(CLIENT.getUserName());
-            logoutB.setDisable(false);
+        String loggedUser = CLIENT.getUserLogedIn();
+        if (loggedUser == null) {
+            userLabel.setText("");
+            loginB.setText("Log in");
+            loginB.setOnAction((e) -> {
+                try {
+                    login();
+                } catch (Exception ex) {
+                    LOGGER.log(Level.INFO, "Error while logging in.", ex);
+                }
+            });
+        } else {
+            userLabel.setText(loggedUser);
+            loginB.setText("Log out");
+            loginB.setOnAction((e) -> logout());
         }
 
         // Populating Olog attributes
@@ -286,17 +317,123 @@ public class OlogPostEntryController implements Initializable {
         });
 
         // Preparing the editor panel
-        VBox.setVgrow(body, Priority.ALWAYS);
-        VBox.setVgrow(previewWV, Priority.ALWAYS);
-        VBox.setVgrow(editorSplitPane, Priority.ALWAYS);
+        InputStream editorJs = OlogPostEntryController.class.getResourceAsStream("/ckeditor5-md/build/ckeditor.js");
+        InputStream editorHtmlTop = OlogPostEntryController.class.getResourceAsStream("/ckeditor5-md/ckeditor_top.html");
+        InputStream editorHtmlBottom = OlogPostEntryController.class.getResourceAsStream("/ckeditor5-md/ckeditor_bottom.html");
 
-        previewWV.prefHeightProperty().bind(VBoxEditor.heightProperty());
-        editorSplitPane.setStyle("-fx-padding: 0;");
+        if (editorJs != null && editorHtmlTop != null && editorHtmlBottom != null) {
+            // Markdown WYSIWYG editor
+            LOGGER.log(Level.INFO, "CKEditor found. Loading it...");
+            editorWebView = new WebView();
+            editorWebView.setMinHeight(EDITOR_MIN_HEIGHT);
+            VBoxEditor.setPrefHeight(EDITOR_MIN_HEIGHT);
+            editorWebView.setPickOnBounds(true);
+            VBoxEditor.getChildren().add(editorWebView);
+            editorPreviewBB.setVisible(false);
 
-        editorSplitPane.getItems().addAll(body, previewWV);
-        editorSplitPane.setDividerPositions(0.5);
+            // Forward console.log() messages from JS to the Java logger.
+            editorWebView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue)
+                    -> {
+                JSObject window = (JSObject) editorWebView.getEngine().executeScript("window");
+                window.setMember("java", bridge);
+                editorWebView.getEngine().executeScript("console.log = function(message)\n"
+                        + "{\n"
+                        + "    java.log(message);\n"
+                        + "};");
+            });
 
-        VBoxEditor.getChildren().add(body);
+            editorWebView.getEngine().loadContent(loadCKEditor(editorJs, editorHtmlTop, editorHtmlBottom));
+        } else {
+            LOGGER.log(Level.INFO, "CKEditor missing. Loading alternative editor...");
+            VBox.setVgrow(body, Priority.ALWAYS);
+            VBox.setVgrow(previewWV, Priority.ALWAYS);
+            VBox.setVgrow(editorSplitPane, Priority.ALWAYS);
+
+            previewWV.prefHeightProperty().bind(VBoxEditor.heightProperty());
+            editorSplitPane.setStyle("-fx-padding: 0;");
+
+            editorSplitPane.getItems().addAll(body, previewWV);
+            editorSplitPane.setDividerPositions(0.5);
+
+            VBoxEditor.getChildren().add(body);
+        }
+    }
+
+    private void login() {
+        while (true) {
+            AuthenticationPaneFX authenticationPaneFX = new AuthenticationPaneFX();
+            Optional<Pair<String, char[]>> credentials = authenticationPaneFX.showAndWait();
+            if (credentials.isPresent()) {
+                try {
+                    boolean loginSuccessful = CLIENT.login(credentials.get().getKey(), credentials.get().getValue());
+                    if (loginSuccessful) {
+                        userLabel.setText(credentials.get().getKey());
+
+                        loginB.setText("Log out");
+                        loginB.setOnAction((e) -> logout());
+
+                        return;
+                    }
+                } catch (OlogUnauthorizedException | LogbookException ex) {
+                    Logger.getLogger(OlogPostEntryController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                return;
+            }
+
+            ButtonType ok = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert alert = new Alert(AlertType.WARNING,
+                    "Incorrect username or password. Would you like to try again?",
+                    ok, cancel);
+
+            alert.setTitle("Invalid credentials");
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.orElse(cancel) == cancel) {
+                return;
+            }
+
+        }
+    }
+
+    private void logout() {
+        CLIENT.logout();
+        CookieManager manager = (CookieManager) CookieHandler.getDefault();
+        manager.getCookieStore().removeAll();
+        userLabel.setText("");
+
+        loginB.setText("Log in");
+        loginB.setOnAction((e) -> login());
+    }
+
+    /**
+     * Workaround to load CKEditor. Generate an HTML document in memory from
+     * resources files.
+     *
+     * @param editorJs
+     * @param editorHtmlTop
+     * @param editorHtmlBottom
+     * @return
+     */
+    private String loadCKEditor(InputStream editorJs, InputStream editorHtmlTop, InputStream editorHtmlBottom) {
+        StringBuilder content = new StringBuilder();
+
+        for (InputStream stream : new InputStream[]{editorHtmlTop, editorJs, editorHtmlBottom}) {
+            try {
+                BufferedReader bf = new BufferedReader(new InputStreamReader(stream));
+                String line;
+                while ((line = bf.readLine()) != null) {
+                    content.append(line);
+
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(OlogPostEntryController.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return content.toString();
     }
 
     @FXML
@@ -368,7 +505,6 @@ public class OlogPostEntryController implements Initializable {
     @FXML
     private void handleButtonSubmit(ActionEvent event) {
         String title = subjectTF.getText();
-        String bodyText = body.getText();
         String level = entryTypeCB.getSelectionModel().getSelectedItem();
 
         List<String> logbooks = new ArrayList<>();
@@ -399,6 +535,15 @@ public class OlogPostEntryController implements Initializable {
             return;
         }
 
+        String bodyText;
+        if (editorWebView == null) {
+            bodyText = body.getText();
+        } else {
+            bodyText = (String) editorWebView.getEngine().executeScript("window.CKEDITOR.getData()");
+        }
+
+        bodyText = parseCleanBody(bodyText);
+
         LogEntry log = new LogEntry(title, bodyText, level, logbooks);
 
         // Adding tags
@@ -418,12 +563,11 @@ public class OlogPostEntryController implements Initializable {
             log.addProperty(prop);
         }
 
+        // Log in if not yet logged
         if (!CLIENT.isLoggedIn()) {
-            AuthenticationPaneFX authenticationPaneFX = new AuthenticationPaneFX();
-            Optional<Pair<String, char[]>> credentials = authenticationPaneFX.showAndWait();
-            if (credentials.isPresent()) {
-                CLIENT.setCredentials(credentials.get().getKey(), credentials.get().getValue());
-            } else {
+            login();
+            // Go back to the editor if the client cancels log in.
+            if (!CLIENT.isLoggedIn()) {
                 return;
             }
         }
@@ -438,7 +582,7 @@ public class OlogPostEntryController implements Initializable {
             alert.showAndWait();
             return;
         } catch (OlogUnauthorizedException e) {
-            CLIENT.forgetCredentials();
+            CLIENT.logout();
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Wrong credentials");
@@ -448,6 +592,18 @@ public class OlogPostEntryController implements Initializable {
 
         Stage stage = (Stage) buttonSubmit.getScene().getWindow();
         stage.close();
+    }
+
+    /**
+     * This method takes the markdown generated manually or by CKEditor and
+     * deals with some unsupported cases.
+     *
+     * @param bodyText
+     * @return
+     */
+    private String parseCleanBody(String bodyText) {
+        // TODO: add header to tables missing it.
+        return bodyText;
     }
 
     void setDefaultLogbooks(String[] defaultLogbooks) {
@@ -471,7 +627,7 @@ public class OlogPostEntryController implements Initializable {
      * library.
      *
      * @param attributeName Name of the attribute.
-     * @param options For checkboxes, separate arguments with commas ",".
+     * @param options For check boxes, separate arguments with commas ",".
      */
     public void addDefaultAttribute(String attributeName, List<String> options) {
         if (attributeName.equals(OlogProvider.SUBJECT_STR)) {
@@ -528,10 +684,12 @@ public class OlogPostEntryController implements Initializable {
             alert.setHeaderText("There are no (more) properties available.");
             alert.showAndWait();
             return;
+
         }
 
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(OlogPostEntryController.class.getResource("/fxml/AddPropertyScene.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(OlogPostEntryController.class
+                    .getResource("/fxml/AddPropertyScene.fxml"));
 
             Parent root = (Parent) fxmlLoader.load();
 
@@ -539,7 +697,9 @@ public class OlogPostEntryController implements Initializable {
             controller.setProperties(serverProperties.keySet());
 
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(OlogPostEntryController.class.getResource("/styles/olog.css").toExternalForm());
+            scene
+                    .getStylesheets().add(OlogPostEntryController.class
+                            .getResource("/styles/olog.css").toExternalForm());
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -615,7 +775,6 @@ public class OlogPostEntryController implements Initializable {
     }
 
     private void updatePreview() {
-
         List<Extension> extensions
                 = Arrays.asList(TablesExtension.create(), ImageAttributesExtension.create());
         Parser parser = Parser.builder().extensions(extensions).build();
@@ -626,12 +785,5 @@ public class OlogPostEntryController implements Initializable {
 
         String html = renderer.render(document);
         engine.loadContent(html);
-    }
-
-    @FXML
-    private void logoutBAction(ActionEvent event) {
-        CLIENT.forgetCredentials();
-        userLabel.setText("");
-        logoutB.setDisable(true);
     }
 }
