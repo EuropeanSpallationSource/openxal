@@ -32,3 +32,8 @@ nbactions.xml
 # IntelliJ
 .idea
 /plugins/epics7/nbproject/
+
+# Node
+node_modules
+package-lock.json
+
