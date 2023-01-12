@@ -23,8 +23,8 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
-                    <exclude>ckeditor5-md/src</exclude>
-                    <exclude>ckeditor5-md/node_modules</exclude>
+                    <exclude>ckeditor5-md/src/</exclude>
+                    <exclude>ckeditor5-md/node_modules/</exclude>
                     <exclude>ckeditor5-md/*.md</exclude>
                     <exclude>ckeditor5-md/*.json</exclude>
                     <exclude>ckeditor5-md/webpack.config.js</exclude>
