@@ -12,7 +12,7 @@
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx-version>19</javafx-version>
-        <xaos-version>0.12-SNAPSHOT</xaos-version>
+        <xaos-version>0.12</xaos-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py,
