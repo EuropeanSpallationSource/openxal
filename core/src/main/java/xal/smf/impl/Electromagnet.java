@@ -39,7 +39,7 @@ public abstract class Electromagnet extends Magnet {
             channelValues -> toFieldFromCA(channelValues[0]), channelValues -> toCAFromField(channelValues));
 
     // When using current PVs to set field, the field property is removed and replaced with this one, which only links readback and set PVs.
-    public final AccessibleProperty fieldSimpleProperty = new AccessibleProperty("fieldSimple", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE);
+    public final AccessibleProperty fieldRBProperty = new AccessibleProperty("fieldRB", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE);
 
     public final AccessibleProperty fieldFromCurrent = new AccessibleProperty("field", MagnetMainSupply.CURRENT_RB_HANDLE, MagnetMainSupply.CURRENT_SET_HANDLE,
             this::getDesignField, value -> setDfltField(value),
@@ -298,9 +298,12 @@ public abstract class Electromagnet extends Magnet {
         // Keep only one property for field
         if (getMagBucket().getUseCurrentFlag()) {
             properties.remove(field);
+            if (supply != null) {
+                properties.remove(supply.fieldSet);
+            }
         } else {
             properties.remove(fieldFromCurrent);
-            properties.remove(fieldSimpleProperty);
+            properties.remove(fieldRBProperty);
         }
 
         return properties;
