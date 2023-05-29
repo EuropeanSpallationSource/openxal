@@ -100,7 +100,7 @@ public class AccessibleProperty {
 
     /**
      *
-     * @param name
+     * @param handle
      */
     public AccessibleProperty(String handle) {
         this.name = handle;
