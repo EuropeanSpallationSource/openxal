@@ -83,7 +83,7 @@ sonarqube.maven:
         - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
         - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports sonar:sonar'
     rules:
-        - if: '$CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
+        - if: '$CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
 
 publish.maven:
     <<: *maven
@@ -91,8 +91,8 @@ publish.maven:
     script:
         - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Ppom -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
     rules:
-        - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
-        - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
+        - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
+        - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
 
 
 publish.artifactory:
@@ -105,8 +105,8 @@ publish.artifactory:
         - 'TARBALL=$(find * -name "*.tar.gz")'
         - 'curl -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} -X PUT "${ARTIFACTORY_URL}/OpenXAL/$REPO/org/xal/openxal.dist/$VERSION/$TARBALL" -T $TARBALL'
     rules:
-        - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
-        - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
+        - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
+        - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
 
 pages:
     <<: *maven
@@ -119,5 +119,5 @@ pages:
         paths:
             - public
     rules:
-        - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
-        - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs/openxal"'
+        - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
+        - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
