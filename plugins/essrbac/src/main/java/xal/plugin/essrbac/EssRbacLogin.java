@@ -1,4 +1,4 @@
-package xal.plugins.essrbac;
+package xal.plugin.essrbac;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

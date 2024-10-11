@@ -1,4 +1,4 @@
-package xal.plugins.essrbac;
+package xal.plugin.essrbac;
 
 import xal.rbac.AccessDeniedException;
 import xal.rbac.RBACException;

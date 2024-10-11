@@ -1,4 +1,4 @@
-package xal.plugins.essrbac;
+package xal.plugin.essrbac;
 
 import org.junit.Test;
 import org.junit.Before;

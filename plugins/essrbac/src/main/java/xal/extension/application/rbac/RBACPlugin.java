@@ -1,8 +1,8 @@
 package xal.extension.application.rbac;
 
 import xal.XalException;
-import xal.plugins.essrbac.EssRbacLogin;
-import xal.plugins.essrbac.DummyRbacLogin;
+import xal.plugin.essrbac.EssRbacLogin;
+import xal.plugin.essrbac.DummyRbacLogin;
 import xal.rbac.RBACLogin;
 
 import java.util.logging.Logger;
