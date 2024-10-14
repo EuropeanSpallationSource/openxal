@@ -113,8 +113,8 @@ pages:
     script:
         - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
         - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
-        - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
-        - 'mv target/site/apidocs public'
+        - 'mv report/target/site/jacoco-aggregate target/reports/apidocs/coverage'
+        - 'mv target/reports/apidocs public'
     artifacts:
         paths:
             - public
