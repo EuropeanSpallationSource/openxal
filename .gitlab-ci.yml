@@ -6,31 +6,36 @@ variables:
 .maven: &maven
     image: registry.esss.lu.se/ics-docker/maven:openjdk-11
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^site.ess.*$/'
+        - if: "$CI_COMMIT_REF_NAME =~ /^site.ess.*$/"
     tags:
         - docker
+stages:
+    - build
+    - test
+    - deploy
+    - vulnerability-report
 
 build.ckeditor:
     image: node:17-alpine3.14
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^site.ess.*$/'
+        - if: "$CI_COMMIT_REF_NAME =~ /^site.ess.*$/"
     tags:
         - docker
     stage: build
     script:
-        - 'cd plugins/olog/src/main/resources/ckeditor5-md'
-        - 'npm install'
-        - 'npm run build'
+        - "cd plugins/olog/src/main/resources/ckeditor5-md"
+        - "npm install"
+        - "npm run build"
     artifacts:
-            paths:
-                - plugins/olog/src/main/resources/ckeditor5-md/build
+        paths:
+            - plugins/olog/src/main/resources/ckeditor5-md/build
 
 build.maven:
     <<: *maven
     stage: build
     needs: ["build.ckeditor"]
     script:
-        - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true clean install'
+        - "mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true clean install"
     artifacts:
         paths:
             - .m2/repository/org/xal/
@@ -44,13 +49,12 @@ build.maven:
             - "*/*/*/target/test-classes"
             - "dist/target/*.tar.gz"
 
-
 .maventest: &maventest
     <<: *maven
     stage: test
     script:
-        - 'cd $SUBDIR'
-        - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
+        - "cd $SUBDIR"
+        - "mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out"
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         paths:
@@ -66,42 +70,56 @@ build.maven:
 test.maven.core:
     <<: *maventest
     variables:
-        SUBDIR: 'test'
+        SUBDIR: "test"
 test.maven.extensions:
     <<: *maventest
     variables:
-        SUBDIR: 'extensions'
+        SUBDIR: "extensions"
 test.maven.plugins:
     <<: *maventest
     variables:
-        SUBDIR: 'plugins'
+        SUBDIR: "plugins"
 
 sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
-        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports sonar:sonar'
+        - "mvn $MAVEN_CLI_OPTS jacoco:report-aggregate"
+        - "mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_BRANCH -Dsonar.junit.reportPaths=target/surefire-reports sonar:sonar"
     rules:
         - if: '$CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
+
+vulnerability-report:
+    <<: *maven
+    stage: vulnerability-report
+    script:
+        - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=org.xal:openxal&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
+    allow_failure: true
+    rules:
+        - if: '$CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
+    artifacts:
+        expire_in: 7 day
+        reports:
+            sast: gl-sast-sonar-report.json
+    dependencies:
+        - sonarqube.maven
 
 publish.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Ppom -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
+        - "mvn $MAVEN_CLI_OPTS deploy -DskipTests -Ppom -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}"
     rules:
         - if: '$CI_COMMIT_REF_NAME == "site.ess.stable" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
         - if: '$CI_COMMIT_REF_NAME == "site.ess.master" && $CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
-
 
 publish.artifactory:
     <<: *maven
     stage: deploy
     script:
-        - 'VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)'
+        - "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
         - 'if [[ $VERSION == *"SNAPSHOT" ]]; then REPO="snapshot"; else REPO="release"; fi'
-        - 'cd dist/target'
+        - "cd dist/target"
         - 'TARBALL=$(find * -name "*.tar.gz")'
         - 'curl -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} -X PUT "${ARTIFACTORY_URL}/OpenXAL/$REPO/org/xal/openxal.dist/$VERSION/$TARBALL" -T $TARBALL'
     rules:
@@ -111,10 +129,10 @@ publish.artifactory:
 pages:
     <<: *maven
     script:
-        - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
-        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
-        - 'mv report/target/site/jacoco-aggregate target/reports/apidocs/coverage'
-        - 'mv target/reports/apidocs public'
+        - "mvn $MAVEN_CLI_OPTS javadoc:aggregate"
+        - "mvn $MAVEN_CLI_OPTS jacoco:report-aggregate"
+        - "mv report/target/site/jacoco-aggregate target/reports/apidocs/coverage"
+        - "mv target/reports/apidocs public"
     artifacts:
         paths:
             - public
