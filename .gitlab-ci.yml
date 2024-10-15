@@ -9,11 +9,6 @@ variables:
         - if: "$CI_COMMIT_REF_NAME =~ /^site.ess.*$/"
     tags:
         - docker
-stages:
-    - build
-    - test
-    - deploy
-    - vulnerability-report
 
 build.ckeditor:
     image: node:17-alpine3.14
@@ -88,21 +83,6 @@ sonarqube.maven:
         - "mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_BRANCH -Dsonar.junit.reportPaths=target/surefire-reports sonar:sonar"
     rules:
         - if: '$CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
-
-vulnerability-report:
-    <<: *maven
-    stage: vulnerability-report
-    script:
-        - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=org.xal:openxal&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
-    allow_failure: true
-    rules:
-        - if: '$CI_PROJECT_NAMESPACE == "ess-crs" && $CI_PROJECT_NAME == "openxal"'
-    artifacts:
-        expire_in: 7 day
-        reports:
-            sast: gl-sast-sonar-report.json
-    dependencies:
-        - sonarqube.maven
 
 publish.maven:
     <<: *maven
