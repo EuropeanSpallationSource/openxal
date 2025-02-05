@@ -4,7 +4,7 @@ variables:
     MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
 .maven: &maven
-    image: registry.esss.lu.se/ics-docker/maven:openjdk-11
+    image: registry.esss.lu.se/ics-docker/maven:openjdk-17
     rules:
         - if: "$CI_COMMIT_REF_NAME =~ /^site.ess.*$/"
     tags:
