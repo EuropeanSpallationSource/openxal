@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -47,7 +47,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.3</version>
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <arguments>
@@ -80,7 +80,7 @@
                     <plugin>
                         <groupId>org.jfrog.buildinfo</groupId>
                         <artifactId>artifactory-maven-plugin</artifactId>
-                        <version>3.6.2</version>
+                        <version>3.7.1</version>
                         <inherited>true</inherited>
                         <executions>
                             <execution> 
@@ -114,7 +114,7 @@
                     <plugin>
                         <groupId>org.jfrog.buildinfo</groupId>
                         <artifactId>artifactory-maven-plugin</artifactId>
-                        <version>3.6.2</version>
+                        <version>3.7.1</version>
                         <inherited>true</inherited>
                         <executions>
                             <execution> 

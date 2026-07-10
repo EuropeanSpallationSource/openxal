@@ -59,7 +59,10 @@ public class Logbook {
         List<LogbookProvider> logbookProviders = getLogbookProviders();
 
         if (logbookProviders.isEmpty()) {
-            throw new LogbookException("No logbook service provider found.");
+            if (alwaysReturn) {
+                throw new LogbookException("No logbook service provider found.");
+            }
+            return null;
         }
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Logbook.class);
         String providerName = defaults.get(LOGBOOK_PROVIDER, "");

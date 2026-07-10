@@ -15,7 +15,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.15</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <propertyName>surefireArgLine</propertyName>
