@@ -17,636 +17,166 @@
  */
 package xal.plugin.epics7.server;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import xal.ca.ChannelRecord;
-import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
-import xal.ca.GetException;
-import xal.ca.Monitor;
-import xal.ca.Timestamp;
 
 /**
+ * Tests for {@link Epics7ServerChannel}, which holds its value in memory and serves it over both protocols. The tests
+ * drive the local put/get API; they do not open network connections.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ServerChannelTest {
 
-    private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannelTest.class.getName());
+    private static Epics7ServerChannelSystem system;
 
-    private boolean methodCalled = false;
+    @BeforeClass
+    public static void setUpClass() {
+        system = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+    }
 
-    /**
-     * Test of connectAndWait method, of class Epics7ServerChannel.
-     */
+    @AfterClass
+    public static void tearDownClass() {
+        if (system != null) {
+            system.dispose();
+        }
+    }
+
+    private Epics7ServerChannel channel(String name) {
+        return new Epics7ServerChannel(name, system);
+    }
+
     @Test
-    public void testConnectAndWait() {
-        LOGGER.log(Level.INFO, "connectAndWait");
-        double timeout = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        boolean result = instance.connectAndWait(timeout);
-        assertEquals(true, result);
+    public void testConnectsWithoutWaiting() {
+        Epics7ServerChannel channel = channel("SrvConnect");
+        assertTrue(channel.connectAndWait(0));
+        assertTrue(channel.isConnected());
+        channel.disconnect();
+        assertFalse(channel.isConnected());
+    }
+
+    @Test
+    public void testPrefixIsStripped() {
+        Epics7ServerChannel channel = channel("ca://SrvPrefix");
+        assertEquals("SrvPrefix", channel.channelName());
+    }
+
+    @Test
+    public void testPutGetDoubleRoundTrip() throws Exception {
+        Epics7ServerChannel channel = channel("SrvDouble");
+        channel.putRawValCallback(3.5, null);
+
+        ChannelRecord record = channel.getRawValueRecord();
+        assertEquals(3.5, record.doubleValue(), 0.0);
+        assertEquals(double.class, channel.elementType());
+        assertEquals(1, channel.elementCount());
+    }
+
+    @Test
+    public void testPutGetIntRoundTrip() throws Exception {
+        Epics7ServerChannel channel = channel("SrvInt");
+        channel.putRawValCallback(42, null);
+
+        assertEquals(42, channel.getRawValueRecord().intValue());
+        assertEquals(int.class, channel.elementType());
+    }
+
+    @Test
+    public void testPutGetStringRoundTrip() throws Exception {
+        Epics7ServerChannel channel = channel("SrvString");
+        channel.putRawValCallback("hello", null);
+
+        assertEquals("hello", channel.getRawValueRecord().stringValue());
+        assertEquals(String.class, channel.elementType());
+    }
+
+    @Test
+    public void testPutGetDoubleArrayRoundTrip() throws Exception {
+        Epics7ServerChannel channel = channel("SrvDoubleArr");
+        double[] values = {1.0, 2.0, 3.0};
+        channel.putRawValCallback(values, null);
+
+        assertArrayEquals(values, channel.getRawValueRecord().doubleArray(), 0.0);
+        assertEquals(double[].class, channel.elementType());
+        assertEquals(3, channel.elementCount());
     }
 
     /**
-     * Test of requestConnection method, of class Epics7ServerChannel.
+     * Writing a value of a different type re-creates the record with the new type.
      */
     @Test
-    public void testRequestConnection() {
-        LOGGER.log(Level.INFO, "requestConnection");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.requestConnection();
-        assertEquals(true, instance.isConnected());
+    public void testTypeChange() throws Exception {
+        Epics7ServerChannel channel = channel("SrvTypeChange");
+        channel.putRawValCallback(1.0, null);
+        assertEquals(double.class, channel.elementType());
+
+        channel.putRawValCallback("now a string", null);
+        assertEquals(String.class, channel.elementType());
+        assertEquals("now a string", channel.getRawValueRecord().stringValue());
     }
 
-    /**
-     * Test of disconnect method, of class Epics7ServerChannel.
-     */
     @Test
-    public void testDisconnect() {
-        LOGGER.log(Level.INFO, "disconnect");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.disconnect();
-        assertEquals(false, instance.isConnected());
+    public void testPutNotifiesListener() throws Exception {
+        Epics7ServerChannel channel = channel("SrvNotify");
+        AtomicReference<xal.ca.Channel> completed = new AtomicReference<>();
+
+        channel.putRawValCallback(1.0, completed::set);
+        assertEquals(channel, completed.get());
     }
 
-    /**
-     * Test of elementCount method, of class Epics7ServerChannel.
-     */
     @Test
-    public void testElementCount() throws Exception {
-        LOGGER.log(Level.INFO, "elementCount");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
+    public void testTimeRecordHasTimestamp() throws Exception {
+        Epics7ServerChannel channel = channel("SrvTime");
+        channel.putRawValCallback(1.0, null);
 
-        int expResult = 1;
-        assertEquals(expResult, instance.elementCount());
-
-        String valString = "value";
-        instance.putVal(valString);
-        assertEquals(expResult, instance.elementCount());
-
-        byte valbyte = 1;
-        instance.putVal(valbyte);
-        assertEquals(expResult, instance.elementCount());
-
-        short valshort = 1;
-        instance.putVal(valshort);
-        assertEquals(expResult, instance.elementCount());
-
-        int valint = 1;
-        instance.putVal(valint);
-        assertEquals(expResult, instance.elementCount());
-
-        long vallong = 1;
-        instance.putVal(vallong);
-        assertEquals(expResult, instance.elementCount());
-
-        float valfloat = 1;
-        instance.putVal(valfloat);
-        assertEquals(expResult, instance.elementCount());
-
-        double valdouble = 1;
-        instance.putVal(valdouble);
-        assertEquals(expResult, instance.elementCount());
-
-        expResult = 2;
-
-        String[] valStringA = {"value1", "value2"};
-        instance.putVal(valStringA);
-        assertEquals(expResult, instance.elementCount());
-
-        byte[] valbyteA = {1, 2};
-        instance.putVal(valbyteA);
-        assertEquals(expResult, instance.elementCount());
-
-        short[] valshortA = {1, 2};
-        instance.putVal(valshortA);
-        assertEquals(expResult, instance.elementCount());
-
-        int[] valintA = {1, 2};
-        instance.putVal(valintA);
-        assertEquals(expResult, instance.elementCount());
-
-        long[] vallongA = {1, 2};
-        instance.putVal(vallongA);
-        assertEquals(expResult, instance.elementCount());
-
-        float[] valfloatA = {1, 2};
-        instance.putVal(valfloatA);
-        assertEquals(expResult, instance.elementCount());
-
-        double[] valdoubleA = {1, 2};
-        instance.putVal(valdoubleA);
-        assertEquals(expResult, instance.elementCount());
+        ChannelTimeRecord record = channel.getRawTimeRecord();
+        // The value was just stamped, so it is close to now.
+        double now = System.currentTimeMillis() / 1000.0;
+        assertEquals(now, record.timeStampInSeconds(), 5.0);
     }
 
-    /**
-     * Test of getUnits method, of class Epics7ServerChannel.
-     */
     @Test
-    public void testGetUnits() {
-        LOGGER.log(Level.INFO, "getUnits");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        String expResult = "Volt";
-        instance.getDisplay().getStringField("units").put(expResult);
-        String result = instance.getUnits();
-        assertEquals(expResult, result);
+    public void testMonitorReceivesPuts() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMonitor");
+        AtomicReference<Double> latest = new AtomicReference<>();
+
+        channel.addMonitorValue((record, chan) -> latest.set(record.doubleValue()), xal.ca.Monitor.VALUE);
+        channel.putRawValCallback(7.0, null);
+
+        assertEquals(7.0, latest.get(), 0.0);
     }
 
-    /**
-     * Test of getRawValueRecord method, of class Epics7ServerChannel.
-     */
     @Test
-    public void testGetRawValueRecord() throws Exception {
-        LOGGER.log(Level.INFO, "getRawValueRecord");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        ChannelRecord result = instance.getRawValueRecord();
-        assertEquals(double.class, result.getType());
-    }
+    public void testMetadataSetters() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMeta");
+        channel.putRawValCallback(1.0, null);
 
-    /**
-     * Test of getRawStatusRecord method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testGetRawStatusRecord() throws Exception {
-        LOGGER.log(Level.INFO, "getRawStatusRecord");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        ChannelStatusRecord result = instance.getRawStatusRecord();
-        assertEquals(0, result.status());
-    }
+        channel.setUnits("mm");
+        channel.setLowerDispLimit(-10.0);
+        channel.setUpperDispLimit(10.0);
+        channel.setLowerCtrlLimit(-8.0);
+        channel.setUpperCtrlLimit(8.0);
+        channel.setLowerAlarmLimit(-6.0);
+        channel.setUpperAlarmLimit(6.0);
+        channel.setLowerWarningLimit(-4.0);
+        channel.setUpperWarningLimit(4.0);
 
-    /**
-     * Test of getRawTimeRecord method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testGetRawTimeRecord() throws Exception {
-        LOGGER.log(Level.INFO, "getRawTimeRecord");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        ChannelTimeRecord result = instance.getRawTimeRecord();
-        assertEquals(Timestamp.class, result.getTimestamp().getClass());
-    }
-
-    /**
-     * Test of getRawValueCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testGetRawValueCallback_IEventSinkValue() throws Exception {
-        LOGGER.log(Level.INFO, "getRawValueCallback");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.getRawValueCallback((record, chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of getRawValueCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testGetRawValueCallback_IEventSinkValue_boolean() throws Exception {
-        LOGGER.log(Level.INFO, "getRawValueCallback");
-
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.getRawValueCallback((record, chan) -> methodCalled = true, true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of getRawValueTimeCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testGetRawValueTimeCallback() throws Exception {
-        LOGGER.log(Level.INFO, "getRawValueTimeCallback");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.getRawValueTimeCallback((record, chan) -> methodCalled = true, true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of addMonitorValTime method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testAddMonitorValTime() throws Exception {
-        LOGGER.log(Level.INFO, "addMonitorValTime");
-
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-
-        Monitor result = instance.addMonitorValTime((record, chan) -> methodCalled = true, 0);
-        instance.putVal("test");
-        assertEquals(true, methodCalled);
-
-        result.clear();
-    }
-
-    /**
-     * Test of addMonitorValStatus method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testAddMonitorValStatus() throws Exception {
-        LOGGER.log(Level.INFO, "addMonitorValStatus");
-
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-
-        Monitor result = instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
-        instance.putVal("test");
-        assertEquals(true, methodCalled);
-
-        result.clear();
-    }
-
-    /**
-     * Test of addMonitorValue method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testAddMonitorValue() throws Exception {
-        LOGGER.log(Level.INFO, "addMonitorValue");
-
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-
-        Monitor result = instance.addMonitorValue((record, chan) -> methodCalled = true, 0);
-        instance.putVal("test");
-        assertEquals(true, methodCalled);
-
-        result.clear();
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_String_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        String newVal = "Test";
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_byte_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        byte newVal = 1;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_short_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        short newVal = 1;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_int_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        int newVal = 1;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_long_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        long newVal = 1;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_float_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        float newVal = 1F;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_double_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        double newVal = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        instance.putRawValCallback("test", (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_StringArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        String[] newVal = {"test1", "test2"};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_byteArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        byte[] newVal = {1, 2};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_shortArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        short[] newVal = {1, 2};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_intArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        int[] newVal = {1, 2};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_longArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        long[] newVal = {1, 2};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_floatArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        float[] newVal = {1F, 2F};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of putRawValCallback method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testPutRawValCallback_doubleArr_PutListener() throws Exception {
-        LOGGER.log(Level.INFO, "putRawValCallback");
-        double[] newVal = {1, 2};
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-
-        // Trying second if condition
-        methodCalled = false;
-        instance.putRawValCallback(newVal, (chan) -> methodCalled = true);
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of setUnits method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetUnits() {
-        LOGGER.log(Level.INFO, "setUnits");
-        String units = "Volt";
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setUnits(units);
-        assertEquals(units, instance.getUnits());
-    }
-
-    /**
-     * Test of setLowerDispLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetLowerDispLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setLowerDispLimit");
-        Number lowerLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setLowerDispLimit(lowerLimit);
-        assertEquals(lowerLimit, instance.rawLowerDisplayLimit());
-    }
-
-    /**
-     * Test of setUpperDispLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetUpperDispLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setUpperDispLimit");
-        Number upperLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setUpperDispLimit(upperLimit);
-        assertEquals(upperLimit, instance.rawUpperDisplayLimit());
-    }
-
-    /**
-     * Test of setLowerAlarmLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetLowerAlarmLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setLowerAlarmLimit");
-        Number lowerLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setLowerAlarmLimit(lowerLimit);
-        assertEquals(lowerLimit, instance.rawLowerAlarmLimit());
-    }
-
-    /**
-     * Test of setUpperAlarmLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetUpperAlarmLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setUpperAlarmLimit");
-        Number upperLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setUpperAlarmLimit(upperLimit);
-        assertEquals(upperLimit, instance.rawUpperAlarmLimit());
-    }
-
-    /**
-     * Test of setLowerWarningLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetLowerWarningLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setLowerWarningLimit");
-        Number lowerLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setLowerWarningLimit(lowerLimit);
-        assertEquals(lowerLimit, instance.rawLowerWarningLimit());
-    }
-
-    /**
-     * Test of setUpperWarningLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetUpperWarningLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setUpperWarningLimit");
-        Number upperLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setUpperWarningLimit(upperLimit);
-        assertEquals(upperLimit, instance.rawUpperWarningLimit());
-    }
-
-    /**
-     * Test of setLowerCtrlLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetLowerCtrlLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setLowerCtrlLimit");
-        Number lowerLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setLowerCtrlLimit(lowerLimit);
-        assertEquals(lowerLimit, instance.rawLowerControlLimit());
-    }
-
-    /**
-     * Test of setUpperCtrlLimit method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetUpperCtrlLimit() throws GetException {
-        LOGGER.log(Level.INFO, "setUpperCtrlLimit");
-        Number upperLimit = 1.0;
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setUpperCtrlLimit(upperLimit);
-        assertEquals(upperLimit, instance.rawUpperControlLimit());
-    }
-
-    /**
-     * Test of setSettable method, of class Epics7ServerChannel.
-     */
-    @Test
-    public void testSetSettable() {
-        LOGGER.log(Level.INFO, "setSettable");
-        Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
-        instance.setSettable(true);
+        assertEquals("mm", channel.getUnits());
+        assertEquals(-10.0, channel.rawLowerDisplayLimit().doubleValue(), 0.0);
+        assertEquals(10.0, channel.rawUpperDisplayLimit().doubleValue(), 0.0);
+        assertEquals(-8.0, channel.rawLowerControlLimit().doubleValue(), 0.0);
+        assertEquals(8.0, channel.rawUpperControlLimit().doubleValue(), 0.0);
+        assertEquals(-6.0, channel.rawLowerAlarmLimit().doubleValue(), 0.0);
+        assertEquals(6.0, channel.rawUpperAlarmLimit().doubleValue(), 0.0);
+        assertEquals(-4.0, channel.rawLowerWarningLimit().doubleValue(), 0.0);
+        assertEquals(4.0, channel.rawUpperWarningLimit().doubleValue(), 0.0);
     }
 }

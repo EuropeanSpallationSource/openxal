@@ -17,25 +17,12 @@
  */
 package xal.plugin.epics7;
 
-import java.math.BigDecimal;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Structure;
+import java.time.Instant;
+import org.epics.pva.data.PVADouble;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import xal.ca.Timestamp;
-import static xal.plugin.epics7.Epics7Channel.ALARM_FIELD;
-import static xal.plugin.epics7.Epics7Channel.CONTROL_FIELD;
-import static xal.plugin.epics7.Epics7Channel.DISPLAY_FIELD;
-import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
-import static xal.plugin.epics7.Epics7ChannelTimeRecord.NANOSECONDS_FIELD_NAME;
-import static xal.plugin.epics7.Epics7ChannelTimeRecord.SECONDS_FIELD_NAME;
-import static xal.plugin.epics7.Epics7ChannelTimeRecord.TIMESTAMP_FIELD_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static xal.plugin.epics7.TestData.VALUE;
 
 /**
  *
@@ -43,57 +30,43 @@ import static xal.plugin.epics7.Epics7ChannelTimeRecord.TIMESTAMP_FIELD_NAME;
  */
 public class Epics7ChannelTimeRecordTest {
 
-    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelTimeRecordTest.class.getName());
+    @Test
+    public void testTimestamp() {
+        Instant time = Instant.ofEpochSecond(1_600_000_000L, 123_456_789);
+        Epics7ChannelTimeRecord instance = new Epics7ChannelTimeRecord(
+                TestData.withTime(new PVADouble(VALUE, 1.0), 0, 0, time));
 
-    private PVStructure pvStructure;
-    String properties = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
-            + DISPLAY_FIELD + "," + CONTROL_FIELD;
-
-    private Epics7ChannelTimeRecord newEpics7ChannelTimeRecord() {
-        Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, properties);
-        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-        pvStructure = pvDataCreate.createPVStructure(structure);
-
-        pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getLongField(SECONDS_FIELD_NAME).put(1);
-        pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getIntField(NANOSECONDS_FIELD_NAME).put(2);
-
-        Epics7ChannelTimeRecord epics7ChannelTimeRecord = new Epics7ChannelTimeRecord(pvStructure);
-        return epics7ChannelTimeRecord;
+        assertEquals(1_600_000_000.123456789, instance.getTimestamp().getSeconds(), 1e-3);
+        assertEquals(1_600_000_000.123456789, instance.timeStampInSeconds(), 1e-3);
     }
 
     /**
-     * Test of getTimestamp method, of class Epics7ChannelTimeRecord.
+     * The status record's fields remain available on a time record.
      */
     @Test
-    public void testGetTimestamp() {
-        LOGGER.log(Level.INFO, "getTimestamp");
-        Epics7ChannelTimeRecord instance = newEpics7ChannelTimeRecord();
-        Timestamp expResult = new Timestamp(new BigDecimal(2).multiply(new BigDecimal("1e-9")).add(new BigDecimal(1)));
-        Timestamp result = instance.getTimestamp();
-        assertEquals(expResult, result);
+    public void testInheritsStatusAndSeverity() {
+        Epics7ChannelTimeRecord instance = new Epics7ChannelTimeRecord(
+                TestData.withTime(new PVADouble(VALUE, 1.0), 2, 7, Instant.EPOCH));
+
+        assertEquals(7, instance.status());
+        assertEquals(2, instance.severity());
     }
 
     /**
-     * Test of timeStampInSeconds method, of class Epics7ChannelTimeRecord.
+     * A structure with no timeStamp field, as returned by a plain "value" request, must not blow up.
      */
     @Test
-    public void testTimeStampInSeconds() {
-        LOGGER.log(Level.INFO, "timeStampInSeconds");
-        Epics7ChannelTimeRecord instance = newEpics7ChannelTimeRecord();
-        double expResult = instance.getTimestamp().getSeconds();
-        double result = instance.timeStampInSeconds();
-        assertEquals(expResult, result, 0.0);
+    public void testMissingTimeStampDefaultsToEpoch() {
+        Epics7ChannelTimeRecord instance = new Epics7ChannelTimeRecord(TestData.doubleRecord(1.0));
+
+        assertEquals(0.0, instance.timeStampInSeconds(), 0.0);
     }
 
-    /**
-     * Test of toString method, of class Epics7ChannelTimeRecord.
-     */
     @Test
-    public void testToString() {
-        LOGGER.log(Level.INFO, "toString");
-        Epics7ChannelTimeRecord instance = newEpics7ChannelTimeRecord();
-        String expResult = ", time: " + instance.getTimestamp().toString();
-        String result = instance.toString().substring(instance.toString().indexOf(", time"));
-        assertEquals(expResult, result);
+    public void testToStringMentionsTime() {
+        Epics7ChannelTimeRecord instance = new Epics7ChannelTimeRecord(
+                TestData.withTime(new PVADouble(VALUE, 1.0), 0, 0, Instant.ofEpochSecond(1000)));
+
+        assertTrue(instance.toString().contains("time: "));
     }
 }

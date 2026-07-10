@@ -17,331 +17,109 @@
  */
 package xal.plugin.epics7.server;
 
-import gov.aps.jca.dbr.DBR_CTRL_Byte;
-import gov.aps.jca.dbr.DBR_CTRL_Double;
-import gov.aps.jca.dbr.DBR_CTRL_Float;
-import gov.aps.jca.dbr.DBR_CTRL_Int;
-import gov.aps.jca.dbr.DBR_CTRL_Short;
-import gov.aps.jca.dbr.DBR_CTRL_String;
-import gov.aps.jca.dbr.DBR_Enum;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.epics.pvdata.copy.CreateRequest;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.monitor.MonitorElement;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Structure;
-import org.epics.pvdatabase.pva.MonitorFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.epics.pva.data.PVAStructure;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import xal.ca.Channel;
-import xal.ca.ConnectionException;
-import xal.ca.MonitorException;
-import xal.ca.PutException;
-import static xal.plugin.epics7.Epics7Channel.ALARM_FIELD;
-import static xal.plugin.epics7.Epics7Channel.CONTROL_FIELD;
-import static xal.plugin.epics7.Epics7Channel.DISPLAY_FIELD;
-import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
-import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
-import static xal.plugin.epics7.Epics7Channel.VALUE_REQUEST;
-import xal.plugin.epics7.TestMonitor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import xal.ca.Monitor;
+import xal.plugin.epics7.TestData;
 
 /**
+ * Tests for {@link Epics7ServerMonitor}. Unlike the base {@link xal.plugin.epics7.Epics7Monitor}, a server monitor does
+ * not subscribe to a native channel; it registers with its {@link Epics7ServerChannel} and is notified through
+ * {@link Epics7ServerMonitor#post} whenever the served value changes.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ServerMonitorTest {
 
-    private static final Logger LOGGER = Logger.getLogger(Epics7ServerMonitorTest.class.getName());
+    private static Epics7ServerChannelSystem system;
 
-    private boolean methodCalled = false;
+    @BeforeClass
+    public static void setUpClass() {
+        system = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+    }
 
-    /**
-     * Test of begin method, of class Epics7ServerMonitor.
-     */
-    @Test
-    public void testBegin() throws ConnectionException, MonitorException {
-        LOGGER.log(Level.INFO, "begin");
-        Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
-        Channel channel = channelFactory.newChannel("TestChannel");
+    @AfterClass
+    public static void tearDownClass() {
+        if (system != null) {
+            system.dispose();
+        }
+    }
 
-        Epics7ServerMonitor instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        instance.clear();
-        assertEquals(false, methodCalled);
-        instance.begin();
-
-        assertEquals(true, methodCalled);
+    private Epics7ServerChannel channel(String name) {
+        return new Epics7ServerChannel(name, system);
     }
 
     /**
-     * Test of monitorConnect method, of class Epics7ServerMonitor.
+     * A posted value is forwarded to the listener unchanged.
      */
     @Test
-    public void testMonitorConnect() throws ConnectionException, MonitorException {
-        LOGGER.log(Level.INFO, "monitorConnect");
-        Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
-        Channel channel = channelFactory.newChannel("TestChannel");
+    public void testPostDispatchesToListener() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMonPost");
+        AtomicReference<PVAStructure> received = new AtomicReference<>();
 
-        Epics7ServerMonitor instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
+        Epics7ServerMonitor monitor = Epics7ServerMonitor.createNewMonitor(channel, received::set, Monitor.VALUE);
 
-        methodCalled = false;
+        PVAStructure data = TestData.doubleRecord(4.0);
+        monitor.post(data);
 
-        instance.monitorConnect(null, MonitorFactory.create(instance.pvRecord, instance, CreateRequest.create().createRequest(VALUE_REQUEST)), null);
-
-        assertEquals(true, methodCalled);
-
+        assertSame(data, received.get());
     }
 
     /**
-     * Test of monitorEvent method, of class Epics7ServerMonitor.
+     * Creating the monitor registers it with the channel, so a later put reaches the listener.
      */
     @Test
-    public void testMonitorEvent() throws ConnectionException, MonitorException, PutException {
-        LOGGER.log(Level.INFO, "monitorEvent");
-        Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
-        Channel channel = channelFactory.newChannel("TestChannel");
+    public void testCreateRegistersWithChannel() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMonRegister");
+        AtomicInteger count = new AtomicInteger();
 
-        Epics7ServerMonitor instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
+        Epics7ServerMonitor.createNewMonitor(channel, pv -> count.incrementAndGet(), Monitor.VALUE);
+        channel.putRawValCallback(1.0, null);
 
-        methodCalled = false;
-
-        instance.monitorEvent(new TestMonitor());
-
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback((long) 1, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.monitorEvent(new TestMonitor() {
-            boolean poll = true;
-
-            @Override
-            public MonitorElement poll() {
-                if (poll) {
-                    poll = false;
-                    return new MonitorElement() {
-                        @Override
-                        public PVStructure getPVStructure() {
-                            Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvLong, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
-                                    + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
-
-                            PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-
-                            return pvStructure;
-                        }
-
-                        @Override
-                        public BitSet getChangedBitSet() {
-                            //To change body of generated methods, choose Tools | Templates.
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-
-                        @Override
-                        public BitSet getOverrunBitSet() {
-                            //To change body of generated methods, choose Tools | Templates.
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-                    };
-                } else {
-                    return null;
-                }
-            }
-        });
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(new long[]{1, 2}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.monitorEvent(new TestMonitor() {
-            boolean poll = true;
-
-            @Override
-            public MonitorElement poll() {
-                if (poll) {
-                    poll = false;
-                    return new MonitorElement() {
-                        @Override
-                        public PVStructure getPVStructure() {
-                            Structure structure = StandardFieldFactory.getStandardField().scalarArray(ScalarType.pvLong, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
-                                    + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
-
-                            PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-
-                            return pvStructure;
-                        }
-
-                        @Override
-                        public BitSet getChangedBitSet() {
-                            //To change body of generated methods, choose Tools | Templates.
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-
-                        @Override
-                        public BitSet getOverrunBitSet() {
-                            //To change body of generated methods, choose Tools | Templates.
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-                    };
-                } else {
-                    return null;
-                }
-            }
-        });
-        assertEquals(true, methodCalled);
+        assertTrue(count.get() >= 1);
     }
 
     /**
-     * Test of postEvent method, of class Epics7ServerMonitor.
+     * After {@link Epics7ServerMonitor#clear()} the monitor is unregistered: neither a further put nor a direct post
+     * reaches the listener.
      */
     @Test
+    public void testClearUnregistersAndStopsEvents() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMonClear");
+        AtomicInteger count = new AtomicInteger();
 
-    public void testPostEvent() throws ConnectionException, MonitorException, PutException {
-        LOGGER.log(Level.INFO, "postEvent");
-        Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
-        Channel channel = channelFactory.newChannel("TestChannel");
+        Epics7ServerMonitor monitor = Epics7ServerMonitor.createNewMonitor(channel, pv -> count.incrementAndGet(),
+                Monitor.VALUE);
 
-        Epics7ServerMonitor instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
+        channel.putRawValCallback(1.0, null);
+        int afterFirstPut = count.get();
+        assertTrue(afterFirstPut >= 1);
 
-        methodCalled = false;
-        instance.postEvent(0, new DBR_Enum());
-        assertEquals(true, methodCalled);
+        monitor.clear();
 
-        methodCalled = false;
-        channel.putRawValCallback(new double[]{1, 2}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Double(new double[]{1, 2}));
-        assertEquals(true, methodCalled);
+        // A put no longer notifies the cleared monitor...
+        channel.putRawValCallback(2.0, null);
+        assertEquals(afterFirstPut, count.get());
 
-        methodCalled = false;
-        channel.putRawValCallback((byte) 1, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Byte(new byte[]{1}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(new byte[]{1, 2}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Byte(new byte[]{1, 2}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(1.0F, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Float(new float[]{1.0F}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(new float[]{1.0F, 2.0F}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Float(new float[]{1.0F, 2.0F}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback((int) 1, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Int(new int[]{1}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(new int[]{1, 2}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Int(new int[]{1, 2}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback((short) 1, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Short(new short[]{1}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(new short[]{1, 2}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_Short(new short[]{1, 2}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback("Test", (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_String(new String[]{"Test"}));
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-        channel.putRawValCallback(new String[]{"Test1", "Test2"}, (e) -> {
-        });
-        instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-            methodCalled = true;
-        }, 0);
-        instance.postEvent(0, new DBR_CTRL_String(new String[]{"Test1", "Test2"}));
-        assertEquals(true, methodCalled);
+        // ...and a direct post is dropped as well.
+        monitor.post(TestData.doubleRecord(3.0));
+        assertEquals(afterFirstPut, count.get());
     }
 
-    /**
-     * Test of canceled method, of class Epics7ServerMonitor.
-     */
     @Test
-    public void testCanceled() throws ConnectionException, MonitorException {
-        LOGGER.log(Level.INFO, "canceled");
-        Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
-        Channel channel = channelFactory.newChannel("TestChannel");
+    public void testGetChannelReturnsOwner() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMonOwner");
 
-        Epics7ServerMonitor instance = (Epics7ServerMonitor) channel.addMonitorValue((c, r) -> {
-        }, 0);
-        instance.canceled();
+        Epics7ServerMonitor monitor = Epics7ServerMonitor.createNewMonitor(channel, pv -> {
+        }, Monitor.VALUE);
+
+        assertEquals(channel, monitor.getChannel());
     }
-
 }

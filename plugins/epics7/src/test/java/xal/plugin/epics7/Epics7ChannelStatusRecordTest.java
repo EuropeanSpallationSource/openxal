@@ -17,23 +17,11 @@
  */
 package xal.plugin.epics7;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Structure;
+import org.epics.pva.data.PVADouble;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static xal.plugin.epics7.Epics7Channel.ALARM_FIELD;
-import static xal.plugin.epics7.Epics7Channel.CONTROL_FIELD;
-import static xal.plugin.epics7.Epics7Channel.DISPLAY_FIELD;
-import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
-import static xal.plugin.epics7.Epics7ChannelStatusRecord.ALARM_FIELD_NAME;
-import static xal.plugin.epics7.Epics7ChannelStatusRecord.SEVERITY_FIELD_NAME;
-import static xal.plugin.epics7.Epics7ChannelStatusRecord.STATUS_FIELD_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static xal.plugin.epics7.TestData.VALUE;
 
 /**
  *
@@ -41,57 +29,33 @@ import static xal.plugin.epics7.Epics7ChannelStatusRecord.STATUS_FIELD_NAME;
  */
 public class Epics7ChannelStatusRecordTest {
 
-    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelStatusRecordTest.class.getName());
+    @Test
+    public void testStatusAndSeverity() {
+        Epics7ChannelStatusRecord instance = new Epics7ChannelStatusRecord(
+                TestData.withAlarm(new PVADouble(VALUE, 1.0), 2, 5));
 
-    private PVStructure pvStructure;
-    String properties = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
-            + DISPLAY_FIELD + "," + CONTROL_FIELD;
-
-    private Epics7ChannelStatusRecord newEpics7ChannelStatusRecord() {
-        Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, properties);
-        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-        pvStructure = pvDataCreate.createPVStructure(structure);
-
-        pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(STATUS_FIELD_NAME).put(1);
-        pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(SEVERITY_FIELD_NAME).put(2);
-
-        Epics7ChannelStatusRecord epics7ChannelStatusRecord = new Epics7ChannelStatusRecord(pvStructure);
-        return epics7ChannelStatusRecord;
+        assertEquals(5, instance.status());
+        assertEquals(2, instance.severity());
     }
 
     /**
-     * Test of status method, of class Epics7ChannelStatusRecord.
+     * A structure with no alarm field, as returned by a plain "value" request, must not blow up.
      */
     @Test
-    public void testStatus() {
-        LOGGER.log(Level.INFO, "status");
-        Epics7ChannelStatusRecord instance = newEpics7ChannelStatusRecord();
-        int expResult = 1;
-        int result = instance.status();
-        assertEquals(expResult, result);
+    public void testMissingAlarmFieldDefaultsToZero() {
+        Epics7ChannelStatusRecord instance = new Epics7ChannelStatusRecord(TestData.doubleRecord(1.0));
+
+        assertEquals(0, instance.status());
+        assertEquals(0, instance.severity());
     }
 
-    /**
-     * Test of severity method, of class Epics7ChannelStatusRecord.
-     */
     @Test
-    public void testSeverity() {
-        LOGGER.log(Level.INFO, "severity");
-        Epics7ChannelStatusRecord instance = newEpics7ChannelStatusRecord();
-        int expResult = 2;
-        int result = instance.severity();
-        assertEquals(expResult, result);
-    }
+    public void testToStringMentionsStatusAndSeverity() {
+        Epics7ChannelStatusRecord instance = new Epics7ChannelStatusRecord(
+                TestData.withAlarm(new PVADouble(VALUE, 1.0), 1, 3));
 
-    /**
-     * Test of toString method, of class Epics7ChannelStatusRecord.
-     */
-    @Test
-    public void testToString() {
-        LOGGER.log(Level.INFO, "toString");
-        Epics7ChannelStatusRecord instance = newEpics7ChannelStatusRecord();
-        String expResult = ", status: 1, severity: 2";
-        String result = instance.toString().substring(instance.toString().indexOf(','));
-        assertEquals(expResult, result);
+        String text = instance.toString();
+        assertTrue(text.contains("status: 3"));
+        assertTrue(text.contains("severity: 1"));
     }
 }

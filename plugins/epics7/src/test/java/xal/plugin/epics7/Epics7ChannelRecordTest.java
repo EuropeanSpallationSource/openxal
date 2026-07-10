@@ -17,34 +17,30 @@
  */
 package xal.plugin.epics7;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.PVBooleanArray;
-import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.PVUIntArray;
-import org.epics.pvdata.pv.PVULongArray;
-import org.epics.pvdata.pv.PVUShortArray;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.StandardField;
-import org.epics.pvdata.pv.Structure;
+import org.epics.pva.data.PVABool;
+import org.epics.pva.data.PVABoolArray;
+import org.epics.pva.data.PVAByte;
+import org.epics.pva.data.PVAByteArray;
+import org.epics.pva.data.PVADouble;
+import org.epics.pva.data.PVADoubleArray;
+import org.epics.pva.data.PVAFloat;
+import org.epics.pva.data.PVAFloatArray;
+import org.epics.pva.data.PVAInt;
+import org.epics.pva.data.PVAIntArray;
+import org.epics.pva.data.PVALong;
+import org.epics.pva.data.PVALongArray;
+import org.epics.pva.data.PVAShort;
+import org.epics.pva.data.PVAShortArray;
+import org.epics.pva.data.PVAString;
+import org.epics.pva.data.PVAStringArray;
+import org.epics.pva.data.PVAStructure;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import xal.ca.ChannelRecord;
-import static xal.plugin.epics7.Epics7Channel.ALARM_FIELD;
-import static xal.plugin.epics7.Epics7Channel.CONTROL_FIELD;
-import static xal.plugin.epics7.Epics7Channel.DISPLAY_FIELD;
-import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
-import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static xal.plugin.epics7.TestData.VALUE;
 
 /**
  *
@@ -52,656 +48,132 @@ import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
  */
 public class Epics7ChannelRecordTest {
 
-    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelRecordTest.class.getName());
-
-    private PVStructure pvStructure;
-    String properties = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
-            + DISPLAY_FIELD + "," + CONTROL_FIELD;
-    String propertiesVA = properties + "," + VALUE_ALARM_FIELD;
-
-    PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-
-    private Epics7ChannelRecord newEpics7ChannelRecord(ScalarType scalarType) {
-        Structure structure = StandardFieldFactory.getStandardField().scalar(scalarType, properties);
-        pvStructure = pvDataCreate.createPVStructure(structure);
-        return new Epics7ChannelRecord(pvStructure);
+    private static Epics7ChannelRecord record(org.epics.pva.data.PVAData value) {
+        return new Epics7ChannelRecord(TestData.valueOnly(value));
     }
 
-    private Epics7ChannelRecord newEpics7ChannelRecordArray(ScalarType scalarType) {
-        StandardField standardField = StandardFieldFactory.getStandardField();
-        Structure structure = standardField.scalarArray(scalarType, properties);
-        pvStructure = pvDataCreate.createPVStructure(structure);
-        return new Epics7ChannelRecord(pvStructure);
-    }
-
-    /**
-     * Test of getStore method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testGetStore() {
-        LOGGER.log(Level.INFO, "getStore");
+    public void testGetStoreAndFieldName() {
+        PVAStructure structure = TestData.doubleRecord(1.5);
+        Epics7ChannelRecord instance = new Epics7ChannelRecord(structure);
 
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-
-        PVStructure result = instance.getStore();
-        assertEquals(pvStructure, result);
+        assertSame(structure, instance.getStore());
+        assertEquals(VALUE, instance.getFieldName());
     }
 
-    /**
-     * Test of getFieldName method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testGetFieldName() {
-        LOGGER.log(Level.INFO, "getFieldName");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        String expResult = "value";
-        String result = instance.getFieldName();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of getCount method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testGetCount() {
-        LOGGER.log(Level.INFO, "getCount");
-
+    public void testNullStore() {
         Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
 
-        int result = instance.getCount();
-        assertEquals(0, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-
-        result = instance.getCount();
-        assertEquals(1, result);
+        assertEquals(0, instance.getCount());
+        assertNull(instance.getType());
+        assertEquals("", instance.toString());
     }
 
     @Test
-    public void testGetCount_byteA() {
-        LOGGER.log(Level.INFO, "getCount_byte[]");
-        byte[] byteVal = {1, 3, 4};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvByte);
-        PVByteArray pvByteArray = instance.getStore().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST);
-        pvByteArray.put(0, byteVal.length, byteVal, 0);
-        int result = instance.getCount();
-        assertEquals(byteVal.length, result);
+    public void testScalarCountIsOne() {
+        assertEquals(1, record(new PVADouble(VALUE, 3.0)).getCount());
+        assertEquals(1, record(new PVAString(VALUE, "x")).getCount());
+        assertEquals(1, record(new PVABool(VALUE, true)).getCount());
     }
 
     @Test
-    public void testGetCount_doubleA() {
-        LOGGER.log(Level.INFO, "getCount_double[]");
-        double[] doubleVal = {1.2, 3.2, 4.5};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvDouble);
-        PVDoubleArray pvDoubleArray = instance.getStore().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST);
-        pvDoubleArray.put(0, doubleVal.length, doubleVal, 0);
-        int result = instance.getCount();
-        assertEquals(doubleVal.length, result);
+    public void testArrayCountIsLength() {
+        assertEquals(3, record(new PVADoubleArray(VALUE, 1.0, 2.0, 3.0)).getCount());
+        assertEquals(2, record(new PVAIntArray(VALUE, false, 1, 2)).getCount());
+        assertEquals(4, record(new PVAStringArray(VALUE, "a", "b", "c", "d")).getCount());
+        assertEquals(0, record(new PVADoubleArray(VALUE)).getCount());
     }
 
     @Test
-    public void testGetCount_floatA() {
-        LOGGER.log(Level.INFO, "getCount_float[]");
-        float[] floatVal = {1.2F, 3.2F, 4.5F};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvFloat);
-        PVFloatArray pvFloatArray = instance.getStore().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST);
-        pvFloatArray.put(0, floatVal.length, floatVal, 0);
-        int result = instance.getCount();
-        assertEquals(floatVal.length, result);
+    public void testScalarTypes() {
+        assertEquals(boolean.class, record(new PVABool(VALUE, true)).getType());
+        assertEquals(byte.class, record(new PVAByte(VALUE, false, (byte) 1)).getType());
+        assertEquals(short.class, record(new PVAShort(VALUE, false, (short) 1)).getType());
+        assertEquals(int.class, record(new PVAInt(VALUE, 1)).getType());
+        assertEquals(long.class, record(new PVALong(VALUE, false, 1L)).getType());
+        assertEquals(float.class, record(new PVAFloat(VALUE, 1f)).getType());
+        assertEquals(double.class, record(new PVADouble(VALUE, 1.0)).getType());
+        assertEquals(String.class, record(new PVAString(VALUE, "x")).getType());
     }
 
     @Test
-    public void testGetCount_intA() {
-        LOGGER.log(Level.INFO, "getCount_int[]");
-        int[] intVal = {2, 5, 3};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvInt);
-        PVIntArray pvIntArray = instance.getStore().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST);
-        pvIntArray.put(0, intVal.length, intVal, 0);
-        int result = instance.getCount();
-        assertEquals(intVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_uintA() {
-        LOGGER.log(Level.INFO, "getCount_uint[]");
-        int[] intVal = {2, 5, 3};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvUInt);
-        PVUIntArray pvUIntArray = instance.getStore().getSubField(PVUIntArray.class, Epics7Channel.VALUE_REQUEST);
-        pvUIntArray.put(0, intVal.length, intVal, 0);
-        int result = instance.getCount();
-        assertEquals(intVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_longA() {
-        LOGGER.log(Level.INFO, "getCount_long[]");
-        long[] longVal = {2, 500000, 3};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvLong);
-        PVLongArray pvLongArray = instance.getStore().getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST);
-        pvLongArray.put(0, longVal.length, longVal, 0);
-        int result = instance.getCount();
-        assertEquals(longVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_ulongA() {
-        LOGGER.log(Level.INFO, "getCount_ulong[]");
-        long[] longVal = {2, 500000, 3};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvULong);
-        PVULongArray pvULongArray = instance.getStore().getSubField(PVULongArray.class, Epics7Channel.VALUE_REQUEST);
-        pvULongArray.put(0, longVal.length, longVal, 0);
-        int result = instance.getCount();
-        assertEquals(longVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_shortA() {
-        LOGGER.log(Level.INFO, "getCount_short[]");
-        short[] shortVal = {2, 3};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvShort);
-        PVShortArray pvShortArray = instance.getStore().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST);
-        pvShortArray.put(0, shortVal.length, shortVal, 0);
-        int result = instance.getCount();
-        assertEquals(shortVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_ushortA() {
-        LOGGER.log(Level.INFO, "getCount_ushort[]");
-        short[] shortVal = {2, 3};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvUShort);
-        PVUShortArray pvUShortArray = instance.getStore().getSubField(PVUShortArray.class, Epics7Channel.VALUE_REQUEST);
-        pvUShortArray.put(0, shortVal.length, shortVal, 0);
-        int result = instance.getCount();
-        assertEquals(shortVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_StringA() {
-        LOGGER.log(Level.INFO, "getCount_String[]");
-        String[] stringVal = {"test1", "test2"};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvString);
-        PVStringArray pvStringArray = instance.getStore().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
-        pvStringArray.put(0, stringVal.length, stringVal, 0);
-        int result = instance.getCount();
-        assertEquals(stringVal.length, result);
-    }
-
-    @Test
-    public void testGetCount_booleanA() {
-        LOGGER.log(Level.INFO, "getCount_boolean[]");
-        boolean[] booleanVal = {true, false};
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvBoolean);
-        PVBooleanArray pvBooleanArray = instance.getStore().getSubField(PVBooleanArray.class, Epics7Channel.VALUE_REQUEST);
-        pvBooleanArray.put(0, booleanVal.length, booleanVal, 0);
-        int result = instance.getCount();
-        assertEquals(booleanVal.length, result);
+    public void testArrayTypes() {
+        assertEquals(boolean[].class, record(new PVABoolArray(VALUE, true)).getType());
+        assertEquals(byte[].class, record(new PVAByteArray(VALUE, false, (byte) 1)).getType());
+        assertEquals(short[].class, record(new PVAShortArray(VALUE, false, (short) 1)).getType());
+        assertEquals(int[].class, record(new PVAIntArray(VALUE, false, 1)).getType());
+        assertEquals(long[].class, record(new PVALongArray(VALUE, false, 1L)).getType());
+        assertEquals(float[].class, record(new PVAFloatArray(VALUE, 1f)).getType());
+        assertEquals(double[].class, record(new PVADoubleArray(VALUE, 1.0)).getType());
+        assertEquals(String[].class, record(new PVAStringArray(VALUE, "x")).getType());
     }
 
     /**
-     * Test of getType method, of class Epics7ChannelRecord.
+     * Unsigned types map onto the same Java type as their signed counterparts.
      */
     @Test
-    public void testGetType() {
-        LOGGER.log(Level.INFO, "getType");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvBoolean);
-        assertEquals(boolean.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvByte);
-        assertEquals(byte.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        assertEquals(double.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvFloat);
-        assertEquals(float.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        assertEquals(int.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvLong);
-        assertEquals(long.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvShort);
-        assertEquals(short.class, instance.getType());
-
-        instance = newEpics7ChannelRecord(ScalarType.pvString);
-        assertEquals(String.class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvBoolean);
-        assertEquals(boolean[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvByte);
-        assertEquals(byte[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvDouble);
-        assertEquals(double[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvFloat);
-        assertEquals(float[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvInt);
-        assertEquals(int[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvLong);
-        assertEquals(long[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvShort);
-        assertEquals(short[].class, instance.getType());
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvString);
-        assertEquals(String[].class, instance.getType());
-
-        instance = new Epics7ChannelRecord(null);
-        assertEquals(null, instance.getType());
+    public void testUnsignedTypes() {
+        assertEquals(byte.class, record(new PVAByte(VALUE, true, (byte) 1)).getType());
+        assertEquals(int.class, record(new PVAInt(VALUE, true, 1)).getType());
+        assertEquals(long.class, record(new PVALong(VALUE, true, 1L)).getType());
     }
 
-    /**
-     * Test of byteValue method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testByteValue() {
-        LOGGER.log(Level.INFO, "byteValue");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvByte);
-        byte expResult = 3;
-        instance.getStore().getByteField(Epics7Channel.VALUE_REQUEST).put(expResult);
-        byte result = instance.byteValue();
-        assertEquals(expResult, result);
+    public void testScalarValueAccessors() {
+        Epics7ChannelRecord instance = record(new PVADouble(VALUE, 42.0));
 
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
-
-        result = instance.byteValue();
-        assertEquals(expResult, result);
+        assertEquals(42, instance.byteValue());
+        assertEquals(42, instance.shortValue());
+        assertEquals(42, instance.intValue());
+        assertEquals(42L, instance.longValue());
+        assertEquals(42.0f, instance.floatValue(), 0.0f);
+        assertEquals(42.0, instance.doubleValue(), 0.0);
+        assertEquals("42.0", instance.stringValue());
     }
 
-    /**
-     * Test of byteValueAt method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testByteValueAt() {
-        LOGGER.log(Level.INFO, "byteValueAt");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvByte);
-        int index = 0;
-        byte expResult = 3;
-        PVByteArray pvByteArray = instance.getStore().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST);
-        pvByteArray.put(0, 1, new byte[]{expResult}, 0);
-        byte result = instance.byteValueAt(index);
-        assertEquals(expResult, result);
+    public void testArrayValueAccessors() {
+        Epics7ChannelRecord instance = record(new PVADoubleArray(VALUE, 1.0, 2.0, 3.0));
 
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
+        assertArrayEquals(new double[]{1.0, 2.0, 3.0}, instance.doubleArray(), 0.0);
+        assertArrayEquals(new int[]{1, 2, 3}, instance.intArray());
+        assertArrayEquals(new long[]{1L, 2L, 3L}, instance.longArray());
+        assertArrayEquals(new short[]{1, 2, 3}, instance.shortArray());
+        assertArrayEquals(new byte[]{1, 2, 3}, instance.byteArray());
+        assertArrayEquals(new float[]{1.0f, 2.0f, 3.0f}, instance.floatArray(), 0.0f);
 
-        result = instance.byteValueAt(index);
-        assertEquals(expResult, result);
+        assertEquals(2.0, instance.doubleValueAt(1), 0.0);
+        assertEquals(3, instance.intValueAt(2));
+        assertEquals(1L, instance.longValueAt(0));
+        assertEquals(2.0f, instance.floatValueAt(1), 0.0f);
+        assertEquals(3, instance.shortValueAt(2));
+        assertEquals(1, instance.byteValueAt(0));
     }
 
-    /**
-     * Test of byteArray method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testByteArray() {
-        LOGGER.log(Level.INFO, "byteArray");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvByte);
-        byte[] expResult = {3, 2, 4};
-        PVByteArray pvByteArray = instance.getStore().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST);
-        pvByteArray.put(0, expResult.length, expResult, 0);
-        byte[] result = instance.byteArray();
-        assertArrayEquals(expResult, result);
+    public void testStringArrayAccessors() {
+        Epics7ChannelRecord instance = record(new PVAStringArray(VALUE, "a", "b"));
 
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = new byte[]{3};
-        result = instance.byteArray();
-        assertArrayEquals(expResult, result);
+        assertArrayEquals(new String[]{"a", "b"}, instance.stringArray());
+        assertEquals("b", instance.stringValueAt(1));
     }
 
-    /**
-     * Test of shortValue method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testShortValue() {
-        LOGGER.log(Level.INFO, "shortValue");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvShort);
-        short expResult = 3;
-        instance.getStore().getShortField(Epics7Channel.VALUE_REQUEST).put(expResult);
-        short result = instance.shortValue();
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = 0;
-        result = instance.shortValue();
-        assertEquals(expResult, result);
+    public void testApplyTransformReturnsSameRecord() {
+        Epics7ChannelRecord instance = record(new PVADouble(VALUE, 1.0));
+        assertSame(instance, instance.applyTransform(null));
     }
 
-    /**
-     * Test of shortValueAt method, of class Epics7ChannelRecord.
-     */
     @Test
-    public void testShortValueAt() {
-        LOGGER.log(Level.INFO, "shortValueAt");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvShort);
-        int index = 0;
-        short expResult = 3;
-        PVShortArray pvShortArray = instance.getStore().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST);
-        pvShortArray.put(0, 1, new short[]{expResult}, 0);
-        short result = instance.shortValueAt(index);
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
-
-        result = instance.shortValueAt(index);
-        assertEquals(expResult, result);
+    public void testArrayValueIsUnsupported() {
+        Epics7ChannelRecord instance = record(new PVADouble(VALUE, 1.0));
+        assertThrows(UnsupportedOperationException.class, instance::arrayValue);
     }
 
-    /**
-     * Test of shortArray method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testShortArray() {
-        LOGGER.log(Level.INFO, "shortArray");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvShort);
-        short[] expResult = {3, 2, 4};
-        PVShortArray pvShortArray = instance.getStore().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST);
-        pvShortArray.put(0, expResult.length, expResult, 0);
-        short[] result = instance.shortArray();
-        assertArrayEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = new short[]{3};
-        result = instance.shortArray();
-        assertArrayEquals(expResult, result);
-    }
-
-    /**
-     * Test of intValue method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testIntValue() {
-        LOGGER.log(Level.INFO, "intValue");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        int expResult = 3;
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(expResult);
-        int result = instance.intValue();
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = 0;
-        result = instance.intValue();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of intValueAt method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testIntValueAt() {
-        LOGGER.log(Level.INFO, "intValueAt");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvInt);
-        int index = 0;
-        int expResult = 3;
-        PVIntArray pvIntArray = instance.getStore().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST);
-        pvIntArray.put(0, 1, new int[]{expResult}, 0);
-        int result = instance.intValueAt(index);
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
-
-        result = instance.intValueAt(index);
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of intArray method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testIntArray() {
-        LOGGER.log(Level.INFO, "intArray");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvInt);
-        int[] expResult = {3, 2, 4};
-        PVIntArray pvIntArray = instance.getStore().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST);
-        pvIntArray.put(0, expResult.length, expResult, 0);
-        int[] result = instance.intArray();
-        assertArrayEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = new int[]{3};
-        result = instance.intArray();
-        assertArrayEquals(expResult, result);
-    }
-
-    /**
-     * Test of floatValue method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testFloatValue() {
-        LOGGER.log(Level.INFO, "floatValue");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvFloat);
-        float expResult = 3;
-        instance.getStore().getFloatField(Epics7Channel.VALUE_REQUEST).put(expResult);
-        float result = instance.floatValue();
-        assertEquals(expResult, result, 1e-6F);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put((int) expResult);
-
-        result = instance.floatValue();
-        assertEquals(expResult, result, 1e-6F);
-    }
-
-    /**
-     * Test of floatValueAt method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testFloatValueAt() {
-        LOGGER.log(Level.INFO, "floatValueAt");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvFloat);
-        int index = 0;
-        float expResult = 3;
-        PVFloatArray pvFloatArray = instance.getStore().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST);
-        pvFloatArray.put(0, 1, new float[]{expResult}, 0);
-        float result = instance.floatValueAt(index);
-        assertEquals(expResult, result, 1e-6F);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put((int) expResult);
-
-        result = instance.floatValueAt(index);
-        assertEquals(expResult, result, 1e-6F);
-    }
-
-    /**
-     * Test of floatArray method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testFloatArray() {
-        LOGGER.log(Level.INFO, "floatArray");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvFloat);
-        float[] expResult = {3, 2, 4};
-        PVFloatArray pvFloatArray = instance.getStore().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST);
-        pvFloatArray.put(0, expResult.length, expResult, 0);
-        float[] result = instance.floatArray();
-        assertArrayEquals(expResult, result, 1e-6F);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = new float[]{3F};
-        result = instance.floatArray();
-        assertArrayEquals(expResult, result, 1e-6F);
-    }
-
-    /**
-     * Test of doubleValue method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testDoubleValue() {
-        LOGGER.log(Level.INFO, "doubleValue");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        double expResult = 3;
-        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
-        double result = instance.doubleValue();
-        assertEquals(expResult, result, 1e-6F);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put((int) expResult);
-
-        result = instance.doubleValue();
-        assertEquals(expResult, result, 1e-6F);
-    }
-
-    /**
-     * Test of doubleValueAt method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testDoubleValueAt() {
-        LOGGER.log(Level.INFO, "doubleValueAt");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvDouble);
-        int index = 0;
-        double expResult = 3;
-        PVDoubleArray pvDoubleArray = instance.getStore().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST);
-        pvDoubleArray.put(0, 1, new double[]{expResult}, 0);
-        double result = instance.doubleValueAt(index);
-        assertEquals(expResult, result, 1e-6F);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvFloat);
-        instance.getStore().getFloatField(Epics7Channel.VALUE_REQUEST).put((float) expResult);
-
-        result = instance.doubleValueAt(index);
-        assertEquals(expResult, result, 1e-6F);
-    }
-
-    /**
-     * Test of doubleArray method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testDoubleArray() {
-        LOGGER.log(Level.INFO, "doubleArray");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvDouble);
-        double[] expResult = {3, 2, 4};
-        PVDoubleArray pvDoubleArray = instance.getStore().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST);
-        pvDoubleArray.put(0, expResult.length, expResult, 0);
-        double[] result = instance.doubleArray();
-        assertArrayEquals(expResult, result, 1e-6F);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = new double[]{3};
-
-        result = instance.doubleArray();
-        assertArrayEquals(expResult, result, 1e-6F);
-    }
-
-    /**
-     * Test of StringValue method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testStringValue() {
-        LOGGER.log(Level.INFO, "StringValue");
-        Epics7ChannelRecord instance = newEpics7ChannelRecord(ScalarType.pvString);
-        String expResult = "test";
-        instance.getStore().getStringField(Epics7Channel.VALUE_REQUEST).put(expResult);
-        String result = instance.stringValue();
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = "3";
-
-        result = instance.stringValue();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of StringValueAt method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testStringValueAt() {
-        LOGGER.log(Level.INFO, "StringValueAt");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvString);
-        int index = 0;
-        String expResult = "test";
-        PVStringArray pvStringArray = instance.getStore().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
-        pvStringArray.put(0, 1, new String[]{expResult}, 0);
-
-        String result = instance.stringValueAt(index);
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = "3";
-
-        result = instance.stringValueAt(index);
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of StringArray method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testStringArray() {
-        LOGGER.log(Level.INFO, "StringArray");
-        Epics7ChannelRecord instance = newEpics7ChannelRecordArray(ScalarType.pvString);
-        String[] expResult = {"test1", "test2", "test3"};
-        PVStringArray pvStringArray = instance.getStore().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
-        pvStringArray.put(0, expResult.length, expResult, 0);
-        String[] result = instance.stringArray();
-        assertArrayEquals(expResult, result);
-
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
-        expResult = new String[]{"3"};
-
-        result = instance.stringArray();
-        assertArrayEquals(expResult, result);
-    }
-
-    /**
-     * Test of toString method, of class Epics7ChannelRecord.
-     */
     @Test
     public void testToString() {
-        LOGGER.log(Level.INFO, "toString");
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
-        String expResult = "";
-        String result = instance.toString();
-        assertEquals(expResult, result);
-
-        instance = newEpics7ChannelRecordArray(ScalarType.pvString);
-
-        expResult = "value: " + pvStructure.toString();
-        result = instance.toString();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of applyTransform method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testApplyTransform() {
-        LOGGER.log(Level.INFO, "applyTransform");
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
-        ChannelRecord result = instance.applyTransform(null);
-        assertEquals(instance, result);
-    }
-
-    /**
-     * Test of arrayValue method, of class Epics7ChannelRecord.
-     */
-    @Test
-    public void testArrayValue() {
-        LOGGER.log(Level.INFO, "arrayValue");
-
-        boolean exceptionThrown = false;
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
-        try {
-            instance.arrayValue();
-        } catch (Exception ex) {
-            exceptionThrown = true;
-        }
-        assertEquals(true, exceptionThrown);
+        Epics7ChannelRecord instance = record(new PVADouble(VALUE, 1.0));
+        org.junit.Assert.assertTrue(instance.toString().startsWith("value: "));
     }
 }

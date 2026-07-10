@@ -17,210 +17,88 @@
  */
 package xal.plugin.epics7;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.epics.pvdata.monitor.MonitorElement;
-import org.epics.pvdata.pv.Status;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import xal.ca.ConnectionException;
-import xal.ca.MonitorException;
-import static xal.plugin.epics7.Epics7Channel.VALUE_REQUEST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link Epics7Monitor} driven by {@link TestNativeChannel}.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7MonitorTest {
 
-    private static final Logger LOGGER = Logger.getLogger(Epics7MonitorTest.class.getName());
+    private static final double TIMEOUT = 2.0;
 
-    private boolean methodCalled = false;
-
-    private Epics7Monitor getEpics7Monitor() throws MonitorException {
-        Epics7Channel channel = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
-        channel.connectAndWait();
-
-        return Epics7Monitor.createNewMonitor(channel, VALUE_REQUEST,
-                (pvStructure) -> methodCalled = true, 0);
+    private Epics7Channel connect(Epics7TestChannelSystem system) {
+        Epics7Channel channel = new Epics7Channel("Test", system);
+        assertTrue(channel.connectAndWait(TIMEOUT));
+        return channel;
     }
 
-    /**
-     * Test of createNewMonitor method, of class Epics7Monitor.
-     */
+    private TestNativeChannel active(Epics7TestChannelSystem system) {
+        return system.created.stream().filter(TestNativeChannel::isConnected).findFirst().orElseThrow(AssertionError::new);
+    }
+
     @Test
-    public void testCreateNewMonitor() throws Exception {
-        LOGGER.log(Level.INFO, "createNewMonitor");
-        methodCalled = false;
+    public void testSubscribesWithRequest() throws Exception {
+        Epics7TestChannelSystem system = Epics7TestChannelSystem.newEpics7ChannelSystem();
+        Epics7Channel channel = connect(system);
 
-        getEpics7Monitor();
+        Epics7Monitor.createNewMonitor(channel, Epics7Channel.VALUE_REQUEST, pv -> {
+        }, xal.ca.Monitor.VALUE);
 
-        assertEquals(true, methodCalled);
+        assertTrue(active(system).subscribeRequests.contains(Epics7Channel.VALUE_REQUEST));
     }
 
-    /**
-     * Test of clear method, of class Epics7Monitor.
-     */
     @Test
-    public void testClear() throws Exception {
-        LOGGER.log(Level.INFO, "clear");
-        methodCalled = false;
+    public void testEventsDeliveredWhileStarted() throws Exception {
+        Epics7TestChannelSystem system = Epics7TestChannelSystem.newEpics7ChannelSystem();
+        Epics7Channel channel = connect(system);
 
-        Epics7Monitor instance = getEpics7Monitor();
+        AtomicInteger count = new AtomicInteger();
+        AtomicReference<org.epics.pva.data.PVAStructure> last = new AtomicReference<>();
+        Epics7Monitor.createNewMonitor(channel, Epics7Channel.VALUE_REQUEST, pv -> {
+            count.incrementAndGet();
+            last.set(pv);
+        }, xal.ca.Monitor.VALUE);
 
-        instance.nativeMonitor = new TestMonitor() {
-            @Override
-            public Status stop() {
-                methodCalled = true;
-                return null;
-            }
+        active(system).postUpdate(TestData.doubleRecord(4.0));
+        active(system).postUpdate(TestData.doubleRecord(5.0));
 
-        };
-        instance.clear();
-
-        assertEquals(true, methodCalled);
+        assertEquals(2, count.get());
+        assertEquals(5.0, ((org.epics.pva.data.PVADouble) last.get().get("value")).get(), 0.0);
     }
 
-    /**
-     * Test of begin method, of class Epics7Monitor.
-     */
     @Test
-    public void testBegin() throws Exception {
-        LOGGER.log(Level.INFO, "begin");
-        methodCalled = false;
+    public void testClearStopsEventsAndClosesSubscription() throws Exception {
+        Epics7TestChannelSystem system = Epics7TestChannelSystem.newEpics7ChannelSystem();
+        Epics7Channel channel = connect(system);
 
-        Epics7Monitor instance = getEpics7Monitor();
+        AtomicInteger count = new AtomicInteger();
+        Epics7Monitor monitor = Epics7Monitor.createNewMonitor(channel, Epics7Channel.VALUE_REQUEST,
+                pv -> count.incrementAndGet(), xal.ca.Monitor.VALUE);
 
-        instance.nativeMonitor = new TestMonitor() {
-            @Override
-            public Status start() {
-                methodCalled = true;
-                return null;
-            }
+        monitor.clear();
 
-        };
-        instance.begin();
+        // The subscription was closed with the native channel.
+        assertTrue(active(system).subscribers.isEmpty());
 
-        assertEquals(true, methodCalled);
+        // Even a late event does not reach a cleared monitor.
+        monitor.dispatch(TestData.doubleRecord(1.0));
+        assertEquals(0, count.get());
     }
 
-    /**
-     * Test of monitorConnect method, of class Epics7Monitor.
-     */
     @Test
-    public void testMonitorConnect() throws MonitorException {
-        LOGGER.log(Level.INFO, "monitorConnect");
-        methodCalled = false;
+    public void testGetChannelReturnsOwner() throws Exception {
+        Epics7TestChannelSystem system = Epics7TestChannelSystem.newEpics7ChannelSystem();
+        Epics7Channel channel = connect(system);
 
-        Epics7Monitor instance = getEpics7Monitor();
+        Epics7Monitor monitor = Epics7Monitor.createNewMonitor(channel, Epics7Channel.VALUE_REQUEST, pv -> {
+        }, xal.ca.Monitor.VALUE);
 
-        instance.nativeMonitor = new TestMonitor() {
-            @Override
-            public Status start() {
-                methodCalled = true;
-                return null;
-            }
-
-        };
-
-        instance.monitorConnect(null, instance.nativeMonitor, null);
-
-        assertEquals(true, methodCalled);
+        assertEquals(channel, monitor.getChannel());
     }
-
-    /**
-     * Test of monitorEvent method, of class Epics7Monitor.
-     */
-    @Test
-    public void testMonitorEvent() throws MonitorException   {
-        LOGGER.log(Level.INFO, "monitorEvent");
-        methodCalled = false;
-
-        Epics7Monitor instance = getEpics7Monitor();
-
-        instance.nativeMonitor = new TestMonitor() {
-            @Override
-            public void release(MonitorElement element) {
-                methodCalled = true;
-            }
-        };
-        instance.monitorEvent(instance.nativeMonitor);
-
-        assertEquals(true, methodCalled);
-
-        methodCalled = false;
-
-        instance.nativeMonitor = new TestMonitor() {
-            @Override
-            public MonitorElement poll() {
-                methodCalled = true;
-                return null;
-            }
-        };
-
-        instance.monitorEvent(instance.nativeMonitor);
-
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of unlisten method, of class Epics7Monitor.
-     */
-    @Test
-    public void testUnlisten() throws MonitorException   {
-        LOGGER.log(Level.INFO, "unlisten");
-        methodCalled = false;
-
-        Epics7Monitor instance = getEpics7Monitor();
-
-        instance.nativeMonitor = new TestMonitor() {
-            @Override
-            public Status stop() {
-                methodCalled = true;
-                return null;
-            }
-
-        };
-        instance.unlisten(instance.nativeMonitor);
-
-        assertEquals(true, methodCalled);
-    }
-
-    /**
-     * Test of getRequesterName method, of class Epics7Monitor.
-     */
-    @Test
-    public void testGetRequesterName() throws MonitorException  {
-        LOGGER.log(Level.INFO, "getRequesterName");
-        String expResult = "TestRequester";
-
-        Epics7Monitor instance = getEpics7Monitor();
-        String result = instance.getRequesterName();
-        LOGGER.log(Level.INFO, result);
-        assertEquals(expResult, result);
-
-        instance.nativeChannel = null;
-        result = instance.getRequesterName();
-        assertEquals(null, result);
-    }
-
-    /**
-     * Test of message method, of class Epics7Monitor.
-     */
-    @Test
-    public void testMessage() throws MonitorException   {
-        LOGGER.log(Level.INFO, "message");
-        String message = "message";
-
-        HandlerImpl handler = new HandlerImpl();
-        Logger.getLogger(Epics7Monitor.class.getName()).addHandler(handler);
-
-        Epics7Monitor instance = getEpics7Monitor();
-
-        instance.message(message, null);
-
-        assertEquals(message, handler.message);
-        assertEquals(handler.level, Level.INFO);
-    }
-
 }

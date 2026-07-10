@@ -17,20 +17,22 @@
  */
 package xal.plugin.epics7;
 
-import org.epics.pvaccess.client.ChannelProvider;
-import xal.plugin.epics7.Epics7ChannelSystem;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * A channel system that hands out {@link TestNativeChannel}s instead of talking to real EPICS servers.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7TestChannelSystem extends Epics7ChannelSystem {
 
-    private ChannelProvider caChannelProvider;
-    private ChannelProvider pvaChannelProvider;
-    private volatile boolean initialized = false;
+    /**
+     * Every channel created, in creation order, so that tests can inspect them.
+     */
+    public final List<TestNativeChannel> created = new CopyOnWriteArrayList<>();
 
-    protected static Epics7ChannelSystem newEpics7ChannelSystem() {
+    protected static Epics7TestChannelSystem newEpics7ChannelSystem() {
         Epics7TestChannelSystem epics7ChannelSystem = new Epics7TestChannelSystem();
 
         epics7ChannelSystem.initialize();
@@ -39,25 +41,26 @@ public class Epics7TestChannelSystem extends Epics7ChannelSystem {
     }
 
     @Override
-    protected ChannelProvider getCaChannelProvider() {
-        return caChannelProvider;
+    public NativeChannel createPvaChannel(String signalName, NativeChannel.ConnectionListener listener) {
+        TestNativeChannel channel = new TestNativeChannel(PvaNativeChannel.PROTOCOL, signalName, listener);
+        created.add(channel);
+        return channel;
     }
 
     @Override
-    protected ChannelProvider getPvaChannelProvider() {
-        return pvaChannelProvider;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+    public NativeChannel createCaChannel(String signalName, NativeChannel.ConnectionListener listener) {
+        TestNativeChannel channel = new TestNativeChannel(CaNativeChannel.PROTOCOL, signalName, listener);
+        created.add(channel);
+        return channel;
     }
 
     @Override
     protected void initialize() {
-        // Try to get the channel providers.
-        caChannelProvider = new TestChannelProvider();
-        pvaChannelProvider = new TestChannelProvider();
         initialized = true;
+    }
+
+    @Override
+    public void dispose() {
+        initialized = false;
     }
 }

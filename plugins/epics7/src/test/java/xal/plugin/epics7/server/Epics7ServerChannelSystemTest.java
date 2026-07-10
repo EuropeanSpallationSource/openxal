@@ -18,13 +18,14 @@
 package xal.plugin.epics7.server;
 
 import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
-import gov.aps.jca.cas.ProcessVariableEventCallback;
 import gov.aps.jca.dbr.DBRType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.pvdatabase.PVRecord;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -34,119 +35,41 @@ public class Epics7ServerChannelSystemTest {
 
     private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannelSystemTest.class.getName());
 
-    private boolean methodCalled = false;
+    private static Epics7ServerChannelSystem system;
 
-    /**
-     * Test of newEpics7ServerChannelSystem method, of class
-     * Epics7ServerChannelSystem.
-     */
-    @Test
-    public void testNewEpics7ServerChannelSystem() {
-        LOGGER.log(Level.INFO, "newEpics7ServerChannelSystem");
-        Epics7ServerChannelSystem result = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        assertEquals(true, result.isInitialized());
+    @BeforeClass
+    public static void setUpClass() {
+        system = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
     }
 
-    /**
-     * Test of addRecord method, of class Epics7ServerChannelSystem.
-     */
-    @Test
-    public void testAddRecord() {
-        LOGGER.log(Level.INFO, "addRecord");
-        methodCalled = false;
-        Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        instance.master = new TestPVDataBase() {
-            @Override
-            public boolean addRecord(PVRecord record) {
-                methodCalled = true;
-                return true;
-            }
-        };
-        instance.addRecord(null);
-
-        assertEquals(true, methodCalled);
+    @AfterClass
+    public static void tearDownClass() {
+        if (system != null) {
+            system.dispose();
+        }
     }
 
-    /**
-     * Test of addMemPV method, of class Epics7ServerChannelSystem.
-     */
     @Test
-    public void testAddMemPV() {
-        LOGGER.log(Level.INFO, "addMemPV");
-        methodCalled = false;
-        MemoryProcessVariable memoryProcessVariable;
-        memoryProcessVariable = new MemoryProcessVariable("TestName", null,
-                DBRType.DOUBLE, new double[]{0}) {
-            @Override
-            public void setEventCallback(ProcessVariableEventCallback eventCallback) {
-                methodCalled = true;
-            }
-        };
-        Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        instance.addMemPV(memoryProcessVariable);
-
-        assertEquals(true, methodCalled);
+    public void testInitialized() {
+        LOGGER.log(Level.INFO, "initialized");
+        assertTrue(system.isInitialized());
     }
 
-    /**
-     * Test of removeMemPV method, of class Epics7ServerChannelSystem.
-     */
     @Test
-    public void testRemoveMemPV() {
-        LOGGER.log(Level.INFO, "removeMemPV");
-        methodCalled = false;
-        MemoryProcessVariable memoryProcessVariable = new MemoryProcessVariable("TestName", null,
-                DBRType.DOUBLE, new double[]{0}) {
-            @Override
-            public void destroy() {
-                methodCalled = true;
-            }
-        };
-        Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        instance.removeMemPV(memoryProcessVariable);
-
-        assertEquals(true, methodCalled);
+    public void testPvaServerAvailable() {
+        LOGGER.log(Level.INFO, "getPvaServer");
+        assertNotNull(system.getPvaServer());
     }
 
-    /**
-     * Test of removeRecord method, of class Epics7ServerChannelSystem.
-     */
     @Test
-    public void testRemoveRecord() {
-        LOGGER.log(Level.INFO, "removeRecord");
-        methodCalled = false;
-        Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        instance.master = new TestPVDataBase() {
-            @Override
-            public boolean removeRecord(PVRecord record) {
-                methodCalled = true;
-                return true;
-            }
-        };
-        instance.removeRecord(null);
+    public void testAddAndRemoveMemPV() {
+        LOGGER.log(Level.INFO, "add/remove MemPV");
+        MemoryProcessVariable pv = new MemoryProcessVariable("TestAddRemove", null, DBRType.DOUBLE, new double[]{0.0});
 
-        assertEquals(true, methodCalled);
-    }
+        system.addMemPV(pv);
+        // Registration installs an event dispatcher as the callback.
+        assertNotNull(pv.getEventCallback());
 
-    /**
-     * Test of initialize method, of class Epics7ServerChannelSystem.
-     */
-    @Test
-    public void testInitialize() {
-        LOGGER.log(Level.INFO, "initialize");
-        Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        instance.initialize();
-        assertEquals(true, instance.isInitialized());
-    }
-
-    /**
-     * Test of dispose method, of class Epics7ServerChannelSystem.
-     */
-    @Test
-    public void testDispose() {
-        LOGGER.log(Level.INFO, "dispose");
-        Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        instance.dispose();
-        assertEquals(false, instance.isInitialized());
+        system.removeMemPV(pv);
     }
 }
