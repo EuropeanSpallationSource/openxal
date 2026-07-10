@@ -24,26 +24,23 @@ import gov.aps.jca.CAException;
 import gov.aps.jca.JCALibrary;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.pvaccess.PVAException;
-import org.epics.pvaccess.client.ChannelProvider;
-import org.epics.pvaccess.server.ServerContext;
-import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
-import org.epics.pvdatabase.PVDatabase;
-import org.epics.pvdatabase.PVDatabaseFactory;
-import org.epics.pvdatabase.PVRecord;
-import org.epics.pvdatabase.pva.ChannelProviderLocalFactory;
+import org.epics.pva.server.PVAServer;
 import xal.plugin.epics7.Epics7ChannelSystem;
 
 /**
+ * Serves channels over both EPICS protocols: PV Access through {@link PVAServer} and Channel Access through the CAJ
+ * channel access server.
+ *
+ * The previous implementation served PV Access from a pvDatabase {@code PVRecord} registry. The PV Access library used
+ * by Phoebus has no pvDatabase, so PVs are registered directly with the server as {@code ServerPV}s, each owned by an
+ * {@link Epics7ServerChannel}.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
 
-    private ChannelProvider pvaChannelProvider;
-    protected PVDatabase master;
+    private PVAServer pvaServer;
     private gov.aps.jca.cas.ServerContext caContext;
-    private ServerContext pvaContext;
     private DefaultServerImpl channelServer;
 
     public static Epics7ServerChannelSystem newEpics7ServerChannelSystem() {
@@ -55,78 +52,67 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     }
 
     /**
-     * Once a record is created by the ChannelFactory, it must be added to the
-     * master database to be able to serve the PV.
-     *
-     * @param pvRecord
+     * The PV Access server that {@link Epics7ServerChannel} registers its PVs with.
      */
-    public synchronized void addRecord(PVRecord pvRecord) {
-        master.addRecord(pvRecord);
+    public PVAServer getPvaServer() {
+        return pvaServer;
     }
 
     public synchronized void addMemPV(MemoryProcessVariable memoryProcessVariable) {
-        channelServer.registerProcessVaribale(memoryProcessVariable);
-        channelServer.registerProcessVaribale(memoryProcessVariable.getName() + ".VAL", memoryProcessVariable);
+        channelServer.registerProcessVariable(memoryProcessVariable);
+        channelServer.registerProcessVariable(memoryProcessVariable.getName() + ".VAL", memoryProcessVariable);
 
         ProcessVariableEventDispatcher processVariableEventDispatcher = new ProcessVariableEventDispatcher(memoryProcessVariable);
         memoryProcessVariable.setEventCallback(processVariableEventDispatcher);
     }
 
-    void removeMemPV(MemoryProcessVariable memoryProcessVariable) {
-        channelServer.unregisterProcessVaribale(memoryProcessVariable.getName());
-        channelServer.unregisterProcessVaribale(memoryProcessVariable.getName() + ".VAL");
+    synchronized void removeMemPV(MemoryProcessVariable memoryProcessVariable) {
+        channelServer.unregisterProcessVariable(memoryProcessVariable.getName());
+        channelServer.unregisterProcessVariable(memoryProcessVariable.getName() + ".VAL");
         memoryProcessVariable.destroy();
-    }
-
-    /**
-     * To remove a record from the master database.
-     *
-     * @param pvRecord
-     */
-    public synchronized void removeRecord(PVRecord pvRecord) {
-        master.removeRecord(pvRecord);
     }
 
     @Override
     protected void initialize() {
         loadConfig(true);
 
-        pvaChannelProvider = ChannelProviderLocalFactory.getChannelProviderLocal();
-        master = PVDatabaseFactory.getMaster();
         try {
             channelServer = new DefaultServerImpl();
             caContext = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, channelServer);
-            pvaContext = ServerContextImpl.startPVAServer(pvaChannelProvider.getProviderName(), 0, true, null);
-        } catch (PVAException | CAException ex) {
-            Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannelSystem.class.getName())
+                    .log(Level.SEVERE, "Channel Access server context could not be created.", ex);
         }
 
-        Thread t = new Thread(() -> {
-            caContext.dispose();
-            pvaContext.dispose();
-            pvaChannelProvider.destroy();
-        });
+        try {
+            pvaServer = new PVAServer();
+        } catch (Exception ex) {
+            Logger.getLogger(Epics7ServerChannelSystem.class.getName())
+                    .log(Level.SEVERE, "PV Access server could not be created.", ex);
+        }
+
+        Thread t = new Thread(this::dispose);
         t.setDaemon(false);
         Runtime.getRuntime().addShutdownHook(t);
 
-        if (caContext == null || pvaContext == null) {
-            if (caContext == null) {
-                Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access server context could not be created.");
-            }
-            if (pvaContext == null) {
-                Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access server context could not be created.");
-            }
-        } else {
-            initialized = true;
-        }
+        initialized = caContext != null && pvaServer != null;
     }
 
-    // Disposing the context and clearing all the records.
+    // Disposing the contexts and clearing all the records.
     @Override
     public void dispose() {
-        caContext.dispose();
-        pvaContext.dispose();
-        pvaChannelProvider.destroy();
+        if (pvaServer != null) {
+            pvaServer.close();
+            pvaServer = null;
+        }
+        if (caContext != null) {
+            try {
+                caContext.destroy();
+            } catch (CAException | IllegalStateException ex) {
+                Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.FINE, null, ex);
+            }
+            caContext = null;
+        }
         initialized = false;
     }
 }

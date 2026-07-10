@@ -17,7 +17,8 @@
  */
 package xal.plugin.epics7;
 
-import org.epics.pvdata.pv.PVStructure;
+import org.epics.pva.data.PVAInt;
+import org.epics.pva.data.PVAStructure;
 import xal.ca.ChannelStatusRecord;
 
 /**
@@ -40,11 +41,17 @@ public class Epics7ChannelStatusRecord extends Epics7ChannelRecord implements Ch
      *
      * @param pvStructure
      */
-    public Epics7ChannelStatusRecord(PVStructure pvStructure) {
+    public Epics7ChannelStatusRecord(PVAStructure pvStructure) {
         super(pvStructure);
 
-        status = pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(STATUS_FIELD_NAME).get();
-        severity = pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(SEVERITY_FIELD_NAME).get();
+        PVAStructure alarm = pvStructure.get(ALARM_FIELD_NAME);
+        status = alarm == null ? 0 : intField(alarm, STATUS_FIELD_NAME);
+        severity = alarm == null ? 0 : intField(alarm, SEVERITY_FIELD_NAME);
+    }
+
+    private static int intField(PVAStructure structure, String name) {
+        PVAInt field = structure.get(name);
+        return field == null ? 0 : field.get();
     }
 
     /**

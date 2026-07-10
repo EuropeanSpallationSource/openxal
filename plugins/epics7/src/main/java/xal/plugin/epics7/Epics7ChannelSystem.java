@@ -19,10 +19,13 @@ package xal.plugin.epics7;
 
 import com.cosylab.epics.caj.CAJContext;
 import com.cosylab.epics.caj.impl.CAConstants;
+import gov.aps.jca.CAException;
+import gov.aps.jca.Context;
+import gov.aps.jca.JCALibrary;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.pvaccess.PVAConstants;
-import org.epics.pvaccess.client.ChannelProvider;
-import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
+import org.epics.pva.PVASettings;
+import org.epics.pva.client.PVAClient;
 import xal.ca.Channel;
 import xal.ca.ChannelSystem;
 import xal.plugin.epics7.server.Epics7ServerChannelSystem;
@@ -33,19 +36,27 @@ import xal.tools.apputils.Preferences;
  */
 public class Epics7ChannelSystem implements ChannelSystem {
 
-    private ChannelProvider caChannelProvider;
-    private ChannelProvider pvaChannelProvider;
+    private PVAClient pvaClient;
+    private Context caContext;
     protected volatile boolean initialized = false;
 
     private static final String ADDR_LIST = ".addr_list";
     private static final String SERVER_PORT = ".server_port";
     private static final String CA_ADDR_LIST = "EPICS_CA_ADDR_LIST";
-    private static final String PVA_MAX_ARRAY_BYTES = "EPICS_PVA_MAX_ARRAY_BYTES";
     private static final String PVA_BROADCAST_PORT = "EPICS_PVA_BROADCAST_PORT";
-    private static final String PVA_BEACON_PERIOD = "EPICS_PVA_BEACON_PERIOD";
     private static final String PVA_CONN_TMO = "EPICS_PVA_CONN_TMO";
     private static final String PVA_AUTO_ADDR_LIST = "EPICS_PVA_AUTO_ADDR_LIST";
     private static final String PVA_ADDR_LIST = "EPICS_PVA_ADDR_LIST";
+    private static final String PVA_NAME_SERVERS = "EPICS_PVA_NAME_SERVERS";
+    private static final String PVA_SERVER_PORT = "EPICS_PVA_SERVER_PORT";
+    private static final String PVA_ENABLE_IPV6 = "EPICS_PVA_ENABLE_IPV6";
+    private static final String PVAS_INTF_ADDR_LIST = "EPICS_PVAS_INTF_ADDR_LIST";
+
+    /**
+     * IPv4-only server interface list, used when IPv6 is disabled so that the server does not reject the IPv6 addresses
+     * in core-pva's default list.
+     */
+    private static final String IPV4_INTF_ADDR_LIST = "0.0.0.0 224.0.0.128,1@127.0.0.1";
     private static final String CAS_BEACON_PORT = "EPICS_CAS_BEACON_PORT";
     private static final String CAS_BEACON_ADDR_LIST = "EPICS_CAS_BEACON_ADDR_LIST";
     private static final String CAS_SERVER_PORT = "EPICS_CAS_SERVER_PORT";
@@ -59,14 +70,6 @@ public class Epics7ChannelSystem implements ChannelSystem {
     private static final String CA_NAME_SERVERS = "EPICS_CA_NAME_SERVERS";
     private static final String CA_AUTO_ADDR_LIST = "EPICS_CA_AUTO_ADDR_LIST";
 
-    protected ChannelProvider getCaChannelProvider() {
-        return caChannelProvider;
-    }
-
-    protected ChannelProvider getPvaChannelProvider() {
-        return pvaChannelProvider;
-    }
-
     protected Epics7ChannelSystem() {
     }
 
@@ -78,42 +81,55 @@ public class Epics7ChannelSystem implements ChannelSystem {
         return epics7ChannelSystem;
     }
 
+    /**
+     * Create a channel speaking PV Access.
+     */
+    public NativeChannel createPvaChannel(String signalName, NativeChannel.ConnectionListener listener) {
+        return new PvaNativeChannel(pvaClient, signalName, listener);
+    }
+
+    /**
+     * Create a channel speaking Channel Access.
+     */
+    public NativeChannel createCaChannel(String signalName, NativeChannel.ConnectionListener listener) {
+        return new CaNativeChannel(caContext, signalName, listener);
+    }
+
     protected void initialize() {
-        // Load CAJ configuration in a similar fashion as the PV Access library.
+        // Must run before any core-pva class is loaded: PVASettings reads the
+        // system properties we set here from a static initialiser.
         loadConfig(false);
 
-        // Initialising channel providers for both EPICS protocols.
-        org.epics.ca.ClientFactory.start();
-        org.epics.pvaccess.ClientFactory.start();
+        try {
+            caContext = JCALibrary.getInstance().createContext(JCALibrary.CHANNEL_ACCESS_JAVA);
+            caContext.initialize();
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ChannelSystem.class.getName())
+                    .log(Level.SEVERE, "Channel Access context could not be created.", ex);
+        }
 
-        // Create shutdown hook to close the resource when calling System.exit() or 
+        try {
+            pvaClient = new PVAClient();
+        } catch (Exception ex) {
+            Logger.getLogger(Epics7ChannelSystem.class.getName())
+                    .log(Level.SEVERE, "PV Access client could not be created.", ex);
+        }
+
+        // Create shutdown hook to close the resource when calling System.exit() or
         // if the process is terminated.
-        // TODO: check whether this is needed, e.g., monitors are stopped without this?
         Thread t = new Thread(this::dispose);
         t.setDaemon(false);
         Runtime.getRuntime().addShutdownHook(t);
 
-        // Try to get the channel providers.
-        caChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("ca");
-        pvaChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("pva");
-
-        if (caChannelProvider == null || pvaChannelProvider == null) {
-            if (caChannelProvider == null) {
-                Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access provider could not be created.");
-            }
-            if (pvaChannelProvider == null) {
-                Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access provider could not be created.");
-            }
-        } else {
-            initialized = true;
-        }
+        initialized = caContext != null && pvaClient != null;
     }
 
     /**
-     * This method preloads the JCA and PVA configuration. It takes the
-     * configuration from Preferences or from environment variables, in that
-     * precedence order. It ignores the jca.use_env property and the JCALibrary
-     * file.
+     * This method preloads the JCA and PVA configuration. It takes the configuration from Preferences or from
+     * environment variables, in that precedence order. It ignores the jca.use_env property and the JCALibrary file.
+     *
+     * Note that the PV Access library used here has no equivalent of EPICS_PVA_BEACON_PERIOD or
+     * EPICS_PVA_MAX_ARRAY_BYTES; those settings are ignored.
      *
      * @param isServer if server configuration has to be loaded.
      */
@@ -121,6 +137,22 @@ public class Epics7ChannelSystem implements ChannelSystem {
         // Setting jca.use_env=false to load the configuration from system properties
         // that we define now.
         System.setProperty("jca.use_env", "false");
+
+        // core-pva enables IPv6 by default and fails hard with "IPv6 not available"
+        // on hosts without it. Open XAL never exposed IPv6 PV Access configuration,
+        // so default it off unless the user explicitly asks for it. This must run
+        // before PVASettings' static initialiser reads the property.
+        if (System.getProperty(PVA_ENABLE_IPV6) == null && System.getenv(PVA_ENABLE_IPV6) == null) {
+            System.setProperty(PVA_ENABLE_IPV6, "false");
+            PVASettings.EPICS_PVA_ENABLE_IPV6 = false;
+
+            // The default server interface list references IPv6 addresses, which the
+            // server rejects once IPv6 is off. Fall back to an IPv4-only list.
+            if (System.getProperty(PVAS_INTF_ADDR_LIST) == null && System.getenv(PVAS_INTF_ADDR_LIST) == null) {
+                System.setProperty(PVAS_INTF_ADDR_LIST, IPV4_INTF_ADDR_LIST);
+                PVASettings.EPICS_PVAS_INTF_ADDR_LIST = IPV4_INTF_ADDR_LIST;
+            }
+        }
 
         // Default values
         String addressList = "";
@@ -133,12 +165,12 @@ public class Epics7ChannelSystem implements ChannelSystem {
         int maxArrayBytes = 16384;
         float maxSearchInterval = (float) 60.0 * 5;
 
-        String pvaAddressList = "";
-        boolean pvaAutoAddressList = true;
-        float pvaConnectionTimeout = 30.0f;
-        float pvaBeaconPeriod = 15.0f;
-        int pvaBroadcastPort = PVAConstants.PVA_BROADCAST_PORT;
-        int pvaReceiveBufferSize = PVAConstants.MAX_TCP_RECV;
+        String pvaAddressList = PVASettings.EPICS_PVA_ADDR_LIST;
+        boolean pvaAutoAddressList = PVASettings.EPICS_PVA_AUTO_ADDR_LIST;
+        String pvaNameServers = PVASettings.EPICS_PVA_NAME_SERVERS;
+        int pvaConnectionTimeout = PVASettings.EPICS_PVA_CONN_TMO;
+        int pvaBroadcastPort = PVASettings.EPICS_PVA_BROADCAST_PORT;
+        int pvaServerPort = PVASettings.EPICS_PVA_SERVER_PORT;
 
         // First try to load the configuration from environment variables.
         String tmp = System.getenv(CA_ADDR_LIST);
@@ -205,36 +237,6 @@ public class Epics7ChannelSystem implements ChannelSystem {
             }
         }
 
-        tmp = System.getenv(PVA_ADDR_LIST);
-        if (tmp != null) {
-            pvaAddressList = tmp;
-        }
-
-        tmp = System.getenv(PVA_AUTO_ADDR_LIST);
-        if (tmp != null) {
-            pvaAutoAddressList = Boolean.parseBoolean(tmp);
-        }
-
-        tmp = System.getenv(PVA_CONN_TMO);
-        if (tmp != null) {
-            pvaConnectionTimeout = Float.parseFloat(tmp);
-        }
-
-        tmp = System.getenv(PVA_BEACON_PERIOD);
-        if (tmp != null) {
-            pvaBeaconPeriod = Float.parseFloat(tmp);
-        }
-
-        tmp = System.getenv(PVA_BROADCAST_PORT);
-        if (tmp != null) {
-            pvaBroadcastPort = Integer.parseInt(tmp);
-        }
-
-        tmp = System.getenv(PVA_MAX_ARRAY_BYTES);
-        if (tmp != null) {
-            pvaReceiveBufferSize = Integer.parseInt(tmp);
-        }
-
         // Then overwrite the values with preferences, if available.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
 
@@ -257,10 +259,10 @@ public class Epics7ChannelSystem implements ChannelSystem {
 
         pvaAddressList = defaults.get(PVA_ADDR_LIST, pvaAddressList);
         pvaAutoAddressList = defaults.getBoolean(PVA_AUTO_ADDR_LIST, pvaAutoAddressList);
-        pvaConnectionTimeout = defaults.getFloat(PVA_CONN_TMO, pvaConnectionTimeout);
-        pvaBeaconPeriod = defaults.getFloat(PVA_BEACON_PERIOD, pvaBeaconPeriod);
+        pvaNameServers = defaults.get(PVA_NAME_SERVERS, pvaNameServers);
+        pvaConnectionTimeout = defaults.getInt(PVA_CONN_TMO, pvaConnectionTimeout);
         pvaBroadcastPort = defaults.getInt(PVA_BROADCAST_PORT, pvaBroadcastPort);
-        pvaReceiveBufferSize = defaults.getInt(PVA_MAX_ARRAY_BYTES, pvaReceiveBufferSize);
+        pvaServerPort = defaults.getInt(PVA_SERVER_PORT, pvaServerPort);
 
         // Finally overwrite with properties, if available.
         addressList = System.getProperty(CA_ADDR_LIST, addressList);
@@ -280,14 +282,7 @@ public class Epics7ChannelSystem implements ChannelSystem {
             repeaterPort = Integer.parseInt(System.getProperty(CAS_BEACON_PORT, Integer.toString(repeaterPort)));
         }
 
-        pvaAddressList = System.getProperty(PVA_ADDR_LIST, pvaAddressList);
-        pvaAutoAddressList = Boolean.parseBoolean(System.getProperty(PVA_AUTO_ADDR_LIST, Boolean.toString(pvaAutoAddressList)));
-        pvaConnectionTimeout = Float.parseFloat(System.getProperty(PVA_CONN_TMO, Float.toString(pvaConnectionTimeout)));
-        pvaBeaconPeriod = Float.parseFloat(System.getProperty(PVA_BEACON_PERIOD, Float.toString(pvaBeaconPeriod)));
-        pvaBroadcastPort = Integer.parseInt(System.getProperty(PVA_BROADCAST_PORT, Integer.toString(pvaBroadcastPort)));
-        pvaReceiveBufferSize = Integer.parseInt(System.getProperty(PVA_MAX_ARRAY_BYTES, Integer.toString(pvaReceiveBufferSize)));
-
-        // Finally save the configuration as properties for the caj and pvaccess libraries.
+        // Finally save the configuration as properties for the caj and PV Access libraries.
         System.setProperty(CAJContext.class.getName() + ADDR_LIST, addressList);
         System.setProperty(CAJContext.class.getName() + ".auto_addr_list", Boolean.toString(autoAddressList));
         System.setProperty(CAJContext.class.getName() + ".name_servers", nameServersList);
@@ -300,10 +295,19 @@ public class Epics7ChannelSystem implements ChannelSystem {
 
         System.setProperty(PVA_ADDR_LIST, pvaAddressList);
         System.setProperty(PVA_AUTO_ADDR_LIST, Boolean.toString(pvaAutoAddressList));
-        System.setProperty(PVA_CONN_TMO, Float.toString(pvaConnectionTimeout));
-        System.setProperty(PVA_BEACON_PERIOD, Float.toString(pvaBeaconPeriod));
+        System.setProperty(PVA_NAME_SERVERS, pvaNameServers);
+        System.setProperty(PVA_CONN_TMO, Integer.toString(pvaConnectionTimeout));
         System.setProperty(PVA_BROADCAST_PORT, Integer.toString(pvaBroadcastPort));
-        System.setProperty(PVA_MAX_ARRAY_BYTES, Integer.toString(pvaReceiveBufferSize));
+        System.setProperty(PVA_SERVER_PORT, Integer.toString(pvaServerPort));
+
+        // PVASettings may already have been initialised from its static block, in
+        // which case the properties above had no effect. Assign the fields too.
+        PVASettings.EPICS_PVA_ADDR_LIST = pvaAddressList;
+        PVASettings.EPICS_PVA_AUTO_ADDR_LIST = pvaAutoAddressList;
+        PVASettings.EPICS_PVA_NAME_SERVERS = pvaNameServers;
+        PVASettings.EPICS_PVA_CONN_TMO = pvaConnectionTimeout;
+        PVASettings.EPICS_PVA_BROADCAST_PORT = pvaBroadcastPort;
+        PVASettings.EPICS_PVA_SERVER_PORT = pvaServerPort;
     }
 
     @Override
@@ -333,8 +337,6 @@ public class Epics7ChannelSystem implements ChannelSystem {
         String message = "";
 
         message += CA_ADDR_LIST + " = " + System.getProperty(CAJContext.class.getName() + ADDR_LIST) + "\n";
-
-        message += CA_ADDR_LIST + " = " + System.getProperty(CAJContext.class.getName() + ADDR_LIST) + "\n";
         message += CA_AUTO_ADDR_LIST + " = " + System.getProperty(CAJContext.class.getName() + ".auto_addr_list") + "\n";
         message += CA_NAME_SERVERS + " = " + System.getProperty(CAJContext.class.getName() + ".name_servers") + "\n";
         message += CA_CONN_TMO + " = " + System.getProperty(CAJContext.class.getName() + ".connection_timeout") + "\n";
@@ -351,12 +353,12 @@ public class Epics7ChannelSystem implements ChannelSystem {
             message += CAS_BEACON_PORT + " = " + System.getProperty(CAJContext.class.getName() + SERVER_PORT) + "\n";
         }
 
-        message += PVA_ADDR_LIST + " = " + System.getProperty(PVA_ADDR_LIST) + "\n";
-        message += PVA_AUTO_ADDR_LIST + " = " + System.getProperty(PVA_AUTO_ADDR_LIST) + "\n";
-        message += PVA_CONN_TMO + " = " + System.getProperty(PVA_CONN_TMO) + "\n";
-        message += PVA_BEACON_PERIOD + " = " + System.getProperty(PVA_BEACON_PERIOD) + "\n";
-        message += PVA_BROADCAST_PORT + " = " + System.getProperty(PVA_BROADCAST_PORT) + "\n";
-        message += PVA_MAX_ARRAY_BYTES + " = " + System.getProperty(PVA_MAX_ARRAY_BYTES) + "\n";
+        message += PVA_ADDR_LIST + " = " + PVASettings.EPICS_PVA_ADDR_LIST + "\n";
+        message += PVA_AUTO_ADDR_LIST + " = " + PVASettings.EPICS_PVA_AUTO_ADDR_LIST + "\n";
+        message += PVA_NAME_SERVERS + " = " + PVASettings.EPICS_PVA_NAME_SERVERS + "\n";
+        message += PVA_CONN_TMO + " = " + PVASettings.EPICS_PVA_CONN_TMO + "\n";
+        message += PVA_BROADCAST_PORT + " = " + PVASettings.EPICS_PVA_BROADCAST_PORT + "\n";
+        message += PVA_SERVER_PORT + " = " + PVASettings.EPICS_PVA_SERVER_PORT + "\n";
 
         Logger.getLogger(className).info(message);
     }
@@ -366,10 +368,18 @@ public class Epics7ChannelSystem implements ChannelSystem {
     }
 
     public void dispose() {
-        org.epics.ca.ClientFactory.stop();
-        org.epics.pvaccess.ClientFactory.stop();
-        caChannelProvider = null;
-        pvaChannelProvider = null;
+        if (pvaClient != null) {
+            pvaClient.close();
+            pvaClient = null;
+        }
+        if (caContext != null) {
+            try {
+                caContext.destroy();
+            } catch (CAException | IllegalStateException ex) {
+                Logger.getLogger(Epics7ChannelSystem.class.getName()).log(Level.FINE, null, ex);
+            }
+            caContext = null;
+        }
         initialized = false;
     }
 }

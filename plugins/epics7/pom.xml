@@ -10,16 +10,38 @@
     <artifactId>openxal.plugins.epics7</artifactId>
 
     <dependencies>
+        <!-- PV Access: the same implementation Phoebus uses (org.epics.pva.*).
+             This is not pvAccessJava; it shares the protocol, not the API.
+
+             Bouncy Castle (a signed jar, used by core-pva only for TLS/OCSP
+             certificate checks) is excluded here and re-added below at runtime
+             scope. On the compile classpath its signature breaks javac's
+             annotation-processor scan in downstream modules; this plugin does
+             not use TLS, so the classes are only needed if that path ever runs. -->
         <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>epics-core</artifactId>
-            <type>pom</type>
-            <version>7.0.7.1</version>
+            <groupId>org.phoebus</groupId>
+            <artifactId>core-pva</artifactId>
+            <version>5.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>1.82</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Channel Access. core-pva speaks PV Access only, so CA goes directly
+             through JCA/CAJ, the way Phoebus does it in core/pv-ca. This
+             artifact bundles both gov.aps.jca and com.cosylab.epics.caj. -->
+        <dependency>
             <groupId>org.epics</groupId>
-            <artifactId>epics-pvdatabase</artifactId>
-            <version>4.3.2.1</version>
+            <artifactId>jca</artifactId>
+            <version>2.4.12</version>
         </dependency>
     </dependencies>
 </project>

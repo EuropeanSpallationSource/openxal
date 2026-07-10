@@ -18,13 +18,14 @@
 package xal.plugin.epics7;
 
 import xal.ca.PutException;
-import org.epics.pvdata.pv.PVStructure;
+import org.epics.pva.data.PVAStructure;
 
 /**
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
+@FunctionalInterface
 public interface EventListener {
 
-    public void event(PVStructure pvStructure) throws PutException;
+    public void event(PVAStructure pvStructure) throws PutException;
 }

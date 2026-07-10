@@ -17,37 +17,41 @@
  */
 package xal.plugin.epics7;
 
-import org.epics.pvdata.pv.BooleanArrayData;
-import org.epics.pvdata.pv.PVBooleanArray;
-import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVScalar;
-import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.StringArrayData;
-import org.epics.pvdata.pv.Type;
+import org.epics.pva.data.PVABool;
+import org.epics.pva.data.PVABoolArray;
+import org.epics.pva.data.PVAByte;
+import org.epics.pva.data.PVAByteArray;
+import org.epics.pva.data.PVAData;
+import org.epics.pva.data.PVADouble;
+import org.epics.pva.data.PVADoubleArray;
+import org.epics.pva.data.PVAFloat;
+import org.epics.pva.data.PVAFloatArray;
+import org.epics.pva.data.PVAInt;
+import org.epics.pva.data.PVAIntArray;
+import org.epics.pva.data.PVALong;
+import org.epics.pva.data.PVALongArray;
+import org.epics.pva.data.PVAShort;
+import org.epics.pva.data.PVAShortArray;
+import org.epics.pva.data.PVAString;
+import org.epics.pva.data.PVAStringArray;
+import org.epics.pva.data.PVAStructure;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelRecordImpl;
 import xal.tools.ArrayValue;
 import xal.tools.transforms.ValueTransform;
 
 /**
- * ChannelRecord implementation for Epics7. It stores the PVStructure data to
- * make it possible to use PVAccess Structures in Open XAL without making
- * significant changes to the core library.
+ * ChannelRecord implementation for Epics7. It stores the PVAStructure data to make it possible to use PV Access
+ * structures in Open XAL without making significant changes to the core library.
+ *
+ * Channel Access values are converted to the same structure form by {@link CaDbrConverter}, so this class does not need
+ * to know which protocol produced the data.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ChannelRecord extends ChannelRecordImpl {
 
-    protected PVStructure pvStructureStore;
+    protected PVAStructure pvStructureStore;
     protected String fieldName;
 
     protected static final String VALUE_FIELD_NAME = "value";
@@ -57,7 +61,7 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
      *
      * @param pvStructure
      */
-    public Epics7ChannelRecord(PVStructure pvStructure) {
+    public Epics7ChannelRecord(PVAStructure pvStructure) {
         super(() -> null);
 
         pvStructureStore = pvStructure;
@@ -69,7 +73,7 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
      *
      * @return The internal data storage.
      */
-    public PVStructure getStore() {
+    public PVAStructure getStore() {
         return pvStructureStore;
     }
 
@@ -77,212 +81,162 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
         return fieldName;
     }
 
-    @Override
-    public int getCount() {
-        if (pvStructureStore != null) {
-            PVField valueField = pvStructureStore.getSubField(VALUE_FIELD_NAME);
-            Type type = valueField.getField().getType();
-            switch (type) {
-                case scalar:
-                    return 1;
-                case scalarArray:
-                    return getCountArray(pvStructureStore, valueField);
-                default:
-                    break;
-            }
-        }
-        return 0;
+    private PVAData valueField() {
+        return pvStructureStore == null ? null : pvStructureStore.get(fieldName);
     }
 
-    public static int getCountArray(PVStructure structure, PVField valueField) {
-        ScalarType sType = ((PVScalarArray) valueField).getScalarArray().getElementType();
-        switch (sType) {
-            case pvByte:
-            case pvUByte:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvByte).getLength();
-            case pvDouble:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble).getLength();
-            case pvFloat:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvFloat).getLength();
-            case pvInt:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvInt).getLength();
-            case pvUInt:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvUInt).getLength();
-            case pvLong:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvLong).getLength();
-            case pvULong:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvULong).getLength();
-            case pvShort:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvShort).getLength();
-            case pvUShort:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvUShort).getLength();
-            case pvString:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvString).getLength();
-            case pvBoolean:
-                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvBoolean).getLength();
-            default:
-                break;
+    @Override
+    public int getCount() {
+        return getCountArray(valueField());
+    }
+
+    /**
+     * The number of elements held by a value field: 1 for a scalar, the array length otherwise.
+     */
+    public static int getCountArray(PVAData valueField) {
+        if (valueField == null) {
+            return 0;
         }
-        return 0;
+        if (valueField instanceof PVAByteArray) {
+            return ((PVAByteArray) valueField).get().length;
+        }
+        if (valueField instanceof PVAShortArray) {
+            return ((PVAShortArray) valueField).get().length;
+        }
+        if (valueField instanceof PVAIntArray) {
+            return ((PVAIntArray) valueField).get().length;
+        }
+        if (valueField instanceof PVALongArray) {
+            return ((PVALongArray) valueField).get().length;
+        }
+        if (valueField instanceof PVAFloatArray) {
+            return ((PVAFloatArray) valueField).get().length;
+        }
+        if (valueField instanceof PVADoubleArray) {
+            return ((PVADoubleArray) valueField).get().length;
+        }
+        if (valueField instanceof PVAStringArray) {
+            return ((PVAStringArray) valueField).get().length;
+        }
+        if (valueField instanceof PVABoolArray) {
+            return ((PVABoolArray) valueField).get().length;
+        }
+        // Any scalar.
+        return 1;
     }
 
     @Override
     public Class<?> getType() {
-        if (pvStructureStore != null) {
-            PVField valueField = pvStructureStore.getSubField(fieldName);
-            Type type = valueField.getField().getType();
-            switch (type) {
-                case scalar:
-                    return getScalarType((PVScalar) valueField);
-                case scalarArray:
-                    return getScalarArrayType((PVScalarArray) valueField);
-                default:
-                    break;
-            }
+        PVAData valueField = valueField();
+        if (valueField == null) {
+            return null;
+        }
+        if (valueField instanceof PVABool) {
+            return boolean.class;
+        }
+        if (valueField instanceof PVAByte) {
+            return byte.class;
+        }
+        if (valueField instanceof PVAShort) {
+            return short.class;
+        }
+        if (valueField instanceof PVAInt) {
+            return int.class;
+        }
+        if (valueField instanceof PVALong) {
+            return long.class;
+        }
+        if (valueField instanceof PVAFloat) {
+            return float.class;
+        }
+        if (valueField instanceof PVADouble) {
+            return double.class;
+        }
+        if (valueField instanceof PVAString) {
+            return String.class;
+        }
+        if (valueField instanceof PVABoolArray) {
+            return boolean[].class;
+        }
+        if (valueField instanceof PVAByteArray) {
+            return byte[].class;
+        }
+        if (valueField instanceof PVAShortArray) {
+            return short[].class;
+        }
+        if (valueField instanceof PVAIntArray) {
+            return int[].class;
+        }
+        if (valueField instanceof PVALongArray) {
+            return long[].class;
+        }
+        if (valueField instanceof PVAFloatArray) {
+            return float[].class;
+        }
+        if (valueField instanceof PVADoubleArray) {
+            return double[].class;
+        }
+        if (valueField instanceof PVAStringArray) {
+            return String[].class;
         }
         return null;
     }
 
-    private Class<?> getScalarType(PVScalar pvScalar) {
-        ScalarType type = pvScalar.getScalar().getScalarType();
-        switch (type) {
-            case pvBoolean:
-                return boolean.class;
-            case pvByte:
-            case pvUByte:
-                return byte.class;
-            case pvDouble:
-                return double.class;
-            case pvFloat:
-                return float.class;
-            case pvInt:
-            case pvUInt:
-                return int.class;
-            case pvLong:
-            case pvULong:
-                return long.class;
-            case pvShort:
-            case pvUShort:
-                return short.class;
-            case pvString:
-                return String.class;
-            default:
-                break;
-        }
-        return null;
-    }
-
-    private Class<?> getScalarArrayType(PVScalarArray pvScalarArray) {
-        ScalarType type = pvScalarArray.getScalarArray().getElementType();
-        switch (type) {
-            case pvByte:
-            case pvUByte:
-                return byte[].class;
-            case pvDouble:
-                return double[].class;
-            case pvFloat:
-                return float[].class;
-            case pvInt:
-            case pvUInt:
-                return int[].class;
-            case pvLong:
-            case pvULong:
-                return long[].class;
-            case pvShort:
-            case pvUShort:
-                return short[].class;
-            case pvString:
-                return String[].class;
-            case pvBoolean:
-                return boolean[].class;
-            default:
-                break;
-        }
-        return null;
-    }
-
+    /**
+     * The value as a Java array, which is what {@link ArrayValue} expects. Scalars become single element arrays.
+     */
     private Object getValue() {
-        if (pvStructureStore != null) {
-            PVField valueField = pvStructureStore.getSubField(VALUE_FIELD_NAME);
-            Type type = valueField.getField().getType();
-            switch (type) {
-                case scalar:
-                    return getScalarValue((PVScalar) valueField);
-                case scalarArray:
-                    return getArrayValue((PVScalarArray) valueField);
-                default:
-                    break;
-            }
+        PVAData valueField = valueField();
+        if (valueField == null) {
+            return null;
         }
-        return null;
-    }
-
-    private Object getScalarValue(PVScalar pvScalar) {
-        ScalarType type = pvScalar.getScalar().getScalarType();
-        switch (type) {
-            case pvBoolean:
-                return new boolean[]{pvStructureStore.getBooleanField(fieldName).get()};
-            case pvByte:
-            case pvUByte:
-                return new byte[]{pvStructureStore.getByteField(fieldName).get()};
-            case pvDouble:
-                return new double[]{pvStructureStore.getDoubleField(fieldName).get()};
-            case pvFloat:
-                return new float[]{pvStructureStore.getFloatField(fieldName).get()};
-            case pvInt:
-            case pvUInt:
-                return new int[]{pvStructureStore.getIntField(fieldName).get()};
-            case pvLong:
-            case pvULong:
-                return new long[]{pvStructureStore.getLongField(fieldName).get()};
-            case pvShort:
-            case pvUShort:
-                return new short[]{pvStructureStore.getShortField(fieldName).get()};
-            case pvString:
-                return new String[]{pvStructureStore.getStringField(fieldName).get()};
-            default:
-                break;
+        if (valueField instanceof PVABool) {
+            return new boolean[]{((PVABool) valueField).get()};
         }
-        return null;
-    }
-
-    private Object getArrayValue(PVScalarArray pvScalarArray) {
-        ScalarType type = pvScalarArray.getScalarArray().getElementType();
-        switch (type) {
-            case pvByte:
-            case pvUByte:
-                PVByteArray byteArray = (PVByteArray) pvStructureStore.getScalarArrayField(fieldName, ScalarType.pvByte);
-                return byteArray.get().toArray(new byte[byteArray.getLength()]);
-            case pvDouble:
-                PVDoubleArray doubleArray = (PVDoubleArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
-                return doubleArray.get().toArray(new double[doubleArray.getLength()]);
-            case pvFloat:
-                PVFloatArray floatArray = (PVFloatArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvFloat);
-                return floatArray.get().toArray(new float[floatArray.getLength()]);
-            case pvInt:
-            case pvUInt:
-                PVIntArray intArray = (PVIntArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvInt);
-                return intArray.get().toArray(new int[intArray.getLength()]);
-            case pvLong:
-            case pvULong:
-                PVLongArray longArray = (PVLongArray) pvStructureStore.getScalarArrayField(fieldName, ScalarType.pvLong);
-                return longArray.get().toArray(new long[longArray.getLength()]);
-            case pvShort:
-            case pvUShort:
-                PVShortArray shortArray = (PVShortArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvShort);
-                return shortArray.get().toArray(new short[shortArray.getLength()]);
-            case pvString:
-                PVStringArray stringArray = (PVStringArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvString);
-                StringArrayData stringArrayData = new StringArrayData();
-                stringArray.get(0, stringArray.getLength(), stringArrayData);
-                return stringArrayData.data;
-            case pvBoolean:
-                PVBooleanArray booleanArray = (PVBooleanArray) pvStructureStore.getScalarArrayField(fieldName, ScalarType.pvBoolean);
-                BooleanArrayData booleanArrayData = new BooleanArrayData();
-                booleanArray.get(0, booleanArray.getLength(), booleanArrayData);
-                return booleanArrayData.data;
-            default:
-                break;
+        if (valueField instanceof PVAByte) {
+            return new byte[]{((PVAByte) valueField).get()};
+        }
+        if (valueField instanceof PVAShort) {
+            return new short[]{((PVAShort) valueField).get()};
+        }
+        if (valueField instanceof PVAInt) {
+            return new int[]{((PVAInt) valueField).get()};
+        }
+        if (valueField instanceof PVALong) {
+            return new long[]{((PVALong) valueField).get()};
+        }
+        if (valueField instanceof PVAFloat) {
+            return new float[]{((PVAFloat) valueField).get()};
+        }
+        if (valueField instanceof PVADouble) {
+            return new double[]{((PVADouble) valueField).get()};
+        }
+        if (valueField instanceof PVAString) {
+            return new String[]{((PVAString) valueField).get()};
+        }
+        if (valueField instanceof PVABoolArray) {
+            return ((PVABoolArray) valueField).get();
+        }
+        if (valueField instanceof PVAByteArray) {
+            return ((PVAByteArray) valueField).get();
+        }
+        if (valueField instanceof PVAShortArray) {
+            return ((PVAShortArray) valueField).get();
+        }
+        if (valueField instanceof PVAIntArray) {
+            return ((PVAIntArray) valueField).get();
+        }
+        if (valueField instanceof PVALongArray) {
+            return ((PVALongArray) valueField).get();
+        }
+        if (valueField instanceof PVAFloatArray) {
+            return ((PVAFloatArray) valueField).get();
+        }
+        if (valueField instanceof PVADoubleArray) {
+            return ((PVADoubleArray) valueField).get();
+        }
+        if (valueField instanceof PVAStringArray) {
+            return ((PVAStringArray) valueField).get();
         }
         return null;
     }

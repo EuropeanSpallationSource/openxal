@@ -18,7 +18,9 @@
 package xal.plugin.epics7;
 
 import java.math.BigDecimal;
-import org.epics.pvdata.pv.PVStructure;
+import org.epics.pva.data.PVAInt;
+import org.epics.pva.data.PVALong;
+import org.epics.pva.data.PVAStructure;
 import xal.ca.ChannelTimeRecord;
 import xal.ca.Timestamp;
 
@@ -41,11 +43,19 @@ public class Epics7ChannelTimeRecord extends Epics7ChannelStatusRecord implement
      *
      * @param pvStructure
      */
-    public Epics7ChannelTimeRecord(PVStructure pvStructure) {
+    public Epics7ChannelTimeRecord(PVAStructure pvStructure) {
         super(pvStructure);
 
-        long seconds = pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getLongField(SECONDS_FIELD_NAME).get();
-        int nanoSeconds = pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getIntField(NANOSECONDS_FIELD_NAME).get();
+        PVAStructure timeStamp = pvStructure.get(TIMESTAMP_FIELD_NAME);
+
+        long seconds = 0;
+        int nanoSeconds = 0;
+        if (timeStamp != null) {
+            PVALong secondsField = timeStamp.get(SECONDS_FIELD_NAME);
+            PVAInt nanoSecondsField = timeStamp.get(NANOSECONDS_FIELD_NAME);
+            seconds = secondsField == null ? 0 : secondsField.get();
+            nanoSeconds = nanoSecondsField == null ? 0 : nanoSecondsField.get();
+        }
 
         timestamp = new Timestamp(new BigDecimal(nanoSeconds).multiply(new BigDecimal("1e-9")).add(new BigDecimal(seconds)));
     }

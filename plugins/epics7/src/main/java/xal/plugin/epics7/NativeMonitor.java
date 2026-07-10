@@ -17,36 +17,15 @@
  */
 package xal.plugin.epics7;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import org.epics.pva.data.PVAStructure;
-
 /**
- * Implementation of EventListener that creates a latch and has an await method
- * to get the record synchronously.
+ * A running subscription on a {@link NativeChannel}.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-class GetListener implements EventListener {
+public interface NativeMonitor {
 
-    private final CountDownLatch doneSignal;
-    private volatile PVAStructure pvStructure;
-
-    public GetListener() {
-        this.doneSignal = new CountDownLatch(1);
-    }
-
-    public PVAStructure getPvStructure() {
-        return pvStructure;
-    }
-
-    @Override
-    public void event(PVAStructure pvStructure) {
-        this.pvStructure = pvStructure;
-        doneSignal.countDown();
-    }
-
-    public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
-        return doneSignal.await(timeout, unit);
-    }
+    /**
+     * Stop the subscription and release its resources. Idempotent.
+     */
+    void close();
 }

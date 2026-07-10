@@ -17,28 +17,43 @@
  */
 package xal.plugin.epics7.server;
 
+import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
 import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
+import gov.aps.jca.CAException;
+import gov.aps.jca.cas.ProcessVariableEventCallback;
+import gov.aps.jca.dbr.DBR;
 import gov.aps.jca.dbr.DBRType;
+import java.lang.reflect.Array;
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.StandardField;
-import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.pv.Type;
-import org.epics.pvdatabase.PVRecord;
+import org.epics.pva.data.PVAArray;
+import org.epics.pva.data.PVABool;
+import org.epics.pva.data.PVAByte;
+import org.epics.pva.data.PVAByteArray;
+import org.epics.pva.data.PVAData;
+import org.epics.pva.data.PVADouble;
+import org.epics.pva.data.PVADoubleArray;
+import org.epics.pva.data.PVAFloat;
+import org.epics.pva.data.PVAFloatArray;
+import org.epics.pva.data.PVAInt;
+import org.epics.pva.data.PVAIntArray;
+import org.epics.pva.data.PVALong;
+import org.epics.pva.data.PVALongArray;
+import org.epics.pva.data.PVAShort;
+import org.epics.pva.data.PVAShortArray;
+import org.epics.pva.data.PVAString;
+import org.epics.pva.data.PVAStringArray;
+import org.epics.pva.data.PVAStructure;
+import org.epics.pva.data.nt.PVAAlarm;
+import org.epics.pva.data.nt.PVAControl;
+import org.epics.pva.data.nt.PVADisplay;
+import org.epics.pva.data.nt.PVAScalar;
+import org.epics.pva.data.nt.PVATimeStamp;
+import org.epics.pva.server.ServerPV;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
@@ -52,29 +67,34 @@ import xal.ca.Monitor;
 import xal.ca.MonitorException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
+import xal.plugin.epics7.CaDbrConverter;
 import xal.plugin.epics7.Epics7Channel;
 import xal.plugin.epics7.Epics7ChannelRecord;
 import xal.plugin.epics7.Epics7ChannelStatusRecord;
 import xal.plugin.epics7.Epics7ChannelTimeRecord;
 
 /**
- * Server channel implementation. It creates PVAccess and CA channels, independently of the signal prefix. This is done
- * to ensure backwards compatibility.
+ * Server channel implementation. It serves the same value over PV Access and Channel Access, independently of the
+ * signal prefix. This is done to ensure backwards compatibility.
  *
- * Gets are done on the PVRecord, while sets are done to both PVRecord and CA PV, so that they are always in sync.
+ * The channel owns the record: a {@link PVAStructure} held in memory. Writes arriving from either protocol, and local
+ * puts, all funnel through {@link #updateValue}, which mirrors the new value to the other protocol and notifies
+ * monitors. The previous implementation kept a pvDatabase record and a Channel Access process variable in sync with a
+ * monitor on each; the PV Access library used by Phoebus offers a write callback instead, so no monitor is needed.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ServerChannel extends Epics7Channel implements IServerChannel {
+public class Epics7ServerChannel extends Epics7Channel implements IServerChannel, ProcessVariableEventCallback {
 
-    // Record associated with this channel.    
     private MemoryProcessVariable memoryProcessVariable;
-    private PVRecord pvRecord;
+    private ServerPV serverPV;
+
+    /**
+     * The served value plus its metadata. Guarded by {@link #updateLock}.
+     */
+    private PVAStructure record;
 
     private final Epics7ServerChannelSystem epics7ServerChannelSystem;
-
-    private static final String PROPERTIES = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
-            + DISPLAY_FIELD + "," + CONTROL_FIELD;
 
     private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannel.class.getName());
 
@@ -82,10 +102,22 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private static final String VALUE_ALARM_FIELD_ERR = "Couldn't find \"valueAlarm\" field.";
     private static final String CONTROL_FIELD_ERR = "Couldn't find \"control\" field.";
 
-    private Epics7ServerMonitor protocolsLinkMonitor = null;
+    private final List<Epics7ServerMonitor> monitors = new CopyOnWriteArrayList<>();
 
-    private ReentrantLock caLock = new ReentrantLock();
-    private ReentrantLock pvaLock = new ReentrantLock();
+    /**
+     * Serialises mutations of {@link #record}.
+     *
+     * It must never be held while writing to {@link #memoryProcessVariable}: MemoryProcessVariable.write is
+     * synchronized and calls back into {@link #postEvent} while holding its own monitor, so holding this lock across
+     * that call would invert the lock order against an incoming Channel Access write and deadlock.
+     */
+    private final ReentrantLock updateLock = new ReentrantLock();
+
+    /**
+     * Set while this thread mirrors a value into the Channel Access process variable, so that the resulting
+     * {@link #postEvent} callback is recognised as our own echo rather than a client write.
+     */
+    private final ThreadLocal<Boolean> mirroringToCa = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
     public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem channelSystem) {
         super(signalName, channelSystem);
@@ -110,177 +142,309 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     // No connection to be made, just create the record. By default its type is double.
     @Override
     public final void requestConnection() {
-        if (pvRecord == null) {
-            addCAPV(DBRType.DOUBLE);
-            addRecord(ScalarType.pvDouble, false);
-
-            // Adding a monitor to update the value on one protocol channel when
-            // the other one is updated by new data received in a put, either
-            // from the network or using a putVal method.
-            try {
-                protocolsLinkMonitor = Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable,
-                        Epics7Channel.VALUE_REQUEST, this::internalMonitor, 0);
-            } catch (MonitorException ex) {
-                Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+        if (record == null) {
+            createPVs(DBRType.DOUBLE, new PVADouble(VALUE_FIELD, 0.0));
             connectionFlag = true;
-        }
-    }
-
-    private void internalMonitor(PVStructure pvStructure) {
-        if (protocolsLinkMonitor != null) {
-            protocolsLinkMonitor.updateTheOtherProtocol(pvStructure);
         }
     }
 
     @Override
     public void disconnect() {
-        removeCAPV();
-        removeRecord();
-        protocolsLinkMonitor.clear();
-        protocolsLinkMonitor = null;
-        connectionFlag = false;
-    }
-
-    public ReentrantLock getCaLock() {
-        return caLock;
-    }
-
-    public ReentrantLock getPvaLock() {
-        return pvaLock;
-    }
-
-    private void addCAPV(DBRType type) {
-        MemoryProcessVariable newMemoryProcessVariable = new MemoryProcessVariable(strId, null, type, new double[]{0.0});
-
-        if (memoryProcessVariable != null) {
-            // TODO: Copy metadata from old record to new record
-            removeCAPV();
-        }
-        memoryProcessVariable = newMemoryProcessVariable;
-
-        epics7ServerChannelSystem.addMemPV(memoryProcessVariable);
-    }
-
-    private void addRecord(ScalarType scalarType, boolean array) {
-        // Remove the old monitor
-        if (protocolsLinkMonitor != null) {
-            protocolsLinkMonitor.clear();
-            protocolsLinkMonitor = null;
-        }
-        
-        StandardField standardField = StandardFieldFactory.getStandardField();
-
-        String properties = PROPERTIES;
-        if (scalarType != ScalarType.pvString) {
-            properties += "," + VALUE_ALARM_FIELD;
-        }
-
-        Structure structure;
-        if (array) {
-            structure = standardField.scalarArray(scalarType, properties);
-        } else {
-            structure = standardField.scalar(scalarType, properties);
-        }
-        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-        PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-        PVRecord newPVRecord = new PVRecord(strId, pvStructure);
-        if (pvRecord != null) {
-            // TODO: Copy metadata from old record to new record
-            removeRecord();
-        }
-        pvRecord = newPVRecord;
-
-        epics7ServerChannelSystem.addRecord(pvRecord);
-
-        // Create a monitor for the new record
+        updateLock.lock();
         try {
-            protocolsLinkMonitor = Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable,
-                    Epics7Channel.VALUE_REQUEST, this::internalMonitor, 0);
-        } catch (MonitorException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+            removeCAPV();
+            removePvaPV();
+            record = null;
+            connectionFlag = false;
+        } finally {
+            updateLock.unlock();
         }
+    }
+
+    void addMonitor(Epics7ServerMonitor monitor) {
+        monitors.add(monitor);
+    }
+
+    void removeMonitor(Epics7ServerMonitor monitor) {
+        monitors.remove(monitor);
+    }
+
+    // ---------------- Record construction ----------------
+    /**
+     * The pvData "valueAlarm_t" structure. Strings have no alarm limits, so they get no valueAlarm field, matching the
+     * previous implementation.
+     */
+    private static PVAStructure newValueAlarm() {
+        return new PVAStructure(VALUE_ALARM_FIELD, "epics:nt/valueAlarm_t:1.0",
+                new PVABool("active", false),
+                new PVADouble("lowAlarmLimit", 0.0),
+                new PVADouble("lowWarningLimit", 0.0),
+                new PVADouble("highWarningLimit", 0.0),
+                new PVADouble("highAlarmLimit", 0.0),
+                new PVAInt("lowAlarmSeverity", 0),
+                new PVAInt("lowWarningSeverity", 0),
+                new PVAInt("highWarningSeverity", 0),
+                new PVAInt("highAlarmSeverity", 0),
+                new PVAByte("hysteresis", false, (byte) 0));
+    }
+
+    private static PVAStructure newRecord(PVAData valueField) {
+        boolean isString = valueField instanceof PVAString || valueField instanceof PVAStringArray;
+        boolean isArray = valueField instanceof PVAArray;
+
+        String structName = isArray ? PVAScalar.ARRAY_STRUCT_NAME_STRING : PVAScalar.SCALAR_STRUCT_NAME_STRING;
+
+        if (isString) {
+            return new PVAStructure("", structName,
+                    valueField,
+                    new PVAAlarm(),
+                    new PVATimeStamp(),
+                    new PVADisplay(0.0, 0.0, "", "", 0, PVADisplay.Form.DEFAULT),
+                    new PVAControl(0.0, 0.0, 0.0));
+        }
+        return new PVAStructure("", structName,
+                valueField,
+                new PVAAlarm(),
+                new PVATimeStamp(),
+                new PVADisplay(0.0, 0.0, "", "", 0, PVADisplay.Form.DEFAULT),
+                new PVAControl(0.0, 0.0, 0.0),
+                newValueAlarm());
+    }
+
+    /**
+     * An initial value for the Channel Access process variable: a single element array of the right primitive type.
+     */
+    private static Object initialCaValue(DBRType type) {
+        if (type == DBRType.STRING) {
+            return new String[]{""};
+        }
+        if (type == DBRType.BYTE) {
+            return new byte[]{0};
+        }
+        if (type == DBRType.SHORT) {
+            return new short[]{0};
+        }
+        if (type == DBRType.INT) {
+            return new int[]{0};
+        }
+        if (type == DBRType.FLOAT) {
+            return new float[]{0.0f};
+        }
+        return new double[]{0.0};
+    }
+
+    /**
+     * Replace both process variables with ones of the given type, preserving nothing. Must hold {@link #updateLock}.
+     */
+    private void createPVs(DBRType dbrType, PVAData valueField) {
+        removeCAPV();
+        removePvaPV();
+
+        // TODO: copy metadata from the old record to the new one.
+        record = newRecord(valueField);
+
+        memoryProcessVariable = new MemoryProcessVariable(strId, null, dbrType, initialCaValue(dbrType));
+        epics7ServerChannelSystem.addMemPV(memoryProcessVariable);
+        ((ProcessVariableEventDispatcher) memoryProcessVariable.getEventCallback()).registerEventListener(this);
+
+        // Passing a write handler is what makes the PV writable.
+        serverPV = epics7ServerChannelSystem.getPvaServer().createPV(strId, record, this::handlePvaWrite);
     }
 
     private void removeCAPV() {
         if (memoryProcessVariable != null) {
+            ProcessVariableEventCallback callback = memoryProcessVariable.getEventCallback();
+            if (callback instanceof ProcessVariableEventDispatcher) {
+                ((ProcessVariableEventDispatcher) callback).unregisterEventListener(this);
+            }
             epics7ServerChannelSystem.removeMemPV(memoryProcessVariable);
             memoryProcessVariable = null;
         }
     }
 
-    private void removeRecord() {
-        if (pvRecord != null) {
-            epics7ServerChannelSystem.removeRecord(pvRecord);
-            pvRecord = null;
+    private void removePvaPV() {
+        if (serverPV != null) {
+            serverPV.close();
+            serverPV = null;
         }
     }
 
-    @Override
-    public int elementCount() throws ConnectionException {
-        if (pvRecord != null) {
-            PVField valueField = pvRecord.getPVStructure().getSubField(VALUE_FIELD);
-            Type type = valueField.getField().getType();
-            switch (type) {
-                case scalar:
-                    return 1;
-                case scalarArray:
-                    return Epics7ChannelRecord.getCountArray(pvRecord.getPVStructure(), valueField);
-                default:
-                    break;
+    // ---------------- Value propagation ----------------
+    /**
+     * A value mutation to apply to the record while {@link #updateLock} is held.
+     */
+    @FunctionalInterface
+    private interface Mutation {
+
+        void apply() throws Exception;
+    }
+
+    /**
+     * Apply a change to the record, then mirror it to the protocol that did not originate it and notify monitors.
+     *
+     * The record is mutated under {@link #updateLock}, but the mirroring happens outside it; see the note on that
+     * field for why.
+     *
+     * @param toCa whether the Channel Access process variable needs updating
+     */
+    private void updateRecord(Mutation mutation, boolean toCa) throws Exception {
+        DBR dbr;
+        PVAStructure snapshot;
+
+        updateLock.lock();
+        try {
+            if (record == null) {
+                return;
+            }
+            mutation.apply();
+            PVATimeStamp.set(record, Instant.now());
+
+            dbr = toCa ? CaDbrConverter.toDBR(record.get(VALUE_FIELD)) : null;
+            snapshot = record.cloneData();
+        } finally {
+            updateLock.unlock();
+        }
+
+        if (dbr != null && memoryProcessVariable != null) {
+            mirroringToCa.set(Boolean.TRUE);
+            try {
+                memoryProcessVariable.write(dbr, null);
+            } catch (CAException ex) {
+                LOGGER.log(Level.SEVERE, "Could not update Channel Access value of " + strId, ex);
+            } finally {
+                mirroringToCa.set(Boolean.FALSE);
             }
         }
-        return 0;
+
+        if (serverPV != null) {
+            try {
+                serverPV.update(snapshot);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Could not update PV Access value of " + strId, ex);
+            }
+        }
+
+        for (Epics7ServerMonitor monitor : monitors) {
+            monitor.post(snapshot);
+        }
+    }
+
+    /**
+     * A Channel Access client wrote to the process variable.
+     */
+    @Override
+    public void postEvent(int select, DBR event) {
+        // Ignore the echo of a value this channel just pushed into the CA process variable.
+        if (Boolean.TRUE.equals(mirroringToCa.get())) {
+            return;
+        }
+        try {
+            updateRecord(() -> setValueFromDbr(event), false);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Could not apply Channel Access write to " + strId, ex);
+        }
     }
 
     @Override
-    protected PVStructure getDisplay() {
-        if (pvRecord != null) {
-            return pvRecord.getPVStructure().getStructureField(DISPLAY_FIELD);
+    public void canceled() {
+        // Nothing to do.
+    }
+
+    /**
+     * A PV Access client wrote to the served PV. The library hands over a copy of the record with the client's changes
+     * already applied.
+     */
+    private void handlePvaWrite(org.epics.pva.common.TCPHandler tcp, ServerPV pv, java.util.BitSet changes,
+            PVAStructure written) throws Exception {
+        updateRecord(() -> record.get(VALUE_FIELD).setValue(written.get(VALUE_FIELD)), true);
+    }
+
+    /**
+     * Copy a Channel Access value into the record's value field.
+     */
+    private void setValueFromDbr(DBR dbr) throws Exception {
+        PVAData valueField = record.get(VALUE_FIELD);
+        Object value = dbr.getValue();
+
+        if (!(valueField instanceof PVAArray)) {
+            valueField.setValue(Array.get(value, 0));
+            return;
         }
-        return null;
+        // Channel Access has no 64 bit integer type, so a long array arrives as int[].
+        if (valueField instanceof PVALongArray && value instanceof int[]) {
+            int[] ints = (int[]) value;
+            long[] longs = new long[ints.length];
+            for (int i = 0; i < ints.length; i++) {
+                longs[i] = ints[i];
+            }
+            valueField.setValue(longs);
+            return;
+        }
+        valueField.setValue(value);
+    }
+
+    // ---------------- Reads ----------------
+    @Override
+    public int elementCount() throws ConnectionException {
+        updateLock.lock();
+        try {
+            return record == null ? 0 : Epics7ChannelRecord.getCountArray(record.get(VALUE_FIELD));
+        } finally {
+            updateLock.unlock();
+        }
     }
 
     @Override
-    protected PVStructure getVAlueAlarm() {
-        if (pvRecord != null) {
-            return pvRecord.getPVStructure().getStructureField(VALUE_ALARM_FIELD);
-        }
-        return null;
+    protected PVAStructure getDisplay() {
+        return record == null ? null : record.get(DISPLAY_FIELD);
     }
 
     @Override
-    protected PVStructure getControl() {
-        if (pvRecord != null) {
-            return pvRecord.getPVStructure().getStructureField(CONTROL_FIELD);
-        }
-        return null;
+    protected PVAStructure getVAlueAlarm() {
+        return record == null ? null : record.get(VALUE_ALARM_FIELD);
+    }
+
+    @Override
+    protected PVAStructure getControl() {
+        return record == null ? null : record.get(CONTROL_FIELD);
     }
 
     @Override
     public String getUnits() {
-        PVStructure displayStructure = getDisplay();
+        PVAStructure displayStructure = getDisplay();
         if (displayStructure != null) {
-            return displayStructure.getStringField("units").get();
+            PVAString units = displayStructure.get("units");
+            return units == null ? "" : units.get();
         }
 
         return "";
     }
 
+    /**
+     * A snapshot of the record, so that callers are not exposed to later updates.
+     */
+    private PVAStructure snapshot() {
+        updateLock.lock();
+        try {
+            return record.cloneData();
+        } finally {
+            updateLock.unlock();
+        }
+    }
+
     @Override
     public ChannelRecord getRawValueRecord() throws GetException {
-        return new Epics7ChannelRecord(pvRecord.getPVStructure());
+        return new Epics7ChannelRecord(snapshot());
     }
 
     @Override
     public ChannelStatusRecord getRawStatusRecord() throws GetException {
-        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure());
+        return new Epics7ChannelStatusRecord(snapshot());
     }
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() throws GetException {
-        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure());
+        return new Epics7ChannelTimeRecord(snapshot());
     }
 
     @Override
@@ -298,6 +462,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         listener.eventValue(getRawTimeRecord(), this);
     }
 
+    // ---------------- Monitors ----------------
     @Override
     public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws MonitorException {
         try {
@@ -306,7 +471,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             throw new MonitorException(CONNECTION_EXC, ex);
         }
 
-        return Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, pvStructure -> {
+        return Epics7ServerMonitor.createNewMonitor(this, pvStructure -> {
             ChannelTimeRecord channelRecord = new Epics7ChannelTimeRecord(pvStructure);
             listener.eventValue(channelRecord, this);
         }, intMaskFire);
@@ -320,7 +485,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             throw new MonitorException(CONNECTION_EXC, ex);
         }
 
-        return Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, pvStructure -> {
+        return Epics7ServerMonitor.createNewMonitor(this, pvStructure -> {
             ChannelStatusRecord channelRecord = new Epics7ChannelStatusRecord(pvStructure);
             listener.eventValue(channelRecord, this);
         }, intMaskFire);
@@ -334,76 +499,61 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             throw new MonitorException(CONNECTION_EXC, ex);
         }
 
-        return Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, pvStructure -> {
+        return Epics7ServerMonitor.createNewMonitor(this, pvStructure -> {
             ChannelRecord channelRecord = new Epics7ChannelRecord(pvStructure);
             listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
-    private void beforeValueUpdated(Class<?> typeClass, DBRType dbrType, ScalarType scalarType, boolean array) {
-        if (elementType() != typeClass) {
-            addCAPV(dbrType);
-            addRecord(scalarType, array);
+    // ---------------- Writes ----------------
+    /**
+     * Set a new value, recreating the process variables first if the type changed.
+     *
+     * @param typeClass the Open XAL element type the new value implies
+     * @param dbrType the Channel Access type to serve
+     * @param template a fresh, empty value field of the right PV Access type
+     * @param newValue the value to store
+     */
+    private void updateValue(Class<?> typeClass, DBRType dbrType, PVAData template, Object newValue,
+            PutListener listener) throws PutException {
+        try {
+            updateLock.lock();
+            try {
+                if (record == null || elementType() != typeClass) {
+                    createPVs(dbrType, template);
+                }
+            } finally {
+                updateLock.unlock();
+            }
+
+            updateRecord(() -> record.get(VALUE_FIELD).setValue(newValue), true);
+        } catch (Exception ex) {
+            throw new PutException("Could not write to " + strId + ": " + ex.getMessage());
         }
 
-        pvRecord.lock();
-        pvRecord.beginGroupPut();
-    }
-
-    private void afterValueUpdated(PutListener listener) {
-        long currentTimeMillis = System.currentTimeMillis();
-
-        int nanoSeconds = (int) (1e6 * (currentTimeMillis % 1e3));
-        long seconds = currentTimeMillis / 1000;
-
-        PVStructure timeStampField = pvRecord.getPVStructure().getStructureField(TIMESTAMP_FIELD);
-
-        timeStampField.getLongField(Epics7ChannelTimeRecord.SECONDS_FIELD_NAME).put(seconds);
-        timeStampField.getIntField(Epics7ChannelTimeRecord.NANOSECONDS_FIELD_NAME).put(nanoSeconds);
-
-        //TODO: update alarms
         if (listener != null) {
             listener.putCompleted(this);
         }
-
-        pvRecord.endGroupPut();
-        pvRecord.unlock();
     }
 
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(String.class, DBRType.STRING, ScalarType.pvString, false);
-
-        pvRecord.getPVStructure().getStringField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(String.class, DBRType.STRING, new PVAString(VALUE_FIELD), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(byte newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(byte.class, DBRType.BYTE, ScalarType.pvByte, false);
-
-        pvRecord.getPVStructure().getByteField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(byte.class, DBRType.BYTE, new PVAByte(VALUE_FIELD, false), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(short newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(short.class, DBRType.SHORT, ScalarType.pvShort, false);
-
-        pvRecord.getPVStructure().getShortField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(short.class, DBRType.SHORT, new PVAShort(VALUE_FIELD, false), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(int newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(int.class, DBRType.INT, ScalarType.pvInt, false);
-
-        pvRecord.getPVStructure().getIntField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(int.class, DBRType.INT, new PVAInt(VALUE_FIELD), newVal, listener);
     }
 
     /**
@@ -411,65 +561,37 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
      */
     @Override
     public void putRawValCallback(long newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(long.class, DBRType.INT, ScalarType.pvLong, false);
-
-        pvRecord.getPVStructure().getLongField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(long.class, DBRType.INT, new PVALong(VALUE_FIELD, false), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(float newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(float.class, DBRType.FLOAT, ScalarType.pvFloat, false);
-
-        pvRecord.getPVStructure().getFloatField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(float.class, DBRType.FLOAT, new PVAFloat(VALUE_FIELD, 0.0f), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(double newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(double.class, DBRType.DOUBLE, ScalarType.pvDouble, false);
-
-        pvRecord.getPVStructure().getDoubleField(VALUE_FIELD).put(newVal);
-
-        afterValueUpdated(listener);
+        updateValue(double.class, DBRType.DOUBLE, new PVADouble(VALUE_FIELD, 0.0), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(String[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(String[].class, DBRType.STRING, ScalarType.pvString, true);
-
-        pvRecord.getPVStructure().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
-
-        afterValueUpdated(listener);
+        updateValue(String[].class, DBRType.STRING, new PVAStringArray(VALUE_FIELD), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(byte[].class, DBRType.BYTE, ScalarType.pvByte, true);
-
-        pvRecord.getPVStructure().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
-
-        afterValueUpdated(listener);
+        updateValue(byte[].class, DBRType.BYTE, new PVAByteArray(VALUE_FIELD, false), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(short[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(short[].class, DBRType.SHORT, ScalarType.pvShort, true);
-
-        pvRecord.getPVStructure().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
-
-        afterValueUpdated(listener);
+        updateValue(short[].class, DBRType.SHORT, new PVAShortArray(VALUE_FIELD, false), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(int[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(int[].class, DBRType.INT, ScalarType.pvInt, true);
-
-        pvRecord.getPVStructure().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
-
-        afterValueUpdated(listener);
+        updateValue(int[].class, DBRType.INT, new PVAIntArray(VALUE_FIELD, false), newVal, listener);
     }
 
     /**
@@ -477,36 +599,64 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
      */
     @Override
     public void putRawValCallback(long[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(long[].class, DBRType.INT, ScalarType.pvLong, true);
-
-        pvRecord.getPVStructure().getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
-
-        afterValueUpdated(listener);
+        updateValue(long[].class, DBRType.INT, new PVALongArray(VALUE_FIELD, false), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(float[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(float[].class, DBRType.FLOAT, ScalarType.pvFloat, true);
-
-        pvRecord.getPVStructure().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
-
-        afterValueUpdated(listener);
+        updateValue(float[].class, DBRType.FLOAT, new PVAFloatArray(VALUE_FIELD), newVal, listener);
     }
 
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(double[].class, DBRType.DOUBLE, ScalarType.pvDouble, true);
+        updateValue(double[].class, DBRType.DOUBLE, new PVADoubleArray(VALUE_FIELD), newVal, listener);
+    }
 
-        pvRecord.getPVStructure().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+    // ---------------- Metadata ----------------
+    private void setDisplayField(String name, Number value, String error) {
+        PVAStructure displayStructure = getDisplay();
+        if (displayStructure != null) {
+            PVADouble field = displayStructure.get(name);
+            if (field != null) {
+                field.set(value.doubleValue());
+                return;
+            }
+        }
+        LOGGER.severe(error);
+    }
 
-        afterValueUpdated(listener);
+    private void setValueAlarmField(String name, Number value) {
+        PVAStructure alarmValueStructure = getVAlueAlarm();
+        if (alarmValueStructure != null) {
+            PVADouble field = alarmValueStructure.get(name);
+            if (field != null) {
+                field.set(value.doubleValue());
+                return;
+            }
+        }
+        LOGGER.severe(VALUE_ALARM_FIELD_ERR);
+    }
+
+    private void setControlField(String name, Number value) {
+        PVAStructure controlStructure = getControl();
+        if (controlStructure != null) {
+            PVADouble field = controlStructure.get(name);
+            if (field != null) {
+                field.set(value.doubleValue());
+                return;
+            }
+        }
+        LOGGER.severe(CONTROL_FIELD_ERR);
     }
 
     @Override
     public void setUnits(String units) {
-        PVStructure displayStructure = getDisplay();
+        PVAStructure displayStructure = getDisplay();
         if (displayStructure != null) {
-            displayStructure.getStringField("units").put(units);
+            PVAString field = displayStructure.get("units");
+            if (field != null) {
+                field.set(units);
+            }
         } else {
             LOGGER.severe(DISPLAY_FIELD_ERR);
         }
@@ -516,97 +666,49 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void setLowerDispLimit(Number lowerLimit) {
-        PVStructure displayStructure = getDisplay();
-        if (displayStructure != null) {
-            displayStructure.getDoubleField("limitLow").put(lowerLimit.doubleValue());
-        } else {
-            LOGGER.severe(DISPLAY_FIELD_ERR);
-        }
-
+        setDisplayField("limitLow", lowerLimit, DISPLAY_FIELD_ERR);
         memoryProcessVariable.setLowerDispLimit(lowerLimit);
     }
 
     @Override
     public void setUpperDispLimit(Number upperLimit) {
-        PVStructure displayStructure = getDisplay();
-        if (displayStructure != null) {
-            displayStructure.getDoubleField("limitHigh").put(upperLimit.doubleValue());
-        } else {
-            LOGGER.severe(DISPLAY_FIELD_ERR);
-        }
-
+        setDisplayField("limitHigh", upperLimit, DISPLAY_FIELD_ERR);
         memoryProcessVariable.setUpperDispLimit(upperLimit);
     }
 
     @Override
     public void setLowerAlarmLimit(Number lowerLimit) {
-        PVStructure alarmValueStructure = getVAlueAlarm();
-        if (alarmValueStructure != null) {
-            alarmValueStructure.getDoubleField("lowAlarmLimit").put(lowerLimit.doubleValue());
-        } else {
-            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
-        }
-
+        setValueAlarmField("lowAlarmLimit", lowerLimit);
         memoryProcessVariable.setLowerAlarmLimit(lowerLimit);
     }
 
     @Override
     public void setUpperAlarmLimit(Number upperLimit) {
-        PVStructure alarmValueStructure = getVAlueAlarm();
-        if (alarmValueStructure != null) {
-            alarmValueStructure.getDoubleField("highAlarmLimit").put(upperLimit.doubleValue());
-        } else {
-            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
-        }
-
+        setValueAlarmField("highAlarmLimit", upperLimit);
         memoryProcessVariable.setUpperAlarmLimit(upperLimit);
     }
 
     @Override
     public void setLowerWarningLimit(Number lowerLimit) {
-        PVStructure alarmValueStructure = getVAlueAlarm();
-        if (alarmValueStructure != null) {
-            alarmValueStructure.getDoubleField("lowWarningLimit").put(lowerLimit.doubleValue());
-        } else {
-            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
-        }
-
+        setValueAlarmField("lowWarningLimit", lowerLimit);
         memoryProcessVariable.setLowerWarningLimit(lowerLimit);
     }
 
     @Override
     public void setUpperWarningLimit(Number upperLimit) {
-        PVStructure alarmValueStructure = getVAlueAlarm();
-        if (alarmValueStructure != null) {
-            alarmValueStructure.getDoubleField("highWarningLimit").put(upperLimit.doubleValue());
-        } else {
-            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
-        }
-
+        setValueAlarmField("highWarningLimit", upperLimit);
         memoryProcessVariable.setUpperWarningLimit(upperLimit);
     }
 
     @Override
     public void setLowerCtrlLimit(Number lowerLimit) {
-        PVStructure alarmValueStructure = getControl();
-        if (alarmValueStructure != null) {
-            alarmValueStructure.getDoubleField("limitLow").put(lowerLimit.doubleValue());
-        } else {
-            LOGGER.severe(CONTROL_FIELD_ERR);
-        }
-
+        setControlField("limitLow", lowerLimit);
         memoryProcessVariable.setLowerCtrlLimit(lowerLimit);
     }
 
     @Override
     public void setUpperCtrlLimit(Number upperLimit) {
-        PVStructure alarmValueStructure = getControl();
-        if (alarmValueStructure != null) {
-            alarmValueStructure.getDoubleField("limitHigh").put(upperLimit.doubleValue());
-        } else {
-            LOGGER.severe(CONTROL_FIELD_ERR);
-        }
-
+        setControlField("limitHigh", upperLimit);
         memoryProcessVariable.setUpperCtrlLimit(upperLimit);
     }
 
