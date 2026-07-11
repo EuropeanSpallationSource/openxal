@@ -50,9 +50,6 @@
                 <version>3.6.3</version>
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
-                    <arguments>
-                        <argument>--add-opens javafx.controls/javafx.scene.chart=ALL-UNNAMED</argument>
-                    </arguments>
                 </configuration>
             </plugin>
         </plugins>
