@@ -17,7 +17,6 @@
  */
 package xal.extension.jels.model.elem;
 
-import java.util.List;
 import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.MagFieldMap;
 import xal.model.IProbe;
@@ -79,16 +78,16 @@ public class ThickMagFieldMap extends ThickElectromagnet {
         double startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
 
         // Find the field map points included in the current slice.
-        List<Double> fieldMapPointPositions = magFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
+        double[] fieldMapPointPositions = magFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
 
-        int numberOfPoints = fieldMapPointPositions.size();
+        int numberOfPoints = fieldMapPointPositions.length;
 
         FieldMapIntegrator integrator = FieldMapIntegrator.identity();
 
         // Calculating the length of the first drift from the slice start to the
-        // first point of the field map. It could be the end point and only a 
+        // first point of the field map. It could be the end point and only a
         // drift space is calculated.
-        double dz = (numberOfPoints > 0 ? fieldMapPointPositions.get(0) - (probe.getPosition() - startPosition) : 0.0);
+        double dz = (numberOfPoints > 0 ? fieldMapPointPositions[0] - (probe.getPosition() - startPosition) : 0.0);
 
         // Add kicks and drifts for each intermediate point (could be none).
         for (int i = 0; i < numberOfPoints; i++) {
@@ -97,12 +96,12 @@ public class ThickMagFieldMap extends ThickElectromagnet {
             // Set the length of the following drift spaces.
             dz = sliceLength;
 
-            FieldMapPoint fieldMapPoint = magFieldmap.getFieldAt(fieldMapPointPositions.get(i));
+            FieldMapPoint fieldMapPoint = magFieldmap.getFieldAt(fieldMapPointPositions[i]);
 
             fieldMapPoint.setAmplitudeFactorB(getMagField());
 
             // First and last slices of the element get half a kick
-            if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - magFieldmap.getLength()) < 1e-6)) {
+            if ((Math.abs(fieldMapPointPositions[i] - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions[i] - startPosition - magFieldmap.getLength()) < 1e-6)) {
                 dz /= 2.;
             }
 
@@ -113,7 +112,7 @@ public class ThickMagFieldMap extends ThickElectromagnet {
         }
 
         // Last drift space (if any).
-        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
+        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions[numberOfPoints - 1] : dblLen);
 
         integrator.timesDriftLeft(dz);
 

@@ -17,7 +17,6 @@
  */
 package xal.extension.jels.model.elem;
 
-import java.util.List;
 import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.model.IProbe;
@@ -50,6 +49,20 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     private double[] deltaPhiArr = null;
     private double[] energyGainArr = null;
     private double[] sinIntegralArr = null;
+
+    // Memoization of computePhaseDriftAndEnergyGain. Within a single propagation
+    // step the core tracker calls this method several times (through transferMap,
+    // longitudinalPhaseAdvance and elapsedTime) with an identical probe state and
+    // slice length, so the full field-map loop is recomputed ~3x for nothing. We
+    // cache the inputs of the last computation and skip the work when they match.
+    // The results live in the instance fields (deltaPhi, energyGain,
+    // synchronousPhase and the *Arr arrays), which stay valid until a new key.
+    private double cachedPosition = Double.NaN;
+    private double cachedKineticEnergy = Double.NaN;
+    private double cachedLongitudinalPhase = Double.NaN;
+    private double cachedLength = Double.NaN;
+    private double[] cachedFieldMapPointPositions = null;
+    private FieldMapPoint[] cachedFieldMapPoints = null;
 
     private double dblAmpFactor;
     private double dblPhaseFactor;
@@ -126,18 +139,28 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
      * @throws xal.model.ModelException
      */
     public void computePhaseDriftAndEnergyGain(IProbe probe, double dblLen) {
+        // Skip the recomputation if the inputs are unchanged since the last call
+        // (see cache fields above). startPosition is constant for the element, so
+        // the previously computed results remain valid.
+        if (probe.getPosition() == cachedPosition
+                && probe.getKineticEnergy() == cachedKineticEnergy
+                && probe.getLongitinalPhase() == cachedLongitudinalPhase
+                && dblLen == cachedLength) {
+            return;
+        }
+
         startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
 
         double initialPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         // Find the field map points included in the current slice.
-        List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
+        double[] fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
 
-        int numberOfPoints = fieldMapPointPositions.size();
+        int numberOfPoints = fieldMapPointPositions.length;
 
-        // First a drift from the slice start to the first point of the field 
+        // First a drift from the slice start to the first point of the field
         // map. It could be the end point and only a drift space is calculated.
-        double dz = (numberOfPoints > 0 ? fieldMapPointPositions.get(0) - (probe.getPosition() - startPosition) : 0.0);
+        double dz = (numberOfPoints > 0 ? fieldMapPointPositions[0] - (probe.getPosition() - startPosition) : 0.0);
 
         double gamma;
         double beta;
@@ -145,6 +168,10 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         deltaPhiArr = new double[numberOfPoints + 1];
         energyGainArr = new double[numberOfPoints + 1];
         sinIntegralArr = new double[numberOfPoints + 1];
+
+        // Interpolated field map points are cached so transferMap can reuse them
+        // for the same slice instead of interpolating the field a second time.
+        FieldMapPoint[] fieldMapPoints = new FieldMapPoint[numberOfPoints];
 
         deltaPhiArr[0] = 0;
         energyGainArr[0] = 0;
@@ -159,7 +186,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
             // Set the length of the following kick.
             dz = getCellLength();
 
-            FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
+            FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions[i]);
+            fieldMapPoints[i] = fieldMapPoint;
 
             if (fieldMapPoint == null) {
                 energyGainArr[i + 1] = energyGainArr[i] + 0;
@@ -171,7 +199,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
             fieldMapPoint.setAmplitudeFactorE(getE0());
 
             // First and last slices of the element get half a kick
-            if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+            if ((Math.abs(fieldMapPointPositions[i] - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions[i] - startPosition - rfFieldmap.getLength()) < 1e-6)) {
                 dz /= 2.;
             }
 
@@ -182,7 +210,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
             dz = getCellLength();
         }
 
-        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
+        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions[numberOfPoints - 1] : dblLen);
 
         gamma = (probe.getKineticEnergy() + energyGainArr[numberOfPoints]) / probe.getSpeciesRestEnergy() + 1.0;
         beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
@@ -190,6 +218,15 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         deltaPhi = deltaPhiArr[numberOfPoints] + 2 * Math.PI * getFrequency() * dz / (beta * LIGHT_SPEED);
         energyGain = energyGainArr[numberOfPoints];
         synchronousPhase = Math.atan2(sinIntegralArr[numberOfPoints], energyGainArr[numberOfPoints]);
+
+        // Store the cache key and the point positions so a subsequent call with
+        // the same inputs (and transferMap) can reuse this work.
+        cachedPosition = probe.getPosition();
+        cachedKineticEnergy = probe.getKineticEnergy();
+        cachedLongitudinalPhase = probe.getLongitinalPhase();
+        cachedLength = dblLen;
+        cachedFieldMapPointPositions = fieldMapPointPositions;
+        cachedFieldMapPoints = fieldMapPoints;
     }
 
     /**
@@ -204,17 +241,18 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         double initialPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
-        // Find the field map points included in the current slice.
-        List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
+        // Reuse the field map points computed (and cached) by
+        // computePhaseDriftAndEnergyGain above for the same slice.
+        double[] fieldMapPointPositions = cachedFieldMapPointPositions;
 
-        int numberOfPoints = fieldMapPointPositions.size();
+        int numberOfPoints = fieldMapPointPositions.length;
         FieldMapIntegrator integrator = FieldMapIntegrator.identity();
         integrator.setCoupled(rfFieldmap.isCoupled());
 
         // Calculating the length of the first drift from the slice start to the
-        // first point of the field map. It could be the end point and only a 
+        // first point of the field map. It could be the end point and only a
         // drift space is calculated.
-        double dz = (numberOfPoints > 0 ? fieldMapPointPositions.get(0) - (probe.getPosition() - startPosition) : 0.0);
+        double dz = (numberOfPoints > 0 ? fieldMapPointPositions[0] - (probe.getPosition() - startPosition) : 0.0);
 
         // Add kicks and drifts for each intermediate point (could be none).
         for (int i = 0; i < numberOfPoints; i++) {
@@ -224,11 +262,14 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
             dz = getCellLength();
 
             // First and last slices of the element get half a kick
-            if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+            if ((Math.abs(fieldMapPointPositions[i] - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions[i] - startPosition - rfFieldmap.getLength()) < 1e-6)) {
                 dz /= 2.;
             }
 
-            FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
+            // Reuse the field map point interpolated (and cached) by
+            // computePhaseDriftAndEnergyGain above; only the amplitude factors
+            // differ between the two passes.
+            FieldMapPoint fieldMapPoint = cachedFieldMapPoints[i];
 
             fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(initialPhase + deltaPhiArr[i + 1]));
             fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LIGHT_SPEED * LIGHT_SPEED) * getE0() * Math.sin(initialPhase + deltaPhiArr[i + 1]));
@@ -241,7 +282,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         }
 
         // Last drift space (if any).
-        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
+        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions[numberOfPoints - 1] : dblLen);
 
         integrator.timesDriftLeft(dz);
 

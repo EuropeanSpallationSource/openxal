@@ -32,8 +32,19 @@ public class FieldMapIntegrator extends PhaseMatrix {
 
     private static final int NDIM = 7;
     private boolean coupled = true;
-    private Integrator integrator = this::rk4Integrator;
+    private boolean firstOrder = false;
     private Operations operations = new CoupledOperations();
+
+    // Reusable scratch buffers for the RK4 integrator, so timesKick does not
+    // allocate (or clone) a matrix per field map point.
+    private final double[] rkK2 = new double[NDIM * NDIM];
+    private final double[] rkK3 = new double[NDIM * NDIM];
+    private final double[] rkK4 = new double[NDIM * NDIM];
+    private final double[] rkTmp = new double[NDIM * NDIM];
+
+    // Spare accumulator buffer, ping-ponged with the transfer matrix backing
+    // array in timesKick so the per-point product does not allocate.
+    private double[] accBuf = new double[NDIM * NDIM];
 
     public void setCoupled(boolean coupled) {
         this.coupled = coupled;
@@ -51,7 +62,7 @@ public class FieldMapIntegrator extends PhaseMatrix {
     public FieldMapIntegrator(PhaseMatrix matrix, String integrator) {
         super(matrix);
         if (integrator.equals("FirstOrder")) {
-            this.integrator = this::firstOrderIntegrator;
+            this.firstOrder = true;
         }
     }
 
@@ -113,7 +124,16 @@ public class FieldMapIntegrator extends PhaseMatrix {
         }
 
         // Integrating the infitinesimal matrix
-        integrator.integrate(infTransferMatrixArray, length);
+        if (firstOrder) {
+            firstOrderIntegrator(infTransferMatrixArray, length);
+        } else if (coupled) {
+            rk4Integrator(infTransferMatrixArray, length);
+        } else {
+            // For uncoupled maps the generator is block diagonal, so the RK4
+            // 4th-order truncated exponential reduces to a closed-form 2x2
+            // exponential per plane (see blockRk4IntegratorUncoupled).
+            blockRk4IntegratorUncoupled(infTransferMatrixArray, length);
+        }
 
         // Renormalizing coordinates to final energy.
         for (int i = 0; i < 6; i++) {
@@ -128,7 +148,12 @@ public class FieldMapIntegrator extends PhaseMatrix {
         double dpv = length * k * (fieldMapPoint.getEy() + beta * LIGHT_SPEED * fieldMapPoint.getBx());
         infTransferMatrixArray[3 * NDIM + 6] = dpv;
 
-        getMatrix().data = operations.matrixMultiplication(infTransferMatrixArray, getMatrix().data);
+        // Accumulate the kick into the running transfer matrix, ping-ponging
+        // between the backing array and the spare buffer to avoid allocating.
+        double[] data = getMatrix().data;
+        operations.matrixMultiplication(infTransferMatrixArray, data, accBuf);
+        getMatrix().data = accBuf;
+        accBuf = data;
     }
 
     public void timesDriftLeft(double length) {
@@ -144,6 +169,51 @@ public class FieldMapIntegrator extends PhaseMatrix {
     }
 
     /**
+     * Closed-form equivalent of {@link #rk4Integrator} for the uncoupled
+     * (block-diagonal) case.
+     * <p>
+     * When the generator is block diagonal, the RK4 result
+     * {@code M = I + A + A^2/2 + A^3/6 + A^4/24} (with {@code A = F*length})
+     * decouples into an independent 2x2 truncated exponential per plane. By the
+     * Cayley-Hamilton theorem every power of a 2x2 matrix {@code B} is a linear
+     * combination of {@code I} and {@code B}, so {@code M_block = alpha*I +
+     * beta*B} where the scalar coefficients depend only on the trace and
+     * determinant of {@code B}. This replaces the per-point 7x7 matrix RK4 dance
+     * with a few scalar operations, and is analytically identical to
+     * {@link #rk4Integrator} (differing only by floating-point rounding order).
+     *
+     * @param m generator {@code F} in place; overwritten with the transfer matrix
+     * @param length integration length
+     */
+    private void blockRk4IntegratorUncoupled(double[] m, double length) {
+        for (int plane = 0; plane < 3; plane++) {
+            int i0 = 2 * plane;
+            int i1 = i0 + 1;
+
+            double a = m[i0 * NDIM + i0] * length;
+            double b = m[i0 * NDIM + i1] * length;
+            double c = m[i1 * NDIM + i0] * length;
+            double d = m[i1 * NDIM + i1] * length;
+
+            double trace = a + d;
+            double det = a * d - b * c;
+
+            // Coefficients of the truncated series sum_{n=0}^{4} B^n / n!
+            // expressed via B^2 = trace*B - det*I (Cayley-Hamilton).
+            double beta = 1.0 + trace / 2.0 + (trace * trace - det) / 6.0
+                    + (trace * trace * trace - 2.0 * trace * det) / 24.0;
+            double alpha = 1.0 - det / 2.0 - trace * det / 6.0
+                    + (det * det - trace * trace * det) / 24.0;
+
+            m[i0 * NDIM + i0] = alpha + beta * a;
+            m[i0 * NDIM + i1] = beta * b;
+            m[i1 * NDIM + i0] = beta * c;
+            m[i1 * NDIM + i1] = alpha + beta * d;
+        }
+        m[NDIM * NDIM - 1] = 1.0;
+    }
+
+    /**
      * Computes the transfer map for a general electromagnetic field using a 4th
      * order Runge-Kutta integrator (non-symplectic).
      *
@@ -151,37 +221,36 @@ public class FieldMapIntegrator extends PhaseMatrix {
      * @param length
      */
     private void rk4Integrator(double[] infTransferMatrixArray, double length) {
+        // k1 aliases the input and becomes A = F*L. The RK4 stages are built in
+        // the reusable rkK2/rkK3/rkK4 buffers (with rkTmp as scratch), avoiding
+        // the per-point clones and result allocations. The operation order is
+        // identical to the previous allocating implementation.
         double[] k1 = infTransferMatrixArray;
         operations.matrixDoubleMultiplication(k1, length);
-        double[] k2 = k1.clone();
-        operations.matrixDoubleMultiplication(k2, 0.5);
-        operations.addIdentityInPlace(k2);
-        k2 = operations.matrixMultiplication(k1, k2);
-        double[] k3 = k2.clone();
-        operations.matrixDoubleMultiplication(k3, 0.5);
-        operations.addIdentityInPlace(k3);
-        k3 = operations.matrixMultiplication(k1, k3);
-        double[] k4 = k3.clone();
-        operations.addIdentityInPlace(k4);
-        k4 = operations.matrixMultiplication(k1, k4);
+
+        System.arraycopy(k1, 0, rkTmp, 0, k1.length);
+        operations.matrixDoubleMultiplication(rkTmp, 0.5);
+        operations.addIdentityInPlace(rkTmp);
+        operations.matrixMultiplication(k1, rkTmp, rkK2);
+
+        System.arraycopy(rkK2, 0, rkTmp, 0, rkK2.length);
+        operations.matrixDoubleMultiplication(rkTmp, 0.5);
+        operations.addIdentityInPlace(rkTmp);
+        operations.matrixMultiplication(k1, rkTmp, rkK3);
+
+        System.arraycopy(rkK3, 0, rkTmp, 0, rkK3.length);
+        operations.addIdentityInPlace(rkTmp);
+        operations.matrixMultiplication(k1, rkTmp, rkK4);
 
         operations.matrixDoubleMultiplication(k1, 1 / 6.);
-        operations.matrixDoubleMultiplication(k2, 1 / 3.);
-        operations.matrixDoubleMultiplication(k3, 1 / 3.);
-        operations.matrixDoubleMultiplication(k4, 1 / 6.);
+        operations.matrixDoubleMultiplication(rkK2, 1 / 3.);
+        operations.matrixDoubleMultiplication(rkK3, 1 / 3.);
+        operations.matrixDoubleMultiplication(rkK4, 1 / 6.);
 
         operations.addIdentityInPlace(infTransferMatrixArray);
-        operations.matrixSum(infTransferMatrixArray, k2);
-        operations.matrixSum(infTransferMatrixArray, k3);
-        operations.matrixSum(infTransferMatrixArray, k4);
-    }
-
-    /**
-     * Interface to select an integrator by reference.
-     */
-    public interface Integrator {
-
-        void integrate(double[] infTransferMatrixArray, double length);
+        operations.matrixSum(infTransferMatrixArray, rkK2);
+        operations.matrixSum(infTransferMatrixArray, rkK3);
+        operations.matrixSum(infTransferMatrixArray, rkK4);
     }
 
     /**
@@ -199,12 +268,27 @@ public class FieldMapIntegrator extends PhaseMatrix {
         abstract void matrixDoubleMultiplication(double[] matrix, double value);
 
         /**
-         * Multiply two matrices and return the result in the first matrix.
+         * Multiply two matrices, writing the product into {@code out} (which
+         * must not alias {@code matrix1} or {@code matrix2}). Avoids allocating
+         * a result array on the hot path.
+         *
+         * @param matrix1
+         * @param matrix2
+         * @param out destination for the product
+         */
+        abstract void matrixMultiplication(double[] matrix1, double[] matrix2, double[] out);
+
+        /**
+         * Multiply two matrices and return the product in a new array.
          *
          * @param matrix1
          * @param matrix2
          */
-        abstract double[] matrixMultiplication(double[] matrix1, double[] matrix2);
+        public double[] matrixMultiplication(double[] matrix1, double[] matrix2) {
+            double[] out = new double[NDIM * NDIM];
+            matrixMultiplication(matrix1, matrix2, out);
+            return out;
+        }
 
         /**
          * Sum two matrices and return the result in the first matrix.
@@ -237,19 +321,17 @@ public class FieldMapIntegrator extends PhaseMatrix {
     private class CoupledOperations extends Operations {
 
         @Override
-        public double[] matrixMultiplication(double[] matrix1, double[] matrix2) {
-            double[] auxMatrix = new double[NDIM * NDIM];
-
+        public void matrixMultiplication(double[] matrix1, double[] matrix2, double[] out) {
             for (int i = 0; i < NDIM; i++) {
                 for (int j = 0; j < NDIM; j++) {
+                    double sum = 0.0;
                     for (int k = 0; k < NDIM; k++) {
-                        auxMatrix[i * NDIM + j] += matrix1[i * NDIM + k] * matrix2[k * NDIM + j];
+                        sum += matrix1[i * NDIM + k] * matrix2[k * NDIM + j];
                     }
+                    out[i * NDIM + j] = sum;
                 }
             }
-            auxMatrix[NDIM * NDIM - 1] = 1.0;
-
-            return auxMatrix;
+            out[NDIM * NDIM - 1] = 1.0;
         }
 
         @Override
@@ -286,21 +368,22 @@ public class FieldMapIntegrator extends PhaseMatrix {
     private class UncoupledOperations extends Operations {
 
         @Override
-        public double[] matrixMultiplication(double[] matrix1, double[] matrix2) {
-            double[] auxMatrix = new double[NDIM * NDIM];
-
+        public void matrixMultiplication(double[] matrix1, double[] matrix2, double[] out) {
+            // Only the three 2x2 plane blocks are written; off-block elements of
+            // out are left untouched (they are zero in the RK4 scratch buffers,
+            // which are only ever written here).
             for (int planes = 0; planes < 3; planes++) {
                 for (int i = 0; i < 2; i++) {
                     for (int j = 0; j < 2; j++) {
+                        double sum = 0.0;
                         for (int k = 0; k < 2; k++) {
-                            auxMatrix[(i + 2 * planes) * NDIM + (j + 2 * planes)] += matrix1[(i + 2 * planes) * NDIM + (k + 2 * planes)] * matrix2[(k + 2 * planes) * NDIM + (j + 2 * planes)];
+                            sum += matrix1[(i + 2 * planes) * NDIM + (k + 2 * planes)] * matrix2[(k + 2 * planes) * NDIM + (j + 2 * planes)];
                         }
+                        out[(i + 2 * planes) * NDIM + (j + 2 * planes)] = sum;
                     }
                 }
             }
-            auxMatrix[NDIM * NDIM - 1] = 1.0;
-
-            return auxMatrix;
+            out[NDIM * NDIM - 1] = 1.0;
         }
 
         @Override
@@ -325,11 +408,20 @@ public class FieldMapIntegrator extends PhaseMatrix {
 
         @Override
         public void matrixSum(double[] matrix1, double[] matrix2) {
-            for (int i = 0; i < NDIM; i++) {
-                for (int j = 0; j < NDIM; j++) {
-                    matrix1[i * NDIM + j] += matrix2[i * NDIM + j];
+            // For uncoupled maps only the three 2x2 plane blocks (and the
+            // homogeneous [6][6] element) are ever non-zero, so summing the rest
+            // is wasted work. Restricting the loop to those elements is
+            // bit-identical (the skipped entries are always 0 + 0) and removes
+            // the dominant cost of the RK4 integrator.
+            for (int planes = 0; planes < 3; planes++) {
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 2; j++) {
+                        int idx = (i + 2 * planes) * NDIM + (j + 2 * planes);
+                        matrix1[idx] += matrix2[idx];
+                    }
                 }
             }
+            matrix1[NDIM * NDIM - 1] += matrix2[NDIM * NDIM - 1];
         }
     }
 }

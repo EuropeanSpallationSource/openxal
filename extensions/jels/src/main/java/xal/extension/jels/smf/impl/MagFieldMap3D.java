@@ -28,6 +28,20 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class MagFieldMap3D extends FieldMap {
 
+    // Interpolation invariants resolved once at construction (constant for the
+    // loaded map) to keep them out of the getFieldAt hot path.
+    private final double[][][] fieldX;
+    private final double[][][] fieldY;
+    private final double[][][] fieldZ;
+    private final double normX;
+    private final double normY;
+    private final double normZ;
+    private final double spacingX;
+    private final double spacingY;
+    private final double spacingZ;
+    private final int midPointX;
+    private final int midPointY;
+
     public MagFieldMap3D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[][][]> fieldComponentX = loadFile3D(path, filename + ".bsx");
         FieldComponent<double[][][]> fieldComponentY = loadFile3D(path, filename + ".bsy");
@@ -43,6 +57,21 @@ public class MagFieldMap3D extends FieldMap {
             numberOfPoints = fieldComponentZ.getField().length;
         }
         this.numberOfPoints = numberOfPoints;
+
+        fieldX = fieldComponentX.getField();
+        fieldY = fieldComponentY.getField();
+        fieldZ = fieldComponentZ.getField();
+        normX = fieldComponentX.getNorm();
+        normY = fieldComponentY.getNorm();
+        normZ = fieldComponentZ.getNorm();
+
+        double minX = fieldComponentX.getMin()[1];
+        double minY = fieldComponentY.getMin()[2];
+        spacingX = (fieldComponentX.getMax()[1] - minX) / (fieldX[0][0].length - 1);
+        spacingY = (fieldComponentY.getMax()[2] - minY) / (fieldY[0].length - 1);
+        spacingZ = fieldComponentZ.getMax()[0] / (fieldZ.length - 1);
+        midPointX = (int) (-minX / spacingX);
+        midPointY = (int) (-minY / spacingY);
 
         recalculateSliceLength();
     }
@@ -67,50 +96,20 @@ public class MagFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][][]> fieldComponentX = (FieldComponent<double[][][]>) magneticField.get("x");
-        FieldComponent<double[][][]> fieldComponentY = (FieldComponent<double[][][]>) magneticField.get("y");
-        FieldComponent<double[][][]> fieldComponentZ = (FieldComponent<double[][][]>) magneticField.get("z");
-
-        if (position < 0.0 || position > fieldComponentZ.getMax()[0]) {
+        if (position < 0.0 || position > length) {
             return null;
         }
-
-        double[][][] fieldX = fieldComponentX.getField();
-        double[][][] fieldY = fieldComponentY.getField();
-        double[][][] fieldZ = fieldComponentZ.getField();
-
-        int numberOfPointsZ = fieldZ.length;
-        int numberOfPointsY = fieldY[0].length;
-        int numberOfPointsX = fieldX[0][0].length;
-
-        double normX = fieldComponentX.getNorm();
-        double normY = fieldComponentY.getNorm();
-        double normZ = fieldComponentZ.getNorm();
-
-        double lengthZ = fieldComponentZ.getMax()[0];
-        double minX = fieldComponentX.getMin()[1];
-        double minY = fieldComponentY.getMin()[2];
-        double maxX = fieldComponentX.getMax()[1];
-        double maxY = fieldComponentY.getMax()[2];
-
-        double spacingX = (maxX - minX) / (numberOfPointsX - 1);
-        double spacingY = (maxY - minY) / (numberOfPointsY - 1);
-        double spacingZ = lengthZ / (numberOfPointsZ - 1);
 
         // Interpolating the field at the given positon.
         int positionIndex = (int) Math.floor(position / spacingZ);
 
         if (positionIndex < 0) {
             positionIndex = 0;
-        } else if (positionIndex >= numberOfPointsZ - 1) {
-            positionIndex = numberOfPointsZ - 2;
+        } else if (positionIndex >= fieldZ.length - 1) {
+            positionIndex = fieldZ.length - 2;
         }
 
         double interpolationFactor = position / spacingZ - positionIndex;
-
-        // To get the (0,0) point in the XY plane.
-        int midPointX = (int) (-minX / spacingX);
-        int midPointY = (int) (-minY / spacingY);
 
         double bx0 = fieldX[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);

@@ -28,6 +28,15 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class MagFieldMap2D extends FieldMap {
 
+    // Interpolation invariants resolved once at construction (constant for the
+    // loaded map) to keep them out of the getFieldAt hot path.
+    private final double[][] fieldZ;
+    private final double[][] fieldR;
+    private final double normZ;
+    private final double normR;
+    private final double spacingZ;
+    private final double spacingR;
+
     public MagFieldMap2D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[][]> fieldComponentZ = loadFile2D(path, filename + ".bsz");
         FieldComponent<double[][]> fieldComponentR = loadFile2D(path, filename + ".bsr");
@@ -41,6 +50,13 @@ public class MagFieldMap2D extends FieldMap {
             numberOfPoints = fieldComponentZ.getField().length;
         }
         this.numberOfPoints = numberOfPoints;
+
+        fieldZ = fieldComponentZ.getField();
+        fieldR = fieldComponentR.getField();
+        normZ = fieldComponentZ.getNorm();
+        normR = fieldComponentR.getNorm();
+        spacingZ = fieldComponentZ.getMax()[0] / (fieldZ.length - 1);
+        spacingR = fieldComponentR.getMax()[1] / (fieldR[0].length - 1);
 
         recalculateSliceLength();
     }
@@ -63,35 +79,17 @@ public class MagFieldMap2D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][]> fieldComponentZ = (FieldComponent<double[][]>) magneticField.get("z");
-        FieldComponent<double[][]> fieldComponentR = (FieldComponent<double[][]>) magneticField.get("r");
-
-        if (position < -1e-6 || position > fieldComponentZ.getMax()[0] + 1e-6) {
+        if (position < -1e-6 || position > length + 1e-6) {
             return null;
         }
-
-        double[][] fieldZ = fieldComponentZ.getField();
-        double[][] fieldR = fieldComponentR.getField();
-
-        double normZ = fieldComponentZ.getNorm();
-        double normR = fieldComponentR.getNorm();
-
-        int numberOfPointsZ = fieldZ.length;
-        int numberOfPointsR = fieldR[0].length;
-
-        double lengthZ = fieldComponentZ.getMax()[0];
-        double lengthR = fieldComponentR.getMax()[1];
-
-        double spacingZ = lengthZ / (numberOfPointsZ - 1);
-        double spacingR = lengthR / (numberOfPointsR - 1);
 
         // Interpolating the field at the given positon.
         int positionIndex = (int) Math.floor(position / spacingZ);
 
         if (positionIndex < 0) {
             positionIndex = 0;
-        } else if (positionIndex >= numberOfPointsZ - 1) {
-            positionIndex = numberOfPointsZ - 2;
+        } else if (positionIndex >= fieldZ.length - 1) {
+            positionIndex = fieldZ.length - 2;
         }
 
         double interpolationFactor = position / spacingZ - positionIndex;

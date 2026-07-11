@@ -29,6 +29,11 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class RfFieldMap1D extends FieldMap {
 
+    // Interpolation invariants resolved once at construction (constant for the
+    // loaded map) to keep them out of the getFieldAt hot path.
+    private final double[] fieldZ;
+    private final double spacingZ;
+
     public RfFieldMap1D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[]> fieldComponent = loadFile1D(path, filename + ".edz");
 
@@ -53,6 +58,10 @@ public class RfFieldMap1D extends FieldMap {
         }
         this.numberOfPoints = numberOfPoints;
 
+        // Cache the (normalized) field array and grid spacing for getFieldAt.
+        this.fieldZ = field;
+        this.spacingZ = length / (field.length - 1);
+
         recalculateSliceLength();
 
         setCoupled(false);
@@ -74,24 +83,19 @@ public class RfFieldMap1D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[]> fieldComponent = (FieldComponent<double[]>) electricField.get("z");
-
-        if (position < -1e-6 || position > fieldComponent.getMax()[0] + 1e-6) {
+        if (position < -1e-6 || position > length + 1e-6) {
             return null;
         }
 
-        double[] field = fieldComponent.getField();
-
-        int numberOfPointsZ = field.length;
-        double spacingZ = length / (numberOfPointsZ - 1);
+        double[] field = fieldZ;
 
         // Interpolating the field at the given positon.
         int positionIndex = (int) Math.floor(position / spacingZ);
 
         if (positionIndex < 0) {
             positionIndex = 0;
-        } else if (positionIndex >= numberOfPointsZ - 1) {
-            positionIndex = numberOfPointsZ - 2;
+        } else if (positionIndex >= field.length - 1) {
+            positionIndex = field.length - 2;
         }
 
         double ez0 = field[positionIndex] + (position - positionIndex * spacingZ)

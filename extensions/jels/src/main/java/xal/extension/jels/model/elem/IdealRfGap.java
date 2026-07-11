@@ -279,7 +279,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     }
 
     protected double computeBetaFromGamma(double gamma) {
-        return Math.sqrt(Math.pow(gamma, 2) - 1.0) / gamma;
+        return Math.sqrt(gamma * gamma - 1.0) / gamma;
     }
 
     /**
@@ -347,18 +347,22 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             double gammaAvg = (gammaEnd + gammaStart) / 2;
             double betaAvg = computeBetaFromGamma(gammaAvg);
 
+            double betaAvg2 = betaAvg * betaAvg;
+            double gammaAvg2 = gammaAvg * gammaAvg;
+            double gammaAvg3 = gammaAvg2 * gammaAvg;
+
             if (ttfFit.getCoef(0) != 0) {
                 double kToverT = -betaMiddle * ttfFit.derivativeAt(betaMiddle) / ttfFit.evaluateAt(betaMiddle);
-                deltaPhi = dblETL / mass * Math.sin(phiS) / (Math.pow(gammaAvg, 3) * Math.pow(betaAvg, 2)) * (kToverT);
-                kx = 1 - dblETL / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) + kToverT);
-                ky = 1 - dblETL / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) - kToverT);
+                deltaPhi = dblETL / mass * Math.sin(phiS) / (gammaAvg3 * betaAvg2) * (kToverT);
+                kx = 1 - dblETL / (2 * mass) * Math.cos(phiS) / (betaAvg2 * gammaAvg3) * (gammaAvg2 + kToverT);
+                ky = 1 - dblETL / (2 * mass) * Math.cos(phiS) / (betaAvg2 * gammaAvg3) * (gammaAvg2 - kToverT);
             } else {
-                kx = 1 - dblETL / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * gammaAvg);
+                kx = 1 - dblETL / (2 * mass) * Math.cos(phiS) / (betaAvg2 * gammaAvg);
                 ky = kx;
             }
 
-            kxy = -Math.PI * dblETL / mass * Math.sin(phiS) / (Math.pow(gammaAvg * betaAvg, 2) * lambda);
-            kz = 2 * Math.PI * dblETL / mass * Math.sin(phiS) / (Math.pow(betaAvg, 2) * lambda);
+            kxy = -Math.PI * dblETL / mass * Math.sin(phiS) / (gammaAvg2 * betaAvg2 * lambda);
+            kz = 2 * Math.PI * dblETL / mass * Math.sin(phiS) / (betaAvg2 * lambda);
 
             symplecticityFactor = Math.sqrt((betaStart * gammaStart) / (betaEnd * gammaEnd * kx * ky));
 
@@ -370,9 +374,11 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             matPhi.setElem(3, 2, kxy / (betaEnd * gammaEnd));
             matPhi.setElem(3, 3, ky * symplecticityFactor);
 
+            double gammaEnd3 = gammaEnd * gammaEnd * gammaEnd;
+            double gammaStart3 = gammaStart * gammaStart * gammaStart;
             matPhi.setElem(4, 4, 1);
-            matPhi.setElem(5, 4, kz / (betaEnd * Math.pow(gammaEnd, 3)));
-            matPhi.setElem(5, 5, (betaStart * Math.pow(gammaStart, 3)) / (betaEnd * Math.pow(gammaEnd, 3)));
+            matPhi.setElem(5, 4, kz / (betaEnd * gammaEnd3));
+            matPhi.setElem(5, 5, (betaStart * gammaStart3) / (betaEnd * gammaEnd3));
         }
 
         matPhi.setElem(6, 6, 1);

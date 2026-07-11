@@ -30,9 +30,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -153,10 +151,7 @@ public abstract class FieldMap {
      * @param dblLen
      * @return
      */
-    public List<Double> getFieldMapPointPositions(double start, double dblLen) {
-        // Find the field map points included in the current slice.
-        List<Double> fieldMapPointPositions = new ArrayList<>();
-
+    public double[] getFieldMapPointPositions(double start, double dblLen) {
         if (start < 0) {
             start = 0;
         }
@@ -166,15 +161,23 @@ public abstract class FieldMap {
         // slice is not included, only the very last point.
         int ie = (int) Math.floor((start + dblLen) / getSliceLength());
 
+        // If last point of the field map is not included, add it.
+        boolean addLastPoint = Math.abs(getLength() - (start + dblLen)) < 1e-6 && ie != numberOfPoints - 1;
+
+        // Find the field map points included in the current slice. A primitive
+        // array (rather than a List<Double>) avoids boxing and allocation churn
+        // on this hot path.
+        int count = (ie >= i0 ? ie - i0 + 1 : 0) + (addLastPoint ? 1 : 0);
+        double[] fieldMapPointPositions = new double[count];
+
+        int k = 0;
         if (ie >= i0) {
             for (int i = i0; i <= ie; i++) {
-                fieldMapPointPositions.add(longitudinalPositions[i]);
+                fieldMapPointPositions[k++] = longitudinalPositions[i];
             }
         }
-
-        // If last point of the field map is not included, add it.
-        if (Math.abs(getLength() - (start + dblLen)) < 1e-6 && ie != numberOfPoints - 1) {
-            fieldMapPointPositions.add(getLength());
+        if (addLastPoint) {
+            fieldMapPointPositions[k] = getLength();
         }
         return fieldMapPointPositions;
     }

@@ -28,6 +28,15 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class RfFieldMap3D extends FieldMap {
 
+    // Cached component references to keep the HashMap lookups out of the
+    // getFieldAt hot path (the map contents are fixed after construction).
+    private FieldComponent<double[][][]> eX;
+    private FieldComponent<double[][][]> eY;
+    private FieldComponent<double[][][]> eZ;
+    private FieldComponent<double[][][]> bX;
+    private FieldComponent<double[][][]> bY;
+    private FieldComponent<double[][][]> bZ;
+
     public RfFieldMap3D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[][][]> electricFieldX = loadFile3D(path, filename + ".edx");
         FieldComponent<double[][][]> electricFieldY = loadFile3D(path, filename + ".edy");
@@ -86,6 +95,13 @@ public class RfFieldMap3D extends FieldMap {
         magneticField.put("y", magneticFieldY);
         magneticField.put("z", magneticFieldZ);
 
+        eX = electricFieldX;
+        eY = electricFieldY;
+        eZ = electricFieldZ;
+        bX = magneticFieldX;
+        bY = magneticFieldY;
+        bZ = magneticFieldZ;
+
         // Compute other values.
         length = electricFieldZ.getMax()[0];
         if (numberOfPoints == 0) {
@@ -124,25 +140,15 @@ public class RfFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][][]> electricFieldX = (FieldComponent<double[][][]>) electricField.get("x");
-        FieldComponent<double[][][]> electricFieldY = (FieldComponent<double[][][]>) electricField.get("y");
-        FieldComponent<double[][][]> electricFieldZ = (FieldComponent<double[][][]>) electricField.get("z");
-
-        FieldComponent<double[][][]> magneticFieldX = (FieldComponent<double[][][]>) magneticField.get("x");
-        FieldComponent<double[][][]> magneticFieldY = (FieldComponent<double[][][]>) magneticField.get("y");
-        FieldComponent<double[][][]> magneticFieldZ = (FieldComponent<double[][][]>) magneticField.get("z");
-
-        if (position < 0.0 || position > electricFieldZ.getMax()[0] || position > magneticFieldZ.getMax()[0]) {
+        if (position < 0.0 || position > eZ.getMax()[0] || position > bZ.getMax()[0]) {
             return null;
         }
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
-        interpolateField(position, electricFieldX, electricFieldY, electricFieldZ,
-                fieldMapPoint, true);
+        interpolateField(position, eX, eY, eZ, fieldMapPoint, true);
 
-        interpolateField(position, magneticFieldX, magneticFieldY, magneticFieldZ,
-                fieldMapPoint, false);
+        interpolateField(position, bX, bY, bZ, fieldMapPoint, false);
 
         return fieldMapPoint;
     }

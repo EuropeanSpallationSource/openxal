@@ -159,15 +159,15 @@ public class ElsTracker extends EnvelopeTracker {
             double m22 = matrix.getElem(2 * i + 1, 2 * i + 1);
             det[i] = m11 * m22 - m21 * m12;
 
-            optics.setElem(3 * i + 0, 3 * i + 0, Math.pow(m11, 2));
+            optics.setElem(3 * i + 0, 3 * i + 0, m11 * m11);
             optics.setElem(3 * i + 0, 3 * i + 1, -2.0 * m11 * m12);
-            optics.setElem(3 * i + 0, 3 * i + 2, Math.pow(m12, 2));
+            optics.setElem(3 * i + 0, 3 * i + 2, m12 * m12);
             optics.setElem(3 * i + 1, 3 * i + 0, -m11 * m21);
             optics.setElem(3 * i + 1, 3 * i + 1, m11 * m22 + m12 * m21);
             optics.setElem(3 * i + 1, 3 * i + 2, -m12 * m22);
-            optics.setElem(3 * i + 2, 3 * i + 0, Math.pow(m21, 2));
+            optics.setElem(3 * i + 2, 3 * i + 0, m21 * m21);
             optics.setElem(3 * i + 2, 3 * i + 1, -2.0 * m21 * m22);
-            optics.setElem(3 * i + 2, 3 * i + 2, Math.pow(m22, 2));
+            optics.setElem(3 * i + 2, 3 * i + 2, m22 * m22);
         }
 
         optics = optics.times(1. / det[0]);
