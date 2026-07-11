@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.plugins</artifactId>
-        <version>7.2</version>
+        <version>7.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.plugins.essrbac</artifactId>
