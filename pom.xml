@@ -4,15 +4,15 @@
     
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>7.0-SNAPSHOT</version>
+    <version>7.0</version>
 
     <properties>
-        <revision>7.0-SNAPSHOT</revision>
+        <revision>7.0</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx-version>25.0.3</javafx-version>
-        <xaos-version>0.13-SNAPSHOT</xaos-version>
+        <xaos-version>0.14</xaos-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py,
