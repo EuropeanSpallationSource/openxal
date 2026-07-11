@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.services</artifactId>
-        <version>7.2-SNAPSHOT</version>
+        <version>7.2</version>
     </parent>
 
     <artifactId>openxal.services.worker</artifactId>
