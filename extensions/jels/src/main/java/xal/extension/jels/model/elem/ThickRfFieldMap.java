@@ -57,8 +57,11 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     // cache the inputs of the last computation and skip the work when they match.
     // The results live in the instance fields (deltaPhi, energyGain,
     // synchronousPhase and the *Arr arrays), which stay valid until a new key.
+    // The key only covers the probe; the setters of element parameters used in
+    // the computation (phase, amplitude, frequency, ...) call invalidateCache().
     private double cachedPosition = Double.NaN;
     private double cachedKineticEnergy = Double.NaN;
+    private double cachedRestEnergy = Double.NaN;
     private double cachedLongitudinalPhase = Double.NaN;
     private double cachedLength = Double.NaN;
     private double[] cachedFieldMapPointPositions = null;
@@ -105,6 +108,17 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     public void setCellLength(double cellLength) {
         this.cellLength = cellLength;
+        invalidateCache();
+    }
+
+    /**
+     * Discard the memoized result of {@link #computePhaseDriftAndEnergyGain}, so the next call recomputes it. Must be
+     * called whenever an element parameter used in that computation changes.
+     */
+    private void invalidateCache() {
+        cachedPosition = Double.NaN;
+        cachedFieldMapPointPositions = null;
+        cachedFieldMapPoints = null;
     }
 
     @Override
@@ -130,6 +144,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
         dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
+
+        invalidateCache();
     }
 
     /**
@@ -144,6 +160,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         // the previously computed results remain valid.
         if (probe.getPosition() == cachedPosition
                 && probe.getKineticEnergy() == cachedKineticEnergy
+                && probe.getSpeciesRestEnergy() == cachedRestEnergy
                 && probe.getLongitinalPhase() == cachedLongitudinalPhase
                 && dblLen == cachedLength) {
             return;
@@ -223,6 +240,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         // the same inputs (and transferMap) can reuse this work.
         cachedPosition = probe.getPosition();
         cachedKineticEnergy = probe.getKineticEnergy();
+        cachedRestEnergy = probe.getSpeciesRestEnergy();
         cachedLongitudinalPhase = probe.getLongitinalPhase();
         cachedLength = dblLen;
         cachedFieldMapPointPositions = fieldMapPointPositions;
@@ -318,6 +336,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public void setE0(double cavAmp) {
         dblE0 = cavAmp * dblAmpFactor;
+        invalidateCache();
     }
 
     /**
@@ -327,11 +346,13 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public void setPhase(double cavPhase) {
         dblPhase = cavPhase + dblPhaseFactor;
+        invalidateCache();
     }
 
     @Override
     public void setFrequency(double dblFreq) {
         this.dblFreq = dblFreq;
+        invalidateCache();
     }
 
     @Override
@@ -403,6 +424,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public void setLongitudinalPhaseReference(double longitudinalPhaseEntrance) {
         this.longitudinalPhaseReference = longitudinalPhaseEntrance;
+        invalidateCache();
     }
 
     @Override
