@@ -54,7 +54,7 @@ public class Epics7Monitor extends xal.ca.Monitor {
             throw new MonitorException("Connection Exception thrown", ex);
         }
 
-        monitor.nativeMonitor = channel.getNativeChannel().subscribe(request, monitor::dispatch);
+        monitor.nativeMonitor = channel.getNativeChannel().subscribe(request, intMaskEvent, monitor::dispatch);
 
         monitor.begin();
 

@@ -19,6 +19,7 @@ package xal.plugin.epics7;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pva.data.PVADouble;
@@ -109,10 +110,15 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
     public boolean connectAndWait(double timeout) {
         requestConnection();
 
-        // If not connected, wait for timeout.
-        if (!isConnected()) {
+        CountDownLatch latch;
+        synchronized (connectionLock) {
+            latch = connectionLatch;
+        }
+
+        // If not connected, wait for timeout. The latch is null if disconnect() ran in the meantime.
+        if (!isConnected() && latch != null) {
             try {
-                connectionLatch.await((long) (1000 * timeout), TimeUnit.MILLISECONDS);
+                latch.await((long) (1000 * timeout), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, null, ex);
                 Thread.currentThread().interrupt();
@@ -123,9 +129,9 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
 
     @Override
     public void requestConnection() {
-        // Only request a new connection if not done previously.
-        if (!isConnected() && connectionLatch == null) {
-            synchronized (connectionLock) {
+        synchronized (connectionLock) {
+            // Only request a new connection if not done previously.
+            if (!isConnected() && connectionLatch == null) {
                 connectionLatch = new CountDownLatch(1);
 
                 // prefix is pva:// or else the default protocol is PVA or None
@@ -374,7 +380,7 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
     public PVAStructure get(String request, boolean attemptConnection) throws GetException {
         GetListener listener = new GetListener();
 
-        getCallback(request, listener, attemptConnection);
+        getCallback(request, listener, listener::failed, attemptConnection);
 
         try {
             boolean noTimeout = listener.await((long) (1000 * dblTmIO), TimeUnit.MILLISECONDS);
@@ -387,6 +393,9 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
             throw new GetException("Get interrupted");
         }
 
+        if (listener.getFailure() != null) {
+            throw new GetException(listener.getFailure());
+        }
         return listener.getPvStructure();
     }
 
@@ -396,6 +405,11 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
 
     public void getCallback(String request, final EventListener listener, boolean attemptConnection)
             throws GetException {
+        getCallback(request, listener, Epics7Channel::logFailure, attemptConnection);
+    }
+
+    private void getCallback(String request, EventListener listener, Consumer<String> onFailure,
+            boolean attemptConnection) throws GetException {
         try {
             checkConnection("ChannelGet", attemptConnection);
         } catch (ConnectionException ex) {
@@ -403,7 +417,11 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
             throw new GetException("Connection Exception thrown.");
         }
 
-        nativeChannel.get(request, listener);
+        nativeChannel.get(request, listener, onFailure);
+    }
+
+    private static void logFailure(String message) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, message);
     }
 
     public void getCallback(String request, EventListener listener) throws GetException {
@@ -464,7 +482,7 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
                 pvStructure -> {
                     ChannelTimeRecord channelRecord = new Epics7ChannelTimeRecord(pvStructure);
                     listener.eventValue(channelRecord, this);
-                });
+                }, attemptConnection);
     }
 
     // --------- Monitor ---------
@@ -514,8 +532,9 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
     /**
      * Write a value to the channel's "value" field.
      *
-     * When no listener is supplied the call blocks until the server acknowledges the write, or until the IO timeout
-     * elapses.
+     * When no listener is supplied the call blocks until the server acknowledges the write, and throws if the write
+     * fails or the IO timeout elapses. A listener is notified when the write ends, whether or not it succeeded (as in
+     * the JCA plugin); failures are logged.
      *
      * @param newValue a boxed scalar or a Java array
      */
@@ -526,22 +545,29 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
             throw new PutException(CONNECTION_EXC, ex);
         }
 
-        // If listener == null, wait for the put to complete.
-        PutListenerImpl blocking = listener == null ? new PutListenerImpl() : null;
-        PutListener effective = listener == null ? blocking : listener;
+        if (listener != null) {
+            nativeChannel.put(newValue, () -> listener.putCompleted(this), message -> {
+                logFailure(message);
+                listener.putCompleted(this);
+            });
+            return;
+        }
 
-        nativeChannel.put(newValue, () -> effective.putCompleted(this));
+        // No listener: wait for the put to complete.
+        PutListenerImpl blocking = new PutListenerImpl();
+        nativeChannel.put(newValue, () -> blocking.putCompleted(this), blocking::failed);
 
-        if (blocking != null) {
-            try {
-                if (!blocking.await((long) (1000 * dblTmIO), TimeUnit.MILLISECONDS)) {
-                    throw new PutException("Put timeout");
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
-                Thread.currentThread().interrupt();
-                throw new PutException("Put interrupted");
+        try {
+            if (!blocking.await((long) (1000 * dblTmIO), TimeUnit.MILLISECONDS)) {
+                throw new PutException("Put timeout");
             }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
+            Thread.currentThread().interrupt();
+            throw new PutException("Put interrupted");
+        }
+        if (blocking.getFailure() != null) {
+            throw new PutException(blocking.getFailure());
         }
     }
 
@@ -645,6 +671,7 @@ public class Epics7Channel extends xal.ca.Channel implements NativeChannel.Conne
 class PutListenerImpl implements PutListener {
 
     private final CountDownLatch doneSignal;
+    private volatile String failure;
 
     public PutListenerImpl() {
         this.doneSignal = new CountDownLatch(1);
@@ -653,6 +680,18 @@ class PutListenerImpl implements PutListener {
     @Override
     public void putCompleted(xal.ca.Channel chan) {
         doneSignal.countDown();
+    }
+
+    public void failed(String message) {
+        failure = message;
+        doneSignal.countDown();
+    }
+
+    /**
+     * The error message if the put failed, or null.
+     */
+    public String getFailure() {
+        return failure;
     }
 
     public boolean await(long timeout, TimeUnit unit) throws InterruptedException {

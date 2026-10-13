@@ -31,6 +31,7 @@ class GetListener implements EventListener {
 
     private final CountDownLatch doneSignal;
     private volatile PVAStructure pvStructure;
+    private volatile String failure;
 
     public GetListener() {
         this.doneSignal = new CountDownLatch(1);
@@ -40,9 +41,21 @@ class GetListener implements EventListener {
         return pvStructure;
     }
 
+    /**
+     * The error message if the get failed, or null.
+     */
+    public String getFailure() {
+        return failure;
+    }
+
     @Override
     public void event(PVAStructure pvStructure) {
         this.pvStructure = pvStructure;
+        doneSignal.countDown();
+    }
+
+    public void failed(String message) {
+        this.failure = message;
         doneSignal.countDown();
     }
 

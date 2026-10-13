@@ -17,6 +17,10 @@
  */
 package xal.plugin.epics7;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.prefs.Preferences;
 import org.junit.After;
@@ -33,6 +37,8 @@ import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
 import xal.ca.GetException;
+import xal.ca.Monitor;
+import xal.ca.PutException;
 
 /**
  * Tests for {@link Epics7Channel} driven by {@link TestNativeChannel}.
@@ -383,5 +389,118 @@ public class Epics7ChannelTest {
         assertThrows(UnsupportedOperationException.class, channel::getWarningLimitPVs);
         assertThrows(UnsupportedOperationException.class, channel::getAlarmLimitPVs);
         assertThrows(UnsupportedOperationException.class, channel::getDriveLimitPVs);
+    }
+
+    /**
+     * A failed get reports the server's error straight away instead of waiting for the IO timeout.
+     */
+    @Test
+    public void testFailedGetThrowsImmediately() {
+        Epics7Channel channel = connect("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        active(channel).failure = "server error";
+
+        long start = System.nanoTime();
+        GetException ex = assertThrows(GetException.class, channel::getRawValueRecord);
+        assertTrue(ex.getMessage(), ex.getMessage().contains("server error"));
+        assertTrue("waited for the timeout", System.nanoTime() - start < 1_000_000_000L);
+    }
+
+    @Test
+    public void testFailedBlockingPutThrows() {
+        Epics7Channel channel = connect("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        active(channel).failure = "write denied";
+
+        PutException ex = assertThrows(PutException.class, () -> channel.putRawValCallback(1.0, null));
+        assertTrue(ex.getMessage(), ex.getMessage().contains("write denied"));
+    }
+
+    /**
+     * As in the JCA plugin, a put listener hears about the end of the put even if it failed.
+     */
+    @Test
+    public void testFailedPutStillNotifiesListener() throws Exception {
+        Epics7Channel channel = connect("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        active(channel).failure = "write denied";
+
+        AtomicInteger completed = new AtomicInteger();
+        channel.putRawValCallback(1.0, chan -> completed.incrementAndGet());
+        assertEquals(1, completed.get());
+    }
+
+    @Test
+    public void testTimeCallbackDoesNotConnectWhenNotAsked() {
+        Epics7TestChannelSystem system = Epics7TestChannelSystem.newEpics7ChannelSystem();
+        Epics7Channel channel = new Epics7Channel("Test", system);
+
+        assertThrows(GetException.class, () -> channel.getRawValueTimeCallback((record, chan) -> {
+        }, false));
+        assertEquals(0, system.created.size());
+    }
+
+    @Test
+    public void testMonitorMaskIsPassedOn() throws Exception {
+        Epics7Channel channel = connect("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+
+        channel.addMonitorValue((record, chan) -> {
+        }, Monitor.VALUE | Monitor.ALARM);
+        assertEquals(List.of(Monitor.VALUE | Monitor.ALARM), active(channel).subscribeMasks);
+    }
+
+    /**
+     * Concurrent connection requests create one native channel per protocol, not one per caller.
+     */
+    @Test
+    public void testConcurrentRequestConnection() throws InterruptedException {
+        Epics7TestChannelSystem system = Epics7TestChannelSystem.newEpics7ChannelSystem();
+        Epics7Channel channel = new Epics7Channel("Test", system);
+
+        CountDownLatch start = new CountDownLatch(1);
+        List<Thread> threads = new ArrayList<>();
+        for (int i = 0; i < 16; i++) {
+            Thread thread = new Thread(() -> {
+                try {
+                    start.await();
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                channel.requestConnection();
+            });
+            thread.start();
+            threads.add(thread);
+        }
+        start.countDown();
+        for (Thread thread : threads) {
+            thread.join();
+        }
+
+        assertEquals(2, system.created.size());
+    }
+
+    /**
+     * Disconnecting while another thread waits for the connection must not crash the waiting thread.
+     */
+    @Test
+    public void testDisconnectDuringConnectAndWait() throws InterruptedException {
+        Epics7Channel channel = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        AtomicReference<Throwable> error = new AtomicReference<>();
+
+        Thread waiter = new Thread(() -> {
+            try {
+                channel.connectAndWait(TIMEOUT);
+            } catch (Throwable t) {
+                error.set(t);
+            }
+        });
+        for (int i = 0; i < 50; i++) {
+            channel.disconnect();
+        }
+        waiter.start();
+        for (int i = 0; i < 50; i++) {
+            channel.disconnect();
+        }
+        waiter.join();
+
+        assertNull(error.get());
     }
 }
