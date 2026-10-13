@@ -55,17 +55,22 @@ public class FieldMapFilesTest {
      * then the values with x varying fastest and z slowest.
      */
     private void write3D(String name, int nx, double halfX, int ny, double halfY, Field3D field) throws IOException {
+        write3D(name, nx, -halfX, halfX, ny, -halfY, halfY, field);
+    }
+
+    private void write3D(String name, int nx, double minX, double maxX, int ny, double minY, double maxY, Field3D field)
+            throws IOException {
         StringBuilder content = new StringBuilder();
         content.append("1 1.0\n");
-        content.append(nx - 1).append(" ").append(-halfX).append(" ").append(halfX).append("\n");
-        content.append(ny - 1).append(" ").append(-halfY).append(" ").append(halfY).append("\n");
+        content.append(nx - 1).append(" ").append(minX).append(" ").append(maxX).append("\n");
+        content.append(ny - 1).append(" ").append(minY).append(" ").append(maxY).append("\n");
         content.append("1.0\n");
-        double spacingX = 2 * halfX / (nx - 1);
-        double spacingY = 2 * halfY / (ny - 1);
+        double spacingX = (maxX - minX) / (nx - 1);
+        double spacingY = (maxY - minY) / (ny - 1);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < ny; j++) {
                 for (int k = 0; k < nx; k++) {
-                    content.append(field.at(-halfX + k * spacingX, -halfY + j * spacingY)).append("\n");
+                    content.append(field.at(minX + k * spacingX, minY + j * spacingY)).append("\n");
                 }
             }
         }
@@ -93,6 +98,23 @@ public class FieldMapFilesTest {
         assertEquals(0.0, point.getBx(), TOLERANCE);
         assertEquals(0.0, point.getBy(), TOLERANCE);
         assertEquals(1.0, point.getdBydx(), 1e-9);
+        assertEquals(1.0, point.getdBxdy(), 1e-9);
+    }
+
+    /**
+     * A map that starts on the axis has no grid line on the negative side, so the transverse derivatives fall back to
+     * one-sided differences.
+     */
+    @Test
+    public void test3DMapStartingOnAxis() throws IOException {
+        write3D("half.bsx", 5, 0.0, 0.02, 5, 0.0, 0.02, (x, y) -> y);
+        write3D("half.bsy", 5, 0.0, 0.02, 5, 0.0, 0.02, (x, y) -> 3 * x);
+        write3D("half.bsz", 5, 0.0, 0.02, 5, 0.0, 0.02, (x, y) -> 0.0);
+
+        FieldMapPoint point = new MagFieldMap3D(path(), "half", 0).getFieldAt(0.5);
+
+        assertEquals(0.0, point.getBy(), TOLERANCE);
+        assertEquals(3.0, point.getdBydx(), 1e-9);
         assertEquals(1.0, point.getdBxdy(), 1e-9);
     }
 
