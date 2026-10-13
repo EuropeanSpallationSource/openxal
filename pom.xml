@@ -11,8 +11,8 @@
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx-version>25.0.4</javafx-version>
-        <xaos-version>0.15</xaos-version>
+        <javafx-version>27</javafx-version>
+        <xaos-version>0.16</xaos-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py,
