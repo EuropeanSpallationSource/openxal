@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "site.ess.**"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Build CKEditor
+        working-directory: plugins/olog/src/main/resources/ckeditor5-md
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      # The ESS repositories in .m2/settings.xml provide artifacts not on Maven Central.
+      - name: Build and test
+        run: mvn -s .m2/settings.xml --batch-mode -Dmaven.javadoc.skip=true install
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports
+          path: "**/target/surefire-reports/TEST-*.xml"
+          if-no-files-found: ignore
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v7
+        with:
+          name: openxal-dist
+          path: dist/target/*.tar.gz
