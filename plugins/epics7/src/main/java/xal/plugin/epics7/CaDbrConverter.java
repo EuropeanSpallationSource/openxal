@@ -58,12 +58,8 @@ import org.epics.pva.data.nt.PVAScalar;
 import org.epics.pva.data.nt.PVATimeStamp;
 
 /**
- * Converts Channel Access data into the {@link PVAStructure} form used throughout this plugin.
- *
- * pvAccessJava used to provide a "ca" {@code ChannelProvider} that presented Channel Access through the same API as PV
- * Access, normalising DBR values into normative-type structures. The PV Access library used by Phoebus implements PV
- * Access only, so that normalisation is done here instead: the resulting structures mimic NTScalar / NTScalarArray so
- * that {@link Epics7ChannelRecord} and its subclasses can read either protocol.
+ * Converts Channel Access data into the {@link PVAStructure} form used throughout this plugin. The resulting structures
+ * mimic NTScalar / NTScalarArray, so that {@link Epics7ChannelRecord} and its subclasses can read either protocol.
  *
  * Which optional fields are present depends on what the requested DBR type carries:
  * <ul>

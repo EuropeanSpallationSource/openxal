@@ -29,11 +29,7 @@ import xal.plugin.epics7.Epics7ChannelSystem;
 
 /**
  * Serves channels over both EPICS protocols: PV Access through {@link PVAServer} and Channel Access through the CAJ
- * channel access server.
- *
- * The previous implementation served PV Access from a pvDatabase {@code PVRecord} registry. The PV Access library used
- * by Phoebus has no pvDatabase, so PVs are registered directly with the server as {@code ServerPV}s, each owned by an
- * {@link Epics7ServerChannel}.
+ * channel access server. Each {@link Epics7ServerChannel} registers its own PVs with both servers.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */

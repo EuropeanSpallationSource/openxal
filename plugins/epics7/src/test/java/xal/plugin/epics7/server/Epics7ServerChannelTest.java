@@ -24,9 +24,11 @@ import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelTimeRecord;
+import xal.ca.GetException;
 
 /**
  * Tests for {@link Epics7ServerChannel}, which holds its value in memory and serves it over both protocols. The tests
@@ -178,5 +180,37 @@ public class Epics7ServerChannelTest {
         assertEquals(6.0, channel.rawUpperAlarmLimit().doubleValue(), 0.0);
         assertEquals(-4.0, channel.rawLowerWarningLimit().doubleValue(), 0.0);
         assertEquals(4.0, channel.rawUpperWarningLimit().doubleValue(), 0.0);
+    }
+
+    /**
+     * Writing a value of another type recreates the record, keeping units and limits.
+     */
+    @Test
+    public void testTypeChangeKeepsMetadata() throws Exception {
+        Epics7ServerChannel channel = channel("SrvMetaType");
+        channel.setUnits("mm");
+        channel.setUpperDispLimit(10.0);
+        channel.setLowerAlarmLimit(-5.0);
+        channel.setUpperCtrlLimit(8.0);
+
+        channel.putRawValCallback(3, null);
+
+        assertEquals(int.class, channel.elementType());
+        assertEquals("mm", channel.getUnits());
+        assertEquals(10.0, channel.rawUpperDisplayLimit().doubleValue(), 0.0);
+        assertEquals(-5.0, channel.rawLowerAlarmLimit().doubleValue(), 0.0);
+        assertEquals(8.0, channel.rawUpperControlLimit().doubleValue(), 0.0);
+    }
+
+    @Test
+    public void testDisconnectedChannel() {
+        Epics7ServerChannel channel = channel("SrvDisconnected");
+        channel.disconnect();
+
+        assertThrows(GetException.class, channel::getRawValueRecord);
+        assertThrows(GetException.class, channel::getRawTimeRecord);
+        // Setting metadata on a disconnected channel is ignored rather than failing.
+        channel.setUnits("mm");
+        channel.setUpperDispLimit(1.0);
     }
 }

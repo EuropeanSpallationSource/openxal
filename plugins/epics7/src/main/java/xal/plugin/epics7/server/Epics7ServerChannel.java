@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pva.data.PVAArray;
@@ -75,12 +76,10 @@ import xal.plugin.epics7.Epics7ChannelTimeRecord;
 
 /**
  * Server channel implementation. It serves the same value over PV Access and Channel Access, independently of the
- * signal prefix. This is done to ensure backwards compatibility.
+ * signal prefix, for backwards compatibility.
  *
  * The channel owns the record: a {@link PVAStructure} held in memory. Writes arriving from either protocol, and local
- * puts, all funnel through {@link #updateValue}, which mirrors the new value to the other protocol and notifies
- * monitors. The previous implementation kept a pvDatabase record and a Channel Access process variable in sync with a
- * monitor on each; the PV Access library used by Phoebus offers a write callback instead, so no monitor is needed.
+ * puts, all go through {@link #updateRecord}, which mirrors the new value to the other protocol and notifies monitors.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -97,10 +96,6 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private final Epics7ServerChannelSystem epics7ServerChannelSystem;
 
     private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannel.class.getName());
-
-    private static final String DISPLAY_FIELD_ERR = "Couldn't find \"display\" field.";
-    private static final String VALUE_ALARM_FIELD_ERR = "Couldn't find \"valueAlarm\" field.";
-    private static final String CONTROL_FIELD_ERR = "Couldn't find \"control\" field.";
 
     private final List<Epics7ServerMonitor> monitors = new CopyOnWriteArrayList<>();
 
@@ -234,21 +229,93 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     /**
-     * Replace both process variables with ones of the given type, preserving nothing. Must hold {@link #updateLock}.
+     * Replace both process variables with ones of the given type. The value is reset; units and limits are kept. Must
+     * hold {@link #updateLock}.
      */
     private void createPVs(DBRType dbrType, PVAData valueField) {
+        PVAStructure oldRecord = record;
+        Consumer<MemoryProcessVariable> caMetadata = caMetadataOf(memoryProcessVariable);
+
         removeCAPV();
         removePvaPV();
 
-        // TODO: copy metadata from the old record to the new one.
         record = newRecord(valueField);
+        if (oldRecord != null) {
+            copyMetadata(oldRecord, record);
+        }
 
         memoryProcessVariable = new MemoryProcessVariable(strId, null, dbrType, initialCaValue(dbrType));
+        caMetadata.accept(memoryProcessVariable);
         epics7ServerChannelSystem.addMemPV(memoryProcessVariable);
         ((ProcessVariableEventDispatcher) memoryProcessVariable.getEventCallback()).registerEventListener(this);
 
         // Passing a write handler is what makes the PV writable.
         serverPV = epics7ServerChannelSystem.getPvaServer().createPV(strId, record, this::handlePvaWrite);
+    }
+
+    /**
+     * Copy the display, control and valueAlarm structures present in both records.
+     */
+    private static void copyMetadata(PVAStructure from, PVAStructure to) {
+        for (String field : new String[]{DISPLAY_FIELD, CONTROL_FIELD, VALUE_ALARM_FIELD}) {
+            PVAStructure source = from.get(field);
+            PVAStructure target = to.get(field);
+            if (source != null && target != null) {
+                try {
+                    target.setValue(source);
+                } catch (Exception ex) {
+                    LOGGER.log(Level.WARNING, "Could not copy " + field + " of " + from.getName(), ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Read the units and limits of a Channel Access process variable now, to apply them to another one later.
+     */
+    private static Consumer<MemoryProcessVariable> caMetadataOf(MemoryProcessVariable from) {
+        if (from == null) {
+            return pv -> {
+            };
+        }
+        String units = from.getUnits();
+        Number lowerDisp = from.getLowerDispLimit();
+        Number upperDisp = from.getUpperDispLimit();
+        Number lowerAlarm = from.getLowerAlarmLimit();
+        Number upperAlarm = from.getUpperAlarmLimit();
+        Number lowerWarning = from.getLowerWarningLimit();
+        Number upperWarning = from.getUpperWarningLimit();
+        Number lowerCtrl = from.getLowerCtrlLimit();
+        Number upperCtrl = from.getUpperCtrlLimit();
+        return pv -> {
+            if (units != null) {
+                pv.setUnits(units);
+            }
+            if (lowerDisp != null) {
+                pv.setLowerDispLimit(lowerDisp);
+            }
+            if (upperDisp != null) {
+                pv.setUpperDispLimit(upperDisp);
+            }
+            if (lowerAlarm != null) {
+                pv.setLowerAlarmLimit(lowerAlarm);
+            }
+            if (upperAlarm != null) {
+                pv.setUpperAlarmLimit(upperAlarm);
+            }
+            if (lowerWarning != null) {
+                pv.setLowerWarningLimit(lowerWarning);
+            }
+            if (upperWarning != null) {
+                pv.setUpperWarningLimit(upperWarning);
+            }
+            if (lowerCtrl != null) {
+                pv.setLowerCtrlLimit(lowerCtrl);
+            }
+            if (upperCtrl != null) {
+                pv.setUpperCtrlLimit(upperCtrl);
+            }
+        };
     }
 
     private void removeCAPV() {
@@ -423,9 +490,12 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     /**
      * A snapshot of the record, so that callers are not exposed to later updates.
      */
-    private PVAStructure snapshot() {
+    private PVAStructure snapshot() throws GetException {
         updateLock.lock();
         try {
+            if (record == null) {
+                throw new GetException("Channel " + strId + " is disconnected.");
+            }
             return record.cloneData();
         } finally {
             updateLock.unlock();
@@ -613,103 +683,91 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     // ---------------- Metadata ----------------
-    private void setDisplayField(String name, Number value, String error) {
-        PVAStructure displayStructure = getDisplay();
-        if (displayStructure != null) {
-            PVADouble field = displayStructure.get(name);
-            if (field != null) {
-                field.set(value.doubleValue());
-                return;
-            }
-        }
-        LOGGER.severe(error);
-    }
+    /**
+     * Set a metadata field of the record and of the Channel Access process variable, then publish the record to PV
+     * Access clients. Local monitors are not notified, since the value did not change.
+     *
+     * @param structure the metadata structure, e.g. "display"
+     * @param field the field in that structure, e.g. "limitLow"
+     * @param caSetter applies the same change to the Channel Access process variable
+     */
+    private void setMetadata(String structure, String field, Object value, Consumer<MemoryProcessVariable> caSetter) {
+        PVAStructure snapshot = null;
 
-    private void setValueAlarmField(String name, Number value) {
-        PVAStructure alarmValueStructure = getVAlueAlarm();
-        if (alarmValueStructure != null) {
-            PVADouble field = alarmValueStructure.get(name);
-            if (field != null) {
-                field.set(value.doubleValue());
+        updateLock.lock();
+        try {
+            if (record == null) {
+                LOGGER.warning(() -> "Cannot set " + structure + "." + field + " of disconnected channel " + strId);
                 return;
             }
+            PVAStructure metadata = record.get(structure);
+            PVAData target = metadata == null ? null : metadata.get(field);
+            if (target == null) {
+                LOGGER.severe(() -> "Couldn't find \"" + structure + "." + field + "\" field of " + strId);
+            } else {
+                target.setValue(value);
+                snapshot = record.cloneData();
+            }
+            // Setting metadata does not call back into postEvent, so this is safe under the lock.
+            caSetter.accept(memoryProcessVariable);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Could not set " + structure + "." + field + " of " + strId, ex);
+        } finally {
+            updateLock.unlock();
         }
-        LOGGER.severe(VALUE_ALARM_FIELD_ERR);
-    }
 
-    private void setControlField(String name, Number value) {
-        PVAStructure controlStructure = getControl();
-        if (controlStructure != null) {
-            PVADouble field = controlStructure.get(name);
-            if (field != null) {
-                field.set(value.doubleValue());
-                return;
+        if (snapshot != null && serverPV != null) {
+            try {
+                serverPV.update(snapshot);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Could not update PV Access value of " + strId, ex);
             }
         }
-        LOGGER.severe(CONTROL_FIELD_ERR);
     }
 
     @Override
     public void setUnits(String units) {
-        PVAStructure displayStructure = getDisplay();
-        if (displayStructure != null) {
-            PVAString field = displayStructure.get("units");
-            if (field != null) {
-                field.set(units);
-            }
-        } else {
-            LOGGER.severe(DISPLAY_FIELD_ERR);
-        }
-
-        memoryProcessVariable.setUnits(units);
+        setMetadata(DISPLAY_FIELD, "units", units, pv -> pv.setUnits(units));
     }
 
     @Override
     public void setLowerDispLimit(Number lowerLimit) {
-        setDisplayField("limitLow", lowerLimit, DISPLAY_FIELD_ERR);
-        memoryProcessVariable.setLowerDispLimit(lowerLimit);
+        setMetadata(DISPLAY_FIELD, "limitLow", lowerLimit, pv -> pv.setLowerDispLimit(lowerLimit));
     }
 
     @Override
     public void setUpperDispLimit(Number upperLimit) {
-        setDisplayField("limitHigh", upperLimit, DISPLAY_FIELD_ERR);
-        memoryProcessVariable.setUpperDispLimit(upperLimit);
+        setMetadata(DISPLAY_FIELD, "limitHigh", upperLimit, pv -> pv.setUpperDispLimit(upperLimit));
     }
 
     @Override
     public void setLowerAlarmLimit(Number lowerLimit) {
-        setValueAlarmField("lowAlarmLimit", lowerLimit);
-        memoryProcessVariable.setLowerAlarmLimit(lowerLimit);
+        setMetadata(VALUE_ALARM_FIELD, "lowAlarmLimit", lowerLimit, pv -> pv.setLowerAlarmLimit(lowerLimit));
     }
 
     @Override
     public void setUpperAlarmLimit(Number upperLimit) {
-        setValueAlarmField("highAlarmLimit", upperLimit);
-        memoryProcessVariable.setUpperAlarmLimit(upperLimit);
+        setMetadata(VALUE_ALARM_FIELD, "highAlarmLimit", upperLimit, pv -> pv.setUpperAlarmLimit(upperLimit));
     }
 
     @Override
     public void setLowerWarningLimit(Number lowerLimit) {
-        setValueAlarmField("lowWarningLimit", lowerLimit);
-        memoryProcessVariable.setLowerWarningLimit(lowerLimit);
+        setMetadata(VALUE_ALARM_FIELD, "lowWarningLimit", lowerLimit, pv -> pv.setLowerWarningLimit(lowerLimit));
     }
 
     @Override
     public void setUpperWarningLimit(Number upperLimit) {
-        setValueAlarmField("highWarningLimit", upperLimit);
-        memoryProcessVariable.setUpperWarningLimit(upperLimit);
+        setMetadata(VALUE_ALARM_FIELD, "highWarningLimit", upperLimit, pv -> pv.setUpperWarningLimit(upperLimit));
     }
 
     @Override
     public void setLowerCtrlLimit(Number lowerLimit) {
-        setControlField("limitLow", lowerLimit);
-        memoryProcessVariable.setLowerCtrlLimit(lowerLimit);
+        setMetadata(CONTROL_FIELD, "limitLow", lowerLimit, pv -> pv.setLowerCtrlLimit(lowerLimit));
     }
 
     @Override
     public void setUpperCtrlLimit(Number upperLimit) {
-        setControlField("limitHigh", upperLimit);
-        memoryProcessVariable.setUpperCtrlLimit(upperLimit);
+        setMetadata(CONTROL_FIELD, "limitHigh", upperLimit, pv -> pv.setUpperCtrlLimit(upperLimit));
     }
 
     @Override

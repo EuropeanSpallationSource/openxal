@@ -96,8 +96,7 @@ public class Epics7ChannelSystem implements ChannelSystem {
     }
 
     protected void initialize() {
-        // Must run before any core-pva class is loaded: PVASettings reads the
-        // system properties we set here from a static initialiser.
+        // Before creating the CA context and the PVA client, which read this configuration.
         loadConfig(false);
 
         try {
