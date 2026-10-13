@@ -97,6 +97,10 @@ public class ThickMagFieldMap extends ThickElectromagnet {
             dz = sliceLength;
 
             FieldMapPoint fieldMapPoint = magFieldmap.getFieldAt(fieldMapPointPositions[i]);
+            if (fieldMapPoint == null) {
+                // Outside the field map: drift only.
+                continue;
+            }
 
             fieldMapPoint.setAmplitudeFactorB(getMagField());
 

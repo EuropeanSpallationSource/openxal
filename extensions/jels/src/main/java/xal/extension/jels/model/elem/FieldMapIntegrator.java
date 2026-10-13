@@ -35,15 +35,13 @@ public class FieldMapIntegrator extends PhaseMatrix {
     private boolean firstOrder = false;
     private Operations operations = new CoupledOperations();
 
-    // Reusable scratch buffers for the RK4 integrator, so timesKick does not
-    // allocate (or clone) a matrix per field map point.
+    // Scratch buffers reused by rk4Integrator to avoid allocating per point.
     private final double[] rkK2 = new double[NDIM * NDIM];
     private final double[] rkK3 = new double[NDIM * NDIM];
     private final double[] rkK4 = new double[NDIM * NDIM];
     private final double[] rkTmp = new double[NDIM * NDIM];
 
-    // Spare accumulator buffer, ping-ponged with the transfer matrix backing
-    // array in timesKick so the per-point product does not allocate.
+    // Spare buffer swapped with the transfer matrix array in timesKick.
     private double[] accBuf = new double[NDIM * NDIM];
 
     public void setCoupled(boolean coupled) {
@@ -178,9 +176,8 @@ public class FieldMapIntegrator extends PhaseMatrix {
      * Cayley-Hamilton theorem every power of a 2x2 matrix {@code B} is a linear
      * combination of {@code I} and {@code B}, so {@code M_block = alpha*I +
      * beta*B} where the scalar coefficients depend only on the trace and
-     * determinant of {@code B}. This replaces the per-point 7x7 matrix RK4 dance
-     * with a few scalar operations, and is analytically identical to
-     * {@link #rk4Integrator} (differing only by floating-point rounding order).
+     * determinant of {@code B}. The result equals {@link #rk4Integrator} up to
+     * floating-point rounding.
      *
      * @param m generator {@code F} in place; overwritten with the transfer matrix
      * @param length integration length
@@ -221,10 +218,7 @@ public class FieldMapIntegrator extends PhaseMatrix {
      * @param length
      */
     private void rk4Integrator(double[] infTransferMatrixArray, double length) {
-        // k1 aliases the input and becomes A = F*L. The RK4 stages are built in
-        // the reusable rkK2/rkK3/rkK4 buffers (with rkTmp as scratch), avoiding
-        // the per-point clones and result allocations. The operation order is
-        // identical to the previous allocating implementation.
+        // k1 aliases the input and becomes A = F*L; rkTmp is scratch.
         double[] k1 = infTransferMatrixArray;
         operations.matrixDoubleMultiplication(k1, length);
 
@@ -248,9 +242,18 @@ public class FieldMapIntegrator extends PhaseMatrix {
         operations.matrixDoubleMultiplication(rkK4, 1 / 6.);
 
         operations.addIdentityInPlace(infTransferMatrixArray);
-        operations.matrixSum(infTransferMatrixArray, rkK2);
-        operations.matrixSum(infTransferMatrixArray, rkK3);
-        operations.matrixSum(infTransferMatrixArray, rkK4);
+        matrixSum(infTransferMatrixArray, rkK2);
+        matrixSum(infTransferMatrixArray, rkK3);
+        matrixSum(infTransferMatrixArray, rkK4);
+    }
+
+    /**
+     * Add the second matrix to the first one in place.
+     */
+    private static void matrixSum(double[] matrix1, double[] matrix2) {
+        for (int i = 0; i < NDIM * NDIM; i++) {
+            matrix1[i] += matrix2[i];
+        }
     }
 
     /**
@@ -277,26 +280,6 @@ public class FieldMapIntegrator extends PhaseMatrix {
          * @param out destination for the product
          */
         abstract void matrixMultiplication(double[] matrix1, double[] matrix2, double[] out);
-
-        /**
-         * Multiply two matrices and return the product in a new array.
-         *
-         * @param matrix1
-         * @param matrix2
-         */
-        public double[] matrixMultiplication(double[] matrix1, double[] matrix2) {
-            double[] out = new double[NDIM * NDIM];
-            matrixMultiplication(matrix1, matrix2, out);
-            return out;
-        }
-
-        /**
-         * Sum two matrices and return the result in the first matrix.
-         *
-         * @param matrix1
-         * @param matrix2
-         */
-        abstract void matrixSum(double[] matrix1, double[] matrix2);
 
         /**
          * Apply a drift transfer matrix to the matrix from the left.
@@ -351,15 +334,6 @@ public class FieldMapIntegrator extends PhaseMatrix {
                 }
             }
         }
-
-        @Override
-        public void matrixSum(double[] matrix1, double[] matrix2) {
-            for (int i = 0; i < NDIM; i++) {
-                for (int j = 0; j < NDIM; j++) {
-                    matrix1[i * NDIM + j] += matrix2[i * NDIM + j];
-                }
-            }
-        }
     }
 
     /**
@@ -369,9 +343,9 @@ public class FieldMapIntegrator extends PhaseMatrix {
 
         @Override
         public void matrixMultiplication(double[] matrix1, double[] matrix2, double[] out) {
-            // Only the three 2x2 plane blocks are written; off-block elements of
-            // out are left untouched (they are zero in the RK4 scratch buffers,
-            // which are only ever written here).
+            // Only the 2x2 plane blocks are written. The off-block elements of
+            // out are not cleared; they stay zero because both buffers swapped
+            // in timesKick start block diagonal.
             for (int planes = 0; planes < 3; planes++) {
                 for (int i = 0; i < 2; i++) {
                     for (int j = 0; j < 2; j++) {
@@ -404,24 +378,6 @@ public class FieldMapIntegrator extends PhaseMatrix {
                     matrix[i * NDIM + j + i] += length * matrix[(i + 1) * NDIM + j + i];
                 }
             }
-        }
-
-        @Override
-        public void matrixSum(double[] matrix1, double[] matrix2) {
-            // For uncoupled maps only the three 2x2 plane blocks (and the
-            // homogeneous [6][6] element) are ever non-zero, so summing the rest
-            // is wasted work. Restricting the loop to those elements is
-            // bit-identical (the skipped entries are always 0 + 0) and removes
-            // the dominant cost of the RK4 integrator.
-            for (int planes = 0; planes < 3; planes++) {
-                for (int i = 0; i < 2; i++) {
-                    for (int j = 0; j < 2; j++) {
-                        int idx = (i + 2 * planes) * NDIM + (j + 2 * planes);
-                        matrix1[idx] += matrix2[idx];
-                    }
-                }
-            }
-            matrix1[NDIM * NDIM - 1] += matrix2[NDIM * NDIM - 1];
         }
     }
 }

@@ -50,15 +50,11 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     private double[] energyGainArr = null;
     private double[] sinIntegralArr = null;
 
-    // Memoization of computePhaseDriftAndEnergyGain. Within a single propagation
-    // step the core tracker calls this method several times (through transferMap,
-    // longitudinalPhaseAdvance and elapsedTime) with an identical probe state and
-    // slice length, so the full field-map loop is recomputed ~3x for nothing. We
-    // cache the inputs of the last computation and skip the work when they match.
-    // The results live in the instance fields (deltaPhi, energyGain,
-    // synchronousPhase and the *Arr arrays), which stay valid until a new key.
-    // The key only covers the probe; the setters of element parameters used in
-    // the computation (phase, amplitude, frequency, ...) call invalidateCache().
+    // Key of the last computePhaseDriftAndEnergyGain call. The tracker calls it
+    // several times per step with the same probe state (through transferMap,
+    // longitudinalPhaseAdvance and elapsedTime), so repeated calls reuse the
+    // results kept in the fields above. The key only covers the probe; setters
+    // of the element parameters used in the computation call invalidateCache().
     private double cachedPosition = Double.NaN;
     private double cachedKineticEnergy = Double.NaN;
     private double cachedRestEnergy = Double.NaN;
@@ -155,9 +151,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
      * @throws xal.model.ModelException
      */
     public void computePhaseDriftAndEnergyGain(IProbe probe, double dblLen) {
-        // Skip the recomputation if the inputs are unchanged since the last call
-        // (see cache fields above). startPosition is constant for the element, so
-        // the previously computed results remain valid.
+        // Same inputs as the last call: the results are still valid.
         if (probe.getPosition() == cachedPosition
                 && probe.getKineticEnergy() == cachedKineticEnergy
                 && probe.getSpeciesRestEnergy() == cachedRestEnergy
@@ -186,8 +180,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         energyGainArr = new double[numberOfPoints + 1];
         sinIntegralArr = new double[numberOfPoints + 1];
 
-        // Interpolated field map points are cached so transferMap can reuse them
-        // for the same slice instead of interpolating the field a second time.
+        // Kept so that transferMap does not interpolate the field again.
         FieldMapPoint[] fieldMapPoints = new FieldMapPoint[numberOfPoints];
 
         deltaPhiArr[0] = 0;
@@ -236,8 +229,6 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         energyGain = energyGainArr[numberOfPoints];
         synchronousPhase = Math.atan2(sinIntegralArr[numberOfPoints], energyGainArr[numberOfPoints]);
 
-        // Store the cache key and the point positions so a subsequent call with
-        // the same inputs (and transferMap) can reuse this work.
         cachedPosition = probe.getPosition();
         cachedKineticEnergy = probe.getKineticEnergy();
         cachedRestEnergy = probe.getSpeciesRestEnergy();
@@ -259,8 +250,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         double initialPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
-        // Reuse the field map points computed (and cached) by
-        // computePhaseDriftAndEnergyGain above for the same slice.
+        // Reuse the points found by computePhaseDriftAndEnergyGain.
         double[] fieldMapPointPositions = cachedFieldMapPointPositions;
 
         int numberOfPoints = fieldMapPointPositions.length;
@@ -284,10 +274,13 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
                 dz /= 2.;
             }
 
-            // Reuse the field map point interpolated (and cached) by
-            // computePhaseDriftAndEnergyGain above; only the amplitude factors
-            // differ between the two passes.
+            // Only the amplitude factors differ from the first pass.
             FieldMapPoint fieldMapPoint = cachedFieldMapPoints[i];
+            if (fieldMapPoint == null) {
+                // Outside the field map: drift only.
+                dz = getCellLength();
+                continue;
+            }
 
             fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(initialPhase + deltaPhiArr[i + 1]));
             fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LIGHT_SPEED * LIGHT_SPEED) * getE0() * Math.sin(initialPhase + deltaPhiArr[i + 1]));

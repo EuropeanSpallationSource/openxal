@@ -20,7 +20,7 @@ import xal.smf.proxy.RfCavityPropertyAccessor;
  * computed for the old settings.
  *
  * Without space charge the tracker propagates each element in a single step, so a new run starts with exactly the
- * probe state the cache was last filled with; that is the case that used to return stale results.
+ * probe state the cache was last filled with.
  */
 public class ThickRfFieldMapCacheTest {
 
