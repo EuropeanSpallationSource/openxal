@@ -208,10 +208,10 @@ public abstract class FieldMap {
     }
 
     /**
-     * Interpolates a 3D field component on the axis. The value and the
-     * transverse derivatives are linearly interpolated along z; the transverse
-     * derivatives are forward differences from the axis and the longitudinal
-     * derivative is the difference between the enclosing grid planes.
+     * Interpolates a 3D field component on the axis. The value and its
+     * derivatives are computed on the enclosing grid planes and linearly
+     * interpolated along z. Derivatives are central differences, or one-sided
+     * at the edges of the grid (e.g. maps that start on the axis).
      */
     protected static final class AxisInterpolator3D {
 
@@ -248,6 +248,38 @@ public abstract class FieldMap {
             return field[i][axisY][axisX];
         }
 
+        /**
+         * Difference along x around the axis on a grid plane, per grid step.
+         */
+        private double derivativeX(double[][] plane) {
+            double[] row = plane[axisY];
+            int lo = Math.max(axisX - 1, 0);
+            int hi = Math.min(axisX + 1, row.length - 1);
+            return (row[hi] - row[lo]) / (hi - lo);
+        }
+
+        /**
+         * Difference along y around the axis on a grid plane, per grid step.
+         */
+        private double derivativeY(double[][] plane) {
+            int lo = Math.max(axisY - 1, 0);
+            int hi = Math.min(axisY + 1, plane.length - 1);
+            return (plane[hi][axisX] - plane[lo][axisX]) / (hi - lo);
+        }
+
+        /**
+         * Difference along z on the axis at grid plane i, per grid step.
+         */
+        private double nodeDerivativeZ(int i) {
+            if (i == 0) {
+                return field[1][axisY][axisX] - field[0][axisY][axisX];
+            }
+            if (i == field.length - 1) {
+                return field[i][axisY][axisX] - field[i - 1][axisY][axisX];
+            }
+            return (field[i + 1][axisY][axisX] - field[i - 1][axisY][axisX]) / 2;
+        }
+
         public AxisSample interpolate(double position) {
             int i = (int) Math.floor(position / spacingZ);
             if (i < 0) {
@@ -264,15 +296,15 @@ public abstract class FieldMap {
             double f1 = plane1[axisY][axisX];
             double value = f0 + t * (f1 - f0);
 
-            double dx0 = plane0[axisY][axisX + 1] - f0;
-            double dx1 = plane1[axisY][axisX + 1] - f1;
+            double dx0 = derivativeX(plane0);
+            double dx1 = derivativeX(plane1);
             double ddx = dx0 + t * (dx1 - dx0);
 
-            double dy0 = plane0[axisY + 1][axisX] - f0;
-            double dy1 = plane1[axisY + 1][axisX] - f1;
+            double dy0 = derivativeY(plane0);
+            double dy1 = derivativeY(plane1);
             double ddy = dy0 + t * (dy1 - dy0);
 
-            double ddz = f1 - f0;
+            double ddz = nodeDerivativeZ(i) + t * (nodeDerivativeZ(i + 1) - nodeDerivativeZ(i));
 
             return new AxisSample(value / norm, ddx / (spacingX * norm), ddy / (spacingY * norm),
                     ddz / (spacingZ * norm));

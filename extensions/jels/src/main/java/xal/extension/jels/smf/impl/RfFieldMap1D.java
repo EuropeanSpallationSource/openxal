@@ -97,17 +97,10 @@ public class RfFieldMap1D extends FieldMap {
             positionIndex = field.length - 2;
         }
 
-        double ez0 = field[positionIndex] + (position - positionIndex * spacingZ)
-                * (field[positionIndex + 1] - field[positionIndex]) / spacingZ;
-        double dEzds;
-        positionIndex = (int) Math.round(position / spacingZ);
-        if (positionIndex <= 0) {
-            dEzds = (field[1] - field[0]) / spacingZ;
-        } else if (positionIndex >= field.length - 1) {
-            dEzds = (field[field.length - 1] - field[field.length - 2]) / spacingZ;
-        } else {
-            dEzds = (field[positionIndex + 1] - field[positionIndex - 1]) / (2.0 * spacingZ);
-        }
+        double t = position / spacingZ - positionIndex;
+        double ez0 = field[positionIndex] + t * (field[positionIndex + 1] - field[positionIndex]);
+        double dEzds = nodeDerivative(positionIndex)
+                + t * (nodeDerivative(positionIndex + 1) - nodeDerivative(positionIndex));
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
@@ -119,5 +112,19 @@ public class RfFieldMap1D extends FieldMap {
         fieldMapPoint.setdBydx(-0.5 * ez0);
 
         return fieldMapPoint;
+    }
+
+    /**
+     * Derivative of the field at grid point i: central difference inside the
+     * map, one-sided at its ends.
+     */
+    private double nodeDerivative(int i) {
+        if (i == 0) {
+            return (fieldZ[1] - fieldZ[0]) / spacingZ;
+        }
+        if (i == fieldZ.length - 1) {
+            return (fieldZ[i] - fieldZ[i - 1]) / spacingZ;
+        }
+        return (fieldZ[i + 1] - fieldZ[i - 1]) / (2.0 * spacingZ);
     }
 }
