@@ -17,6 +17,7 @@
  */
 package xal.plugin.epics7;
 
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pva.client.ClientChannelState;
@@ -103,7 +104,7 @@ public class PvaNativeChannel implements NativeChannel {
     }
 
     @Override
-    public void get(String request, EventListener listener) throws GetException {
+    public void get(String request, EventListener listener, Consumer<String> onFailure) throws GetException {
         PVAChannel current;
         try {
             current = connectedChannel("get");
@@ -113,7 +114,7 @@ public class PvaNativeChannel implements NativeChannel {
 
         current.read(request).whenComplete((data, error) -> {
             if (error != null) {
-                LOGGER.log(Level.SEVERE, "Get failed for " + channelName, error);
+                onFailure.accept("Get failed for " + channelName + ": " + error.getMessage());
                 return;
             }
             try {
@@ -125,7 +126,7 @@ public class PvaNativeChannel implements NativeChannel {
     }
 
     @Override
-    public void put(Object newValue, Runnable onComplete) throws PutException {
+    public void put(Object newValue, Runnable onComplete, Consumer<String> onFailure) throws PutException {
         PVAChannel current;
         try {
             current = connectedChannel("put");
@@ -136,7 +137,7 @@ public class PvaNativeChannel implements NativeChannel {
         try {
             current.write(false, Epics7Channel.VALUE_REQUEST, newValue).whenComplete((ignored, error) -> {
                 if (error != null) {
-                    LOGGER.log(Level.SEVERE, "Put failed for " + channelName, error);
+                    onFailure.accept("Put failed for " + channelName + ": " + error.getMessage());
                     return;
                 }
                 if (onComplete != null) {
@@ -149,7 +150,7 @@ public class PvaNativeChannel implements NativeChannel {
     }
 
     @Override
-    public NativeMonitor subscribe(String request, EventListener listener) throws MonitorException {
+    public NativeMonitor subscribe(String request, int mask, EventListener listener) throws MonitorException {
         PVAChannel current;
         try {
             current = connectedChannel("subscribe");

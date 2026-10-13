@@ -17,17 +17,14 @@
  */
 package xal.plugin.epics7;
 
+import java.util.function.Consumer;
 import org.epics.pva.data.PVAStructure;
 import xal.ca.GetException;
 import xal.ca.MonitorException;
 import xal.ca.PutException;
 
 /**
- * Protocol-agnostic view of a single native channel.
- *
- * The previous implementation relied on pvAccessJava's {@code ChannelProvider}, which exposed Channel Access and PV
- * Access through one common {@code Channel} interface. The PV Access library used by Phoebus ({@code org.epics.pva})
- * implements PV Access only, so that common view no longer exists and is reconstructed here.
+ * Protocol-agnostic view of a single native channel, implemented for PV Access and Channel Access.
  *
  * Both implementations deliver data as a {@link PVAStructure} shaped like a normative type, so that
  * {@link Epics7ChannelRecord} and its subclasses work unchanged for either protocol.
@@ -67,20 +64,25 @@ public interface NativeChannel {
      * Read the requested fields once and deliver them to the listener.
      *
      * @param request comma separated field names, e.g. "value,alarm"
+     * @param onFailure called with an error message instead of the listener if the read fails
      */
-    void get(String request, EventListener listener) throws GetException;
+    void get(String request, EventListener listener, Consumer<String> onFailure) throws GetException;
 
     /**
      * Write a new value to the "value" field.
      *
      * @param newValue a boxed scalar or a Java array
+     * @param onComplete called once the server has accepted the write
+     * @param onFailure called with an error message instead of onComplete if the write fails
      */
-    void put(Object newValue, Runnable onComplete) throws PutException;
+    void put(Object newValue, Runnable onComplete, Consumer<String> onFailure) throws PutException;
 
     /**
      * Subscribe to the requested fields.
      *
-     * The structure handed to the listener is owned by the caller and safe to retain.
+     * The structure handed to the listener is owned by the listener and safe to retain.
+     *
+     * @param mask the {@link xal.ca.Monitor} event mask; protocols without event masks ignore it
      */
-    NativeMonitor subscribe(String request, EventListener listener) throws MonitorException;
+    NativeMonitor subscribe(String request, int mask, EventListener listener) throws MonitorException;
 }

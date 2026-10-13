@@ -19,7 +19,9 @@ package xal.plugin.epics7;
 
 import gov.aps.jca.CAException;
 import gov.aps.jca.Context;
+import gov.aps.jca.CAStatus;
 import gov.aps.jca.dbr.DBRType;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.ca.GetException;
@@ -27,11 +29,9 @@ import xal.ca.MonitorException;
 import xal.ca.PutException;
 
 /**
- * {@link NativeChannel} speaking the Channel Access protocol through JCA/CAJ.
- *
- * The PV Access library used by Phoebus implements PV Access only, so Channel Access is handled directly here, the way
- * Phoebus does it in its core-pv-ca module. Values are converted to {@link org.epics.pva.data.PVAStructure} by
- * {@link CaDbrConverter} so that callers cannot tell the two protocols apart.
+ * {@link NativeChannel} speaking the Channel Access protocol through JCA/CAJ, as Phoebus does in core-pv-ca. Values are
+ * converted to {@link org.epics.pva.data.PVAStructure} by {@link CaDbrConverter}, so callers cannot tell the two
+ * protocols apart.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -42,10 +42,9 @@ public class CaNativeChannel implements NativeChannel {
     private static final Logger LOGGER = Logger.getLogger(CaNativeChannel.class.getName());
 
     /**
-     * Channel Access subscriptions carry a mask rather than a field request. PV Access has no equivalent, so
-     * subscriptions always ask for value and alarm changes, matching what the pvAccessJava "ca" provider did.
+     * Event mask used when the caller passes none. {@link xal.ca.Monitor} masks use the same bits as Channel Access.
      */
-    private static final int MONITOR_MASK = gov.aps.jca.Monitor.VALUE | gov.aps.jca.Monitor.ALARM;
+    private static final int DEFAULT_MONITOR_MASK = gov.aps.jca.Monitor.VALUE | gov.aps.jca.Monitor.ALARM;
 
     private final Context context;
     private final String channelName;
@@ -115,7 +114,7 @@ public class CaNativeChannel implements NativeChannel {
     }
 
     @Override
-    public void get(String request, EventListener listener) throws GetException {
+    public void get(String request, EventListener listener, Consumer<String> onFailure) throws GetException {
         gov.aps.jca.Channel current;
         try {
             current = connectedChannel("get");
@@ -126,9 +125,8 @@ public class CaNativeChannel implements NativeChannel {
         DBRType type = CaDbrConverter.requestType(current.getFieldType(), request);
         try {
             current.get(type, current.getElementCount(), event -> {
-                if (event.getDBR() == null) {
-                    LOGGER.log(Level.SEVERE, "Get failed for {0}: {1}",
-                            new Object[]{channelName, event.getStatus()});
+                if (event.getDBR() == null || !event.getStatus().isSuccessful()) {
+                    onFailure.accept("Get failed for " + channelName + ": " + event.getStatus());
                     return;
                 }
                 try {
@@ -144,7 +142,7 @@ public class CaNativeChannel implements NativeChannel {
     }
 
     @Override
-    public void put(Object newValue, Runnable onComplete) throws PutException {
+    public void put(Object newValue, Runnable onComplete, Consumer<String> onFailure) throws PutException {
         gov.aps.jca.Channel current;
         try {
             current = connectedChannel("put");
@@ -153,7 +151,10 @@ public class CaNativeChannel implements NativeChannel {
         }
 
         gov.aps.jca.event.PutListener putListener = event -> {
-            if (onComplete != null) {
+            CAStatus status = event.getStatus();
+            if (status != null && !status.isSuccessful()) {
+                onFailure.accept("Put failed for " + channelName + ": " + status);
+            } else if (onComplete != null) {
                 onComplete.run();
             }
         };
@@ -210,7 +211,7 @@ public class CaNativeChannel implements NativeChannel {
     }
 
     @Override
-    public NativeMonitor subscribe(String request, EventListener listener) throws MonitorException {
+    public NativeMonitor subscribe(String request, int mask, EventListener listener) throws MonitorException {
         gov.aps.jca.Channel current;
         try {
             current = connectedChannel("subscribe");
@@ -219,18 +220,21 @@ public class CaNativeChannel implements NativeChannel {
         }
 
         DBRType type = CaDbrConverter.requestType(current.getFieldType(), request);
+        gov.aps.jca.event.MonitorListener monitorListener = event -> {
+            if (event.getDBR() == null) {
+                return;
+            }
+            try {
+                listener.event(CaDbrConverter.toStructure(event.getDBR()));
+            } catch (PutException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        };
+
         final gov.aps.jca.Monitor monitor;
         try {
-            monitor = current.addMonitor(type, current.getElementCount(), MONITOR_MASK, event -> {
-                if (event.getDBR() == null) {
-                    return;
-                }
-                try {
-                    listener.event(CaDbrConverter.toStructure(event.getDBR()));
-                } catch (PutException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            });
+            monitor = current.addMonitor(type, current.getElementCount(), mask == 0 ? DEFAULT_MONITOR_MASK : mask,
+                    monitorListener);
             context.flushIO();
         } catch (CAException | IllegalStateException ex) {
             throw new MonitorException("Could not subscribe to " + channelName, ex);

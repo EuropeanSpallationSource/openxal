@@ -20,6 +20,7 @@ package xal.plugin.epics7;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import org.epics.pva.data.PVAStructure;
 import xal.ca.PutException;
 
@@ -53,6 +54,12 @@ public class TestNativeChannel implements NativeChannel {
     public final List<String> getRequests = new CopyOnWriteArrayList<>();
     public final List<String> subscribeRequests = new CopyOnWriteArrayList<>();
     public final List<Object> puts = new CopyOnWriteArrayList<>();
+    public final List<Integer> subscribeMasks = new CopyOnWriteArrayList<>();
+
+    /**
+     * When set, gets and puts fail with this message instead of succeeding.
+     */
+    public volatile String failure;
 
     /**
      * Listeners registered by {@link #subscribe}, so tests can push updates.
@@ -110,8 +117,12 @@ public class TestNativeChannel implements NativeChannel {
     }
 
     @Override
-    public void get(String request, EventListener listener) {
+    public void get(String request, EventListener listener, Consumer<String> onFailure) {
         getRequests.add(request);
+        if (failure != null) {
+            onFailure.accept(failure);
+            return;
+        }
         try {
             listener.event(data);
         } catch (PutException ex) {
@@ -120,16 +131,21 @@ public class TestNativeChannel implements NativeChannel {
     }
 
     @Override
-    public void put(Object newValue, Runnable onComplete) {
+    public void put(Object newValue, Runnable onComplete, Consumer<String> onFailure) {
         puts.add(newValue);
+        if (failure != null) {
+            onFailure.accept(failure);
+            return;
+        }
         if (onComplete != null) {
             onComplete.run();
         }
     }
 
     @Override
-    public NativeMonitor subscribe(String request, EventListener listener) {
+    public NativeMonitor subscribe(String request, int mask, EventListener listener) {
         subscribeRequests.add(request);
+        subscribeMasks.add(mask);
         subscribers.add(listener);
         return () -> subscribers.remove(listener);
     }
