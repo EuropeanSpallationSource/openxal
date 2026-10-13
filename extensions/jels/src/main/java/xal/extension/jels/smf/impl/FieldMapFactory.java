@@ -17,12 +17,8 @@
  */
 package xal.extension.jels.smf.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Factory class to get the right {@link xal.extension.jels.smf.impl.FieldMap}
@@ -32,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class FieldMapFactory {
 
-    private static Map<String, FieldMap> instances = new HashMap<>();
+    private static final Map<String, FieldMap> instances = new ConcurrentHashMap<>();
 
     public enum FieldType {
         ELECTRIC,
@@ -43,6 +39,10 @@ public class FieldMapFactory {
         return instances;
     }
 
+    private static String key(String path, String filename, FieldType fieldType, int dimensions, int numberOfPoints) {
+        return FieldMap.resolve(path, filename) + "#" + fieldType + "-" + dimensions + "D#" + numberOfPoints;
+    }
+
     /**
      * Static factory method to add a field profile without the need to have it
      * on disk.
@@ -51,16 +51,34 @@ public class FieldMapFactory {
      * @param fieldmap The FieldMap object
      */
     public static void putInstance(String key, FieldMap fieldmap) throws FieldMapException {
-        if (instances.containsKey(key)) {
+        if (instances.putIfAbsent(key, fieldmap) != null) {
             throw new FieldMapException("There is already a fieldmap that uses the same key: " + key);
         }
-
-        instances.put(key, fieldmap);
     }
 
     /**
      * Static factory method to add a field profile without the need to have it
-     * on disk.
+     * on disk, so that {@link #getInstance} returns it for the given file.
+     *
+     * @param path not necessarily a path, used as a key
+     * @param filename not necessarily a filename, used as a key
+     * @param fieldType electric or magnetic
+     * @param dimensions 1D, 2D, or 3D (only integer)
+     * @param numberOfPoints number of points to use for integration. It can be
+     * lower or higher than the number of points in the field map
+     * @param fieldmap The FieldMap object
+     */
+    public static void putInstance(String path, String filename, FieldType fieldType, int dimensions,
+            int numberOfPoints, FieldMap fieldmap) throws FieldMapException {
+        putInstance(key(path, filename, fieldType, dimensions, numberOfPoints), fieldmap);
+    }
+
+    /**
+     * Static factory method to add a field profile without the need to have it
+     * on disk. The field type and dimensions are taken from the class of the
+     * field map, which must be one of the built-in implementations; use
+     * {@link #putInstance(String, String, FieldType, int, int, FieldMap)} for
+     * other classes.
      *
      * @param path not necessarily a path, used as a key
      * @param filename not necessarily a filename, used as a key
@@ -69,14 +87,18 @@ public class FieldMapFactory {
      * @param fieldmap The FieldMap object
      */
     public static void putInstance(String path, String filename, int numberOfPoints, FieldMap fieldmap) throws FieldMapException {
-        String key = null;
-        try {
-            key = new URI(path).resolve(filename).toString() + numberOfPoints;
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(FieldMapFactory.class.getName()).log(Level.SEVERE, null, ex);
+        if (fieldmap instanceof RfFieldMap1D) {
+            putInstance(path, filename, FieldType.ELECTRIC, 1, numberOfPoints, fieldmap);
+        } else if (fieldmap instanceof RfFieldMap3D) {
+            putInstance(path, filename, FieldType.ELECTRIC, 3, numberOfPoints, fieldmap);
+        } else if (fieldmap instanceof MagFieldMap2D) {
+            putInstance(path, filename, FieldType.MAGNETIC, 2, numberOfPoints, fieldmap);
+        } else if (fieldmap instanceof MagFieldMap3D) {
+            putInstance(path, filename, FieldType.MAGNETIC, 3, numberOfPoints, fieldmap);
+        } else {
+            throw new FieldMapException("Cannot tell the field type and dimensions of " + fieldmap.getClass().getName()
+                    + "; pass them explicitly.");
         }
-
-        putInstance(key, fieldmap);
     }
 
     /**
@@ -89,72 +111,39 @@ public class FieldMapFactory {
      * @param dimensions 1D, 2D, or 3D (only integer)
      * @param numberOfPoints number of points to use for integration. It can be
      * lower or higher than the number of points in the field map
-     * @return field profile
+     * @return field profile, or null if the combination of parameters is not
+     * supported
+     * @throws FieldMapException if the field map files cannot be loaded
      */
     public static FieldMap getInstance(String path, String filename, boolean dynamic,
             FieldType fieldType, int dimensions, int numberOfPoints) {
-        String key = null;
-        try {
-            key = new URI(path).resolve(filename).toString() + numberOfPoints;
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(FieldMapFactory.class.getName()).log(Level.SEVERE, null, ex);
+        if (!isSupported(dynamic, fieldType, dimensions)) {
+            return null;
         }
 
-        if (instances.containsKey(key)) {
-            return instances.get(key);
-        }
+        return instances.computeIfAbsent(key(path, filename, fieldType, dimensions, numberOfPoints),
+                key -> create(path, filename, fieldType, dimensions, numberOfPoints));
+    }
 
-        FieldMap fieldMap = null;
-
+    private static boolean isSupported(boolean dynamic, FieldType fieldType, int dimensions) {
         switch (fieldType) {
             case ELECTRIC:
-                switch (dimensions) {
-                    case 1:
-                        if (dynamic) {
-                            fieldMap = new RfFieldMap1D(path, filename, numberOfPoints);
-                        }
-                        break;
-//                    case 2:
-//                        if (dynamic) {
-//                            fieldMap = new RfFieldMap2D(path, filename, numberOfPoints);
-//                        }
-//                        break;
-                    case 3:
-                        if (dynamic) {
-                            fieldMap = new RfFieldMap3D(path, filename, numberOfPoints);
-                        }
-                        break;
-                    default:
-                        return null;
-                }
-                break;
+                return dynamic && (dimensions == 1 || dimensions == 3);
             case MAGNETIC:
-                switch (dimensions) {
-//                    case 1:
-//                        if (!dynamic) {
-//                            fieldMap = new MagFieldMap1D(path, filename, numberOfPoints);
-//                        }
-//                        break;
-                    case 2:
-                        if (!dynamic) {
-                            fieldMap = new MagFieldMap2D(path, filename, numberOfPoints);
-                        }
-                        break;
-                    case 3:
-                        if (!dynamic) {
-                            fieldMap = new MagFieldMap3D(path, filename, numberOfPoints);
-                        }
-                        break;
-                    default:
-                        return null;
-                }
-                break;
+                return !dynamic && (dimensions == 2 || dimensions == 3);
             default:
-                return null;
-
+                return false;
         }
+    }
 
-        instances.put(key, fieldMap);
-        return fieldMap;
+    private static FieldMap create(String path, String filename, FieldType fieldType, int dimensions, int numberOfPoints) {
+        if (fieldType == FieldType.ELECTRIC) {
+            return dimensions == 1
+                    ? new RfFieldMap1D(path, filename, numberOfPoints)
+                    : new RfFieldMap3D(path, filename, numberOfPoints);
+        }
+        return dimensions == 2
+                ? new MagFieldMap2D(path, filename, numberOfPoints)
+                : new MagFieldMap3D(path, filename, numberOfPoints);
     }
 }

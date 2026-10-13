@@ -28,14 +28,12 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class RfFieldMap3D extends FieldMap {
 
-    // Cached component references to keep the HashMap lookups out of the
-    // getFieldAt hot path (the map contents are fixed after construction).
-    private FieldComponent<double[][][]> eX;
-    private FieldComponent<double[][][]> eY;
-    private FieldComponent<double[][][]> eZ;
-    private FieldComponent<double[][][]> bX;
-    private FieldComponent<double[][][]> bY;
-    private FieldComponent<double[][][]> bZ;
+    private final AxisInterpolator3D eX;
+    private final AxisInterpolator3D eY;
+    private final AxisInterpolator3D eZ;
+    private final AxisInterpolator3D bX;
+    private final AxisInterpolator3D bY;
+    private final AxisInterpolator3D bZ;
 
     public RfFieldMap3D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[][][]> electricFieldX = loadFile3D(path, filename + ".edx");
@@ -45,21 +43,16 @@ public class RfFieldMap3D extends FieldMap {
         FieldComponent<double[][][]> magneticFieldY = loadFile3D(path, filename + ".bdy");
         FieldComponent<double[][][]> magneticFieldZ = loadFile3D(path, filename + ".bdz");
 
-        // Normalizing the field map.
         int numberOfPointsZ = electricFieldZ.getField().length;
         int numberOfPointsY = electricFieldZ.getField()[0].length;
         int numberOfPointsX = electricFieldZ.getField()[0][0].length;
 
-        double minX = electricFieldX.getMin()[1];
-        double minY = electricFieldY.getMin()[2];
-        double maxX = electricFieldX.getMax()[1];
-        double maxY = electricFieldY.getMax()[2];
-
-        double spacingX = (maxX - minX) / (numberOfPointsX - 1);
-        double spacingY = (maxY - minY) / (numberOfPointsY - 1);
-
-        int midPointX = (int) (-minX / spacingX);
-        int midPointY = (int) (-minY / spacingY);
+        eX = new AxisInterpolator3D(electricFieldX);
+        eY = new AxisInterpolator3D(electricFieldY);
+        eZ = new AxisInterpolator3D(electricFieldZ);
+        bX = new AxisInterpolator3D(magneticFieldX);
+        bY = new AxisInterpolator3D(magneticFieldY);
+        bZ = new AxisInterpolator3D(magneticFieldZ);
 
         double[][][] eFieldX = electricFieldX.getField();
         double[][][] eFieldY = electricFieldY.getField();
@@ -68,9 +61,10 @@ public class RfFieldMap3D extends FieldMap {
         double[][][] bFieldY = magneticFieldY.getField();
         double[][][] bFieldZ = magneticFieldZ.getField();
 
+        // Normalizing the field map.
         fieldIntegral = 0;
         for (int i = 0; i < numberOfPointsZ; i++) {
-            fieldIntegral += Math.abs(eFieldZ[i][midPointY][midPointX]);
+            fieldIntegral += Math.abs(eZ.rawValueOnAxis(i));
         }
 
         fieldIntegral *= electricFieldZ.getMax()[0] / numberOfPointsZ;
@@ -94,13 +88,6 @@ public class RfFieldMap3D extends FieldMap {
         magneticField.put("x", magneticFieldX);
         magneticField.put("y", magneticFieldY);
         magneticField.put("z", magneticFieldZ);
-
-        eX = electricFieldX;
-        eY = electricFieldY;
-        eZ = electricFieldZ;
-        bX = magneticFieldX;
-        bY = magneticFieldY;
-        bZ = magneticFieldZ;
 
         // Compute other values.
         length = electricFieldZ.getMax()[0];
@@ -140,138 +127,47 @@ public class RfFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        if (position < 0.0 || position > eZ.getMax()[0] || position > bZ.getMax()[0]) {
+        if (isOutside(position)) {
             return null;
         }
 
+        AxisSample ex = eX.interpolate(position);
+        AxisSample ey = eY.interpolate(position);
+        AxisSample ez = eZ.interpolate(position);
+        AxisSample bx = bX.interpolate(position);
+        AxisSample by = bY.interpolate(position);
+        AxisSample bz = bZ.interpolate(position);
+
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
-        interpolateField(position, eX, eY, eZ, fieldMapPoint, true);
+        fieldMapPoint.setEx(ex.value());
+        fieldMapPoint.setEy(ey.value());
+        fieldMapPoint.setEz(ez.value());
 
-        interpolateField(position, bX, bY, bZ, fieldMapPoint, false);
+        fieldMapPoint.setdExdx(ex.ddx());
+        fieldMapPoint.setdExdy(ex.ddy());
+        fieldMapPoint.setdExdz(ex.ddz());
+
+        fieldMapPoint.setdEydx(ey.ddx());
+        fieldMapPoint.setdEydy(ey.ddy());
+        fieldMapPoint.setdEydz(ey.ddz());
+
+        fieldMapPoint.setdEzdx(ez.ddx());
+        fieldMapPoint.setdEzdy(ez.ddy());
+        fieldMapPoint.setdEzdz(ez.ddz());
+
+        fieldMapPoint.setBx(bx.value());
+        fieldMapPoint.setBy(by.value());
+        fieldMapPoint.setBz(bz.value());
+
+        fieldMapPoint.setdBxdx(bx.ddx());
+        fieldMapPoint.setdBxdy(bx.ddy());
+        fieldMapPoint.setdBxdz(bx.ddz());
+
+        fieldMapPoint.setdBydx(by.ddx());
+        fieldMapPoint.setdBydy(by.ddy());
+        fieldMapPoint.setdBydz(by.ddz());
 
         return fieldMapPoint;
-    }
-
-    private void interpolateField(double position,
-            FieldComponent<double[][][]> fieldComponentX,
-            FieldComponent<double[][][]> fieldComponentY,
-            FieldComponent<double[][][]> fieldComponentZ,
-            FieldMapPoint fieldMapPoint, boolean electricField) {
-
-        double[][][] fieldX = fieldComponentX.getField();
-        double[][][] fieldY = fieldComponentY.getField();
-        double[][][] fieldZ = fieldComponentZ.getField();
-
-        int numberOfPointsZ = fieldZ.length;
-        int numberOfPointsY = fieldY[0].length;
-        int numberOfPointsX = fieldX[0][0].length;
-
-        double normX = fieldComponentX.getNorm();
-        double normY = fieldComponentY.getNorm();
-        double normZ = fieldComponentZ.getNorm();
-
-        double lengthZ = fieldComponentZ.getMax()[0];
-        double minX = fieldComponentX.getMin()[1];
-        double minY = fieldComponentY.getMin()[2];
-        double maxX = fieldComponentX.getMax()[1];
-        double maxY = fieldComponentY.getMax()[2];
-
-        double spacingX = (maxX - minX) / (numberOfPointsX - 1);
-        double spacingY = (maxY - minY) / (numberOfPointsY - 1);
-        double spacingZ = lengthZ / (numberOfPointsZ - 1);
-
-        // Interpolating the field at the given positon.
-        int positionIndex = (int) Math.floor(position / spacingZ);
-
-        if (positionIndex < 0) {
-            positionIndex = 0;
-        } else if (positionIndex >= numberOfPointsZ - 1) {
-            positionIndex = numberOfPointsZ - 2;
-        }
-
-        double interpolationFactor = position / spacingZ - positionIndex;
-
-        // To get the (0,0) point in the XY plane.
-        int midPointX = (int) (-minX / spacingX);
-        int midPointY = (int) (-minY / spacingY);
-
-        double fx0 = fieldX[positionIndex][midPointY][midPointX] + interpolationFactor
-                * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-        double fy0 = fieldY[positionIndex][midPointY][midPointX] + interpolationFactor
-                * (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-        double fz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolationFactor
-                * (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
-
-        double dFxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldX[positionIndex + 1][midPointY][midPointX + 1] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]));
-        double dFxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldX[positionIndex + 1][midPointY + 1][midPointX] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]));
-        double dFydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldY[positionIndex + 1][midPointY][midPointX + 1] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]));
-        double dFydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldY[positionIndex + 1][midPointY + 1][midPointX] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]));
-        double dFzdx = (fieldZ[positionIndex][midPointY][midPointX + 1] - fieldZ[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldZ[positionIndex + 1][midPointY][midPointX + 1] - fieldZ[positionIndex + 1][midPointY][midPointX] - (fieldZ[positionIndex][midPointY][midPointX + 1] - fieldZ[positionIndex][midPointY][midPointX]));
-        double dFzdy = (fieldZ[positionIndex][midPointY + 1][midPointX] - fieldZ[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldZ[positionIndex + 1][midPointY + 1][midPointX] - fieldZ[positionIndex + 1][midPointY][midPointX] - (fieldZ[positionIndex][midPointY + 1][midPointX] - fieldZ[positionIndex][midPointY][midPointX]));
-
-        double dFxdz;
-        double dFydz;
-        double dFzdz;
-
-        if (positionIndex == fieldZ.length - 1) {
-            dFxdz = (fieldX[positionIndex][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]);
-            dFydz = (fieldY[positionIndex][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]);
-            dFzdz = (fieldZ[positionIndex][midPointY][midPointX] - fieldZ[positionIndex - 1][midPointY][midPointX]);
-        } else {
-            dFxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-            dFydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-            dFzdz = (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
-        }
-
-        // Denormalising
-        fx0 /= normX;
-        fy0 /= normY;
-        fz0 /= normZ;
-        dFxdx /= spacingX * normX;
-        dFxdy /= spacingY * normX;
-        dFydx /= spacingX * normY;
-        dFydy /= spacingY * normY;
-        dFxdz /= spacingZ * normX;
-        dFydz /= spacingZ * normY;
-        dFzdx /= spacingX * normZ;
-        dFzdy /= spacingY * normZ;
-        dFzdz /= spacingZ * normZ;
-
-        if (electricField) {
-            fieldMapPoint.setEx(fx0);
-            fieldMapPoint.setEy(fy0);
-            fieldMapPoint.setEz(fz0);
-
-            fieldMapPoint.setdExdx(dFxdx);
-            fieldMapPoint.setdExdy(dFxdy);
-            fieldMapPoint.setdExdz(dFxdz);
-
-            fieldMapPoint.setdEydx(dFydx);
-            fieldMapPoint.setdEydy(dFydy);
-            fieldMapPoint.setdEydz(dFydz);
-
-            fieldMapPoint.setdEzdx(dFzdx);
-            fieldMapPoint.setdEzdy(dFzdy);
-            fieldMapPoint.setdEzdz(dFzdz);
-        } else {
-            fieldMapPoint.setBx(fx0);
-            fieldMapPoint.setBy(fy0);
-            fieldMapPoint.setBz(fz0);
-
-            fieldMapPoint.setdBxdx(dFxdx);
-            fieldMapPoint.setdBxdy(dFxdy);
-            fieldMapPoint.setdBxdz(dFxdz);
-
-            fieldMapPoint.setdBydx(dFydx);
-            fieldMapPoint.setdBydy(dFydy);
-            fieldMapPoint.setdBydz(dFydz);
-        }
     }
 }

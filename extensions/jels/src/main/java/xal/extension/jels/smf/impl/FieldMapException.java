@@ -27,4 +27,8 @@ public class FieldMapException extends RuntimeException {
         super(msg);
     }
 
+    public FieldMapException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
 }

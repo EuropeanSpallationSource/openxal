@@ -28,19 +28,9 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class MagFieldMap3D extends FieldMap {
 
-    // Interpolation invariants resolved once at construction (constant for the
-    // loaded map) to keep them out of the getFieldAt hot path.
-    private final double[][][] fieldX;
-    private final double[][][] fieldY;
-    private final double[][][] fieldZ;
-    private final double normX;
-    private final double normY;
-    private final double normZ;
-    private final double spacingX;
-    private final double spacingY;
-    private final double spacingZ;
-    private final int midPointX;
-    private final int midPointY;
+    private final AxisInterpolator3D fieldX;
+    private final AxisInterpolator3D fieldY;
+    private final AxisInterpolator3D fieldZ;
 
     public MagFieldMap3D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[][][]> fieldComponentX = loadFile3D(path, filename + ".bsx");
@@ -58,20 +48,9 @@ public class MagFieldMap3D extends FieldMap {
         }
         this.numberOfPoints = numberOfPoints;
 
-        fieldX = fieldComponentX.getField();
-        fieldY = fieldComponentY.getField();
-        fieldZ = fieldComponentZ.getField();
-        normX = fieldComponentX.getNorm();
-        normY = fieldComponentY.getNorm();
-        normZ = fieldComponentZ.getNorm();
-
-        double minX = fieldComponentX.getMin()[1];
-        double minY = fieldComponentY.getMin()[2];
-        spacingX = (fieldComponentX.getMax()[1] - minX) / (fieldX[0][0].length - 1);
-        spacingY = (fieldComponentY.getMax()[2] - minY) / (fieldY[0].length - 1);
-        spacingZ = fieldComponentZ.getMax()[0] / (fieldZ.length - 1);
-        midPointX = (int) (-minX / spacingX);
-        midPointY = (int) (-minY / spacingY);
+        fieldX = new AxisInterpolator3D(fieldComponentX);
+        fieldY = new AxisInterpolator3D(fieldComponentY);
+        fieldZ = new AxisInterpolator3D(fieldComponentZ);
 
         recalculateSliceLength();
     }
@@ -96,72 +75,27 @@ public class MagFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        if (position < 0.0 || position > length) {
+        if (isOutside(position)) {
             return null;
         }
 
-        // Interpolating the field at the given positon.
-        int positionIndex = (int) Math.floor(position / spacingZ);
-
-        if (positionIndex < 0) {
-            positionIndex = 0;
-        } else if (positionIndex >= fieldZ.length - 1) {
-            positionIndex = fieldZ.length - 2;
-        }
-
-        double interpolationFactor = position / spacingZ - positionIndex;
-
-        double bx0 = fieldX[positionIndex][midPointY][midPointX] + interpolationFactor
-                * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-        double by0 = fieldY[positionIndex][midPointY][midPointX] + interpolationFactor
-                * (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-        double bz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolationFactor
-                * (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
-
-        double dBxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldX[positionIndex + 1][midPointY][midPointX + 1] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]));
-        double dBxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldX[positionIndex + 1][midPointY + 1][midPointX] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]));
-        double dBydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldY[positionIndex + 1][midPointY][midPointX + 1] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]));
-        double dBydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
-                * (fieldY[positionIndex + 1][midPointY + 1][midPointX] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]));
-
-        double dBxdz;
-        double dBydz;
-
-        if (positionIndex == fieldZ.length - 1) {
-            dBxdz = (fieldX[positionIndex][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]);
-            dBydz = (fieldY[positionIndex][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]);
-        } else {
-            dBxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-            dBydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-        }
-
-        // Denormalising
-        bx0 /= normX;
-        by0 /= normY;
-        bz0 /= normZ;
-        dBxdx /= spacingX * normX;
-        dBxdy /= spacingY * normX;
-        dBydx /= spacingX * normY;
-        dBydy /= spacingY * normY;
-        dBxdz /= spacingZ * normX;
-        dBydz /= spacingZ * normY;
+        AxisSample bx = fieldX.interpolate(position);
+        AxisSample by = fieldY.interpolate(position);
+        AxisSample bz = fieldZ.interpolate(position);
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
-        fieldMapPoint.setBx(bx0);
-        fieldMapPoint.setBy(by0);
-        fieldMapPoint.setBz(bz0);
+        fieldMapPoint.setBx(bx.value());
+        fieldMapPoint.setBy(by.value());
+        fieldMapPoint.setBz(bz.value());
 
-        fieldMapPoint.setdBxdx(dBxdx);
-        fieldMapPoint.setdBxdy(dBxdy);
-        fieldMapPoint.setdBxdz(dBxdz);
+        fieldMapPoint.setdBxdx(bx.ddx());
+        fieldMapPoint.setdBxdy(bx.ddy());
+        fieldMapPoint.setdBxdz(bx.ddz());
 
-        fieldMapPoint.setdBydx(dBydx);
-        fieldMapPoint.setdBydy(dBydy);
-        fieldMapPoint.setdBydz(dBydz);
+        fieldMapPoint.setdBydx(by.ddx());
+        fieldMapPoint.setdBydy(by.ddy());
+        fieldMapPoint.setdBydz(by.ddz());
 
         return fieldMapPoint;
     }

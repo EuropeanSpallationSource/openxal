@@ -58,7 +58,6 @@ public class RfFieldMap1D extends FieldMap {
         }
         this.numberOfPoints = numberOfPoints;
 
-        // Cache the (normalized) field array and grid spacing for getFieldAt.
         this.fieldZ = field;
         this.spacingZ = length / (field.length - 1);
 
@@ -83,7 +82,7 @@ public class RfFieldMap1D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        if (position < -1e-6 || position > length + 1e-6) {
+        if (isOutside(position)) {
             return null;
         }
 
@@ -102,10 +101,10 @@ public class RfFieldMap1D extends FieldMap {
                 * (field[positionIndex + 1] - field[positionIndex]) / spacingZ;
         double dEzds;
         positionIndex = (int) Math.round(position / spacingZ);
-        if (positionIndex == 0) {
-            dEzds = field[positionIndex + 1] / spacingZ;
-        } else if (positionIndex == field.length - 1) {
-            dEzds = field[positionIndex - 1] / spacingZ;
+        if (positionIndex <= 0) {
+            dEzds = (field[1] - field[0]) / spacingZ;
+        } else if (positionIndex >= field.length - 1) {
+            dEzds = (field[field.length - 1] - field[field.length - 2]) / spacingZ;
         } else {
             dEzds = (field[positionIndex + 1] - field[positionIndex - 1]) / (2.0 * spacingZ);
         }
@@ -118,7 +117,6 @@ public class RfFieldMap1D extends FieldMap {
         fieldMapPoint.setdEzdz(dEzds);
         fieldMapPoint.setdBxdy(0.5 * ez0);
         fieldMapPoint.setdBydx(-0.5 * ez0);
-        fieldMapPoint.setEz(ez0);
 
         return fieldMapPoint;
     }

@@ -17,23 +17,25 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import xal.extension.jels.model.elem.FieldMapPoint;
 
 /**
@@ -57,6 +59,13 @@ public abstract class FieldMap {
     private static final int DOUBLE_BYTES = 8;
     private static final int FLOAT_BYTES = 4;
     private static final int INT_BYTES = 4;
+    private static final int ASCII_CHECK_BYTES = 15;
+
+    /**
+     * Positions this close outside the field map still return the field at its
+     * edge, to absorb rounding in the caller's position arithmetic.
+     */
+    private static final double POSITION_TOLERANCE = 1e-6;
 
     protected static final Logger LOGGER = Logger.getLogger(FieldMap.class.getName());
 
@@ -161,12 +170,10 @@ public abstract class FieldMap {
         // slice is not included, only the very last point.
         int ie = (int) Math.floor((start + dblLen) / getSliceLength());
 
-        // If last point of the field map is not included, add it.
+        // The last point of the field map is added if the slice ends there.
         boolean addLastPoint = Math.abs(getLength() - (start + dblLen)) < 1e-6 && ie != numberOfPoints - 1;
 
-        // Find the field map points included in the current slice. A primitive
-        // array (rather than a List<Double>) avoids boxing and allocation churn
-        // on this hot path.
+        // Find the field map points included in the current slice.
         int count = (ie >= i0 ? ie - i0 + 1 : 0) + (addLastPoint ? 1 : 0);
         double[] fieldMapPointPositions = new double[count];
 
@@ -183,45 +190,172 @@ public abstract class FieldMap {
     }
 
     /**
+     * Whether the position is outside the field map, beyond the tolerance for
+     * rounding errors.
+     *
+     * @param position Position along the element [m].
+     */
+    protected boolean isOutside(double position) {
+        return position < -POSITION_TOLERANCE || position > length + POSITION_TOLERANCE;
+    }
+
+    /**
+     * A 3D field component and its derivatives on the axis (x = y = 0), at a
+     * given longitudinal position.
+     */
+    protected record AxisSample(double value, double ddx, double ddy, double ddz) {
+
+    }
+
+    /**
+     * Interpolates a 3D field component on the axis. The value and the
+     * transverse derivatives are linearly interpolated along z; the transverse
+     * derivatives are forward differences from the axis and the longitudinal
+     * derivative is the difference between the enclosing grid planes.
+     */
+    protected static final class AxisInterpolator3D {
+
+        private final double[][][] field;
+        private final double norm;
+        private final double spacingX;
+        private final double spacingY;
+        private final double spacingZ;
+        private final int axisX;
+        private final int axisY;
+
+        public AxisInterpolator3D(FieldComponent<double[][][]> component) {
+            field = component.getField();
+            norm = component.getNorm();
+
+            double minX = component.getMin()[1];
+            double minY = component.getMin()[2];
+            spacingX = (component.getMax()[1] - minX) / (field[0][0].length - 1);
+            spacingY = (component.getMax()[2] - minY) / (field[0].length - 1);
+            spacingZ = component.getMax()[0] / (field.length - 1);
+
+            // Rounded, not truncated: -minX / spacingX can be just below the
+            // integer (e.g. 6.999...), which would select the grid line next to
+            // the axis.
+            axisX = (int) Math.round(-minX / spacingX);
+            axisY = (int) Math.round(-minY / spacingY);
+        }
+
+        /**
+         * The raw field value on the axis at grid plane {@code i}, before
+         * dividing by the norm.
+         */
+        public double rawValueOnAxis(int i) {
+            return field[i][axisY][axisX];
+        }
+
+        public AxisSample interpolate(double position) {
+            int i = (int) Math.floor(position / spacingZ);
+            if (i < 0) {
+                i = 0;
+            } else if (i >= field.length - 1) {
+                i = field.length - 2;
+            }
+            double t = position / spacingZ - i;
+
+            double[][] plane0 = field[i];
+            double[][] plane1 = field[i + 1];
+
+            double f0 = plane0[axisY][axisX];
+            double f1 = plane1[axisY][axisX];
+            double value = f0 + t * (f1 - f0);
+
+            double dx0 = plane0[axisY][axisX + 1] - f0;
+            double dx1 = plane1[axisY][axisX + 1] - f1;
+            double ddx = dx0 + t * (dx1 - dx0);
+
+            double dy0 = plane0[axisY + 1][axisX] - f0;
+            double dy1 = plane1[axisY + 1][axisX] - f1;
+            double ddy = dy0 + t * (dy1 - dy0);
+
+            double ddz = f1 - f0;
+
+            return new AxisSample(value / norm, ddx / (spacingX * norm), ddy / (spacingY * norm),
+                    ddz / (spacingZ * norm));
+        }
+    }
+
+    /**
      * ************************ File manipulation **************************
      */
     /**
-     * Check if a file is binary or ASCII.
+     * Resolves a field map file name against the field map directory. URIs into
+     * an archive (e.g. {@code jar:file:/lib.jar!/maps/}) are resolved within
+     * the archive.
      *
-     * @param filename URL to the file.
-     * @return True if the file is ASCII, false if binary.
+     * @param path field map directory
+     * @param name file name
+     * @return URI of the file
      */
-    private static boolean isAscii(URL fileURL) {
-        boolean result = false;
-
-        InputStream stream = null;
+    protected static URI resolve(String path, String name) {
         try {
-            stream = fileURL.openStream();
-
-            result = true;
-            for (int i = 0; i < 15; i++) {
-                int c = stream.read();
-                if (c == -1) {
-                    break;
-                }
-                //(9)Horizontal Tab (10)Line feed  (11)Vertical tab (13)Carriage return (32)Space (126)tilde
-                if (!(c == 9 || c == 10 || c == 11 || c == 13 || (c >= 32 && c <= 126))) {
-                    result = false;
-                }
+            URI base = new URI(path.replace(" ", "%20"));
+            String relative = name.replace(" ", "%20");
+            if (!base.isOpaque()) {
+                return base.resolve(relative);
             }
-        } catch (IOException ex) {
-            LOGGER.log(Level.WARNING, null, ex);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.WARNING, null, ex);
-                }
+            String spec = base.toString();
+            int separator = spec.indexOf("!/");
+            if (separator < 0) {
+                throw new FieldMapException("Cannot resolve field map " + name + " against " + path);
+            }
+            URI entry = new URI(spec.substring(separator + 1)).resolve(relative);
+            return new URI(spec.substring(0, separator + 1) + entry);
+        } catch (URISyntaxException ex) {
+            throw new FieldMapException("Invalid field map location " + path + name, ex);
+        }
+    }
+
+    @FunctionalInterface
+    private interface Parser<T> {
+
+        FieldComponent<T> parse(InputStream stream) throws IOException;
+    }
+
+    /**
+     * Opens a field map file and parses it with the parser matching its
+     * format.
+     *
+     * @param binaryParser parser for binary files, or null if the format has
+     * no binary variant
+     * @throws FieldMapException if the file cannot be read or parsed
+     */
+    private static <T> FieldComponent<T> load(String path, String name, Parser<T> asciiParser, Parser<T> binaryParser) {
+        URI uri = resolve(path, name);
+        try (InputStream stream = new BufferedInputStream(uri.toURL().openStream())) {
+            if (isAscii(stream)) {
+                return asciiParser.parse(stream);
+            }
+            if (binaryParser == null) {
+                throw new IOException("binary files are not supported for this field map type");
+            }
+            return binaryParser.parse(stream);
+        } catch (IOException | RuntimeException ex) {
+            throw new FieldMapException("Could not load field map " + uri + ": " + ex, ex);
+        }
+    }
+
+    /**
+     * Checks if a file is ASCII or binary from its first bytes, leaving the
+     * stream at its start.
+     */
+    private static boolean isAscii(InputStream stream) throws IOException {
+        stream.mark(ASCII_CHECK_BYTES);
+        byte[] header = stream.readNBytes(ASCII_CHECK_BYTES);
+        stream.reset();
+
+        for (byte b : header) {
+            int c = b & 0xFF;
+            //(9)Horizontal Tab (10)Line feed  (11)Vertical tab (13)Carriage return (32)Space (126)tilde
+            if (!(c == 9 || c == 10 || c == 11 || c == 13 || (c >= 32 && c <= 126))) {
+                return false;
             }
         }
-
-        return result;
+        return true;
     }
 
     /**
@@ -230,18 +364,10 @@ public abstract class FieldMap {
      * @param path path to the file
      * @param name
      * @return
+     * @throws FieldMapException if the file cannot be read or parsed
      */
     protected final FieldComponent<double[]> loadFile1D(String path, String name) {
-        try {
-            URL fileURL = new URL(new URL(path), name);
-
-            if (isAscii(fileURL)) {
-                return loadASCIIFile1D(fileURL);
-            }
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return load(path, name, FieldMap::parseASCIIFile1D, null);
     }
 
     /**
@@ -250,18 +376,10 @@ public abstract class FieldMap {
      * @param path path to the file
      * @param name
      * @return
+     * @throws FieldMapException if the file cannot be read or parsed
      */
     protected final FieldComponent<double[][]> loadFile2D(String path, String name) {
-        try {
-            URL fileURL = new URL(new URL(path), name);
-
-            if (isAscii(fileURL)) {
-                return loadASCIIFile2D(fileURL);
-            }
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return load(path, name, FieldMap::parseASCIIFile2D, null);
     }
 
     /**
@@ -270,249 +388,187 @@ public abstract class FieldMap {
      * @param path path to the file
      * @param name
      * @return
+     * @throws FieldMapException if the file cannot be read or parsed
      */
     protected final FieldComponent<double[][][]> loadFile3D(String path, String name) {
-        try {
-            URL fileURL = new URL(new URL(path), name);
-
-            if (isAscii(fileURL)) {
-                return loadASCIIFile3D(fileURL);
-            } else {
-
-                return loadBinaryFile3D(fileURL);
-            }
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return load(path, name, FieldMap::parseASCIIFile3D, FieldMap::parseBinaryFile3D);
     }
 
-    private FieldComponent<double[]> loadASCIIFile1D(URL fileURL) {
+    /**
+     * Reads the values of an ASCII field map, separated by any whitespace.
+     */
+    private static final class AsciiReader {
+
+        private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+
+        private final BufferedReader reader;
+        private String[] tokens = new String[0];
+        private int next;
+
+        AsciiReader(InputStream stream) {
+            reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        }
+
+        /**
+         * The fields of the next header line.
+         */
+        String[] line() throws IOException {
+            String line = reader.readLine();
+            if (line == null) {
+                throw new EOFException("unexpected end of file in the header");
+            }
+            return WHITESPACE.split(line.trim());
+        }
+
+        double nextDouble() throws IOException {
+            while (next == tokens.length) {
+                String line = reader.readLine();
+                if (line == null) {
+                    throw new EOFException("fewer field values than declared in the header");
+                }
+                line = line.trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+                if (!hasWhitespace(line)) {
+                    // Usual layout: one value per line.
+                    return Double.parseDouble(line);
+                }
+                tokens = WHITESPACE.split(line);
+                next = 0;
+            }
+            return Double.parseDouble(tokens[next++]);
+        }
+
+        private static boolean hasWhitespace(String line) {
+            for (int i = 0; i < line.length(); i++) {
+                if (Character.isWhitespace(line.charAt(i))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private static FieldComponent<double[]> parseASCIIFile1D(InputStream stream) throws IOException {
         FieldComponent<double[]> fieldComponent = new FieldComponent<>();
+        AsciiReader reader = new AsciiReader(stream);
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream(), StandardCharsets.UTF_8))) {
+        String[] data = reader.line();
+        int nPoints = Integer.parseInt(data[0]) + 1;
+        fieldComponent.setMax(new double[]{Double.parseDouble(data[1])});
+        fieldComponent.setNorm(Double.parseDouble(reader.line()[0]));
 
-            // first line
-            String line = br.readLine();
-            String[] data = line.split(" ");
-
-            int nPoints = Integer.parseInt(data[0]) + 1;
-            double[] field = new double[nPoints];
-            double len = Double.parseDouble(data[1]);
-            fieldComponent.setMax(new double[]{len});
-
-            // Read norm and not use it
-            line = br.readLine();
-            double norm = Double.parseDouble(line);
-            fieldComponent.setNorm(norm);
-
-            int i = 0;
-            while ((line = br.readLine()) != null && i < nPoints) {
-                field[i++] = Double.parseDouble(line);
-            }
-
-            fieldComponent.setField(field);
-        } catch (IOException ex) {
-            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
+        double[] field = new double[nPoints];
+        for (int i = 0; i < nPoints; i++) {
+            field[i] = reader.nextDouble();
         }
+        fieldComponent.setField(field);
 
         return fieldComponent;
     }
 
-    private FieldComponent<double[][]> loadASCIIFile2D(URL fileURL) {
+    private static FieldComponent<double[][]> parseASCIIFile2D(InputStream stream) throws IOException {
         FieldComponent<double[][]> fieldComponent = new FieldComponent<>();
+        AsciiReader reader = new AsciiReader(stream);
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream(), StandardCharsets.UTF_8))) {
-            // first line
-            String line = br.readLine();
-            String[] data = line.split(" ");
+        String[] data = reader.line();
+        int nPointsZ = Integer.parseInt(data[0]) + 1;
+        double lengthZ = Double.parseDouble(data[1]);
 
-            int nPointsZ = Integer.parseInt(data[0]) + 1;
-            double lengthZ = Double.parseDouble(data[1]);
+        data = reader.line();
+        int nPointsR = Integer.parseInt(data[0]) + 1;
+        double lengthR = Double.parseDouble(data[1]);
 
-            // second line
-            line = br.readLine();
-            data = line.split(" ");
+        fieldComponent.setMax(new double[]{lengthZ, lengthR});
+        fieldComponent.setNorm(Double.parseDouble(reader.line()[0]));
 
-            int nPointsR = Integer.parseInt(data[0]) + 1;
-            double lengthR = Double.parseDouble(data[1]);
-
-            fieldComponent.setMax(new double[]{lengthZ, lengthR});
-
-            double[][] field = new double[nPointsZ][nPointsR];
-
-            line = br.readLine();
-            double norm = Double.parseDouble(line);
-            fieldComponent.setNorm(norm);
-
-            for (int i = 0; i < nPointsZ; i++) {
-                for (int j = 0; j < nPointsR; j++) {
-                    line = br.readLine();
-                    if (line != null) {
-                        field[i][j] = Double.parseDouble(line);
-                    }
-                }
+        double[][] field = new double[nPointsZ][nPointsR];
+        for (int i = 0; i < nPointsZ; i++) {
+            for (int j = 0; j < nPointsR; j++) {
+                field[i][j] = reader.nextDouble();
             }
-
-            fieldComponent.setField(field);
-        } catch (IOException ex) {
-            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
+        fieldComponent.setField(field);
 
         return fieldComponent;
     }
 
-    private FieldComponent<double[][][]> loadASCIIFile3D(URL fileURL) {
+    private static FieldComponent<double[][][]> parseASCIIFile3D(InputStream stream) throws IOException {
         FieldComponent<double[][][]> fieldComponent = new FieldComponent<>();
+        AsciiReader reader = new AsciiReader(stream);
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream(), StandardCharsets.UTF_8))) {
-            // first line
-            String line = br.readLine();
-            String[] data = line.split(" ");
+        String[] data = reader.line();
+        int nPointsZ = Integer.parseInt(data[0]) + 1;
+        double lengthZ = Double.parseDouble(data[1]);
 
-            int nPointsZ = Integer.parseInt(data[0]) + 1;
-            double lengthZ = Double.parseDouble(data[1]);
+        data = reader.line();
+        int nPointsX = Integer.parseInt(data[0]) + 1;
+        double minX = Double.parseDouble(data[1]);
+        double maxX = Double.parseDouble(data[2]);
 
-            // second line
-            line = br.readLine();
-            data = line.split(" ");
+        data = reader.line();
+        int nPointsY = Integer.parseInt(data[0]) + 1;
+        double minY = Double.parseDouble(data[1]);
+        double maxY = Double.parseDouble(data[2]);
 
-            int nPointsX = Integer.parseInt(data[0]) + 1;
-            double minX = Double.parseDouble(data[1]);
-            double maxX = Double.parseDouble(data[2]);
+        fieldComponent.setMin(new double[]{0., minX, minY});
+        fieldComponent.setMax(new double[]{lengthZ, maxX, maxY});
+        fieldComponent.setNorm(Double.parseDouble(reader.line()[0]));
 
-            // third line
-            line = br.readLine();
-            data = line.split(" ");
-
-            int nPointsY = Integer.parseInt(data[0]) + 1;
-            double minY = Double.parseDouble(data[1]);
-            double maxY = Double.parseDouble(data[2]);
-
-            fieldComponent.setMin(new double[]{0., minX, minY});
-            fieldComponent.setMax(new double[]{lengthZ, maxX, maxY});
-
-            double[][][] field = new double[nPointsZ][nPointsY][nPointsX];
-
-            line = br.readLine();
-            double norm = Double.parseDouble(line);
-            fieldComponent.setNorm(norm);
-
-            for (int i = 0; i < nPointsZ; i++) {
-                for (int j = 0; j < nPointsY; j++) {
-                    for (int k = 0; k < nPointsX; k++) {
-                        line = br.readLine();
-                        if (line != null) {
-                            field[i][j][k] = Double.parseDouble(line);
-                        }
-                    }
+        double[][][] field = new double[nPointsZ][nPointsY][nPointsX];
+        for (int i = 0; i < nPointsZ; i++) {
+            for (int j = 0; j < nPointsY; j++) {
+                for (int k = 0; k < nPointsX; k++) {
+                    field[i][j][k] = reader.nextDouble();
                 }
             }
-
-            fieldComponent.setField(field);
-        } catch (IOException ex) {
-            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
+        fieldComponent.setField(field);
 
         return fieldComponent;
     }
 
-    private FieldComponent<double[][][]> loadBinaryFile3D(URL fileURL) {
+    /**
+     * Reads exactly {@code length} bytes as a little-endian buffer.
+     */
+    private static ByteBuffer readBytes(InputStream stream, int length) throws IOException {
+        byte[] bytes = stream.readNBytes(length);
+        if (bytes.length != length) {
+            throw new EOFException("expected " + length + " bytes, found " + bytes.length);
+        }
+        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+    }
+
+    private static FieldComponent<double[][][]> parseBinaryFile3D(InputStream stream) throws IOException {
         FieldComponent<double[][][]> fieldComponent = new FieldComponent<>();
 
-        try (InputStream stream = fileURL.openStream()) {
-            byte[] intAux = new byte[INT_BYTES];
-            byte[] floatAux = new byte[FLOAT_BYTES];
-            byte[] doubleAux = new byte[DOUBLE_BYTES];
+        ByteBuffer header = readBytes(stream, 3 * INT_BYTES + 6 * DOUBLE_BYTES);
+        int nPointsZ = header.getInt() + 1;
+        double lengthZ = header.getDouble();
+        int nPointsX = header.getInt() + 1;
+        double minX = header.getDouble();
+        double maxX = header.getDouble();
+        int nPointsY = header.getInt() + 1;
+        double minY = header.getDouble();
+        double maxY = header.getDouble();
+        double norm = header.getDouble();
 
-            int nPointsZ = 0;
-            if (stream.read(intAux, 0, INT_BYTES) == INT_BYTES) {
-                nPointsZ = ByteBuffer.wrap(intAux).order(ByteOrder.LITTLE_ENDIAN).getInt() + 1;
-            } else {
-                throw new IOException();
-            }
+        fieldComponent.setMin(new double[]{0., minX, minY});
+        fieldComponent.setMax(new double[]{lengthZ, maxX, maxY});
+        fieldComponent.setNorm(norm);
 
-            double lengthZ = 0;
-            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
-                lengthZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
-            } else {
-                throw new IOException();
-            }
-
-            int nPointsX = 0;
-            if (stream.read(intAux, 0, INT_BYTES) == INT_BYTES) {
-                nPointsX = ByteBuffer.wrap(intAux).order(ByteOrder.LITTLE_ENDIAN).getInt() + 1;
-            } else {
-                throw new IOException();
-            }
-
-            double minX = 0;
-            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
-                minX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
-            } else {
-                throw new IOException();
-            }
-
-            double maxX = 0;
-            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
-                maxX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
-            } else {
-                throw new IOException();
-            }
-
-            int nPointsY = 0;
-            if (stream.read(intAux, 0, INT_BYTES) == INT_BYTES) {
-                nPointsY = ByteBuffer.wrap(intAux).order(ByteOrder.LITTLE_ENDIAN).getInt() + 1;
-            } else {
-                throw new IOException();
-            }
-
-            double minY = 0;
-            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
-                minY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
-            } else {
-                throw new IOException();
-            }
-
-            double maxY = 0;
-            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
-                maxY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
-            } else {
-                throw new IOException();
-            }
-
-            double norm = 0;
-            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
-                norm = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
-            } else {
-                throw new IOException();
-            }
-
-            fieldComponent.setMin(new double[]{0., minX, minY});
-            fieldComponent.setMax(new double[]{lengthZ, maxX, maxY});
-
-            double[][][] field = new double[nPointsZ][nPointsY][nPointsX];
-
-            fieldComponent.setNorm(norm);
-
-            for (int i = 0; i < nPointsZ; i++) {
-                for (int j = 0; j < nPointsY; j++) {
-                    for (int k = 0; k < nPointsX; k++) {
-                        float fieldPoint = 0;
-                        if (stream.read(floatAux, 0, FLOAT_BYTES) == FLOAT_BYTES) {
-                            fieldPoint = ByteBuffer.wrap(floatAux).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-                        } else {
-                            throw new IOException();
-                        }
-                        field[i][j][k] = (double) fieldPoint;
-                    }
+        FloatBuffer values = readBytes(stream,
+                Math.multiplyExact(Math.multiplyExact(Math.multiplyExact(nPointsZ, nPointsY), nPointsX), FLOAT_BYTES)).asFloatBuffer();
+        double[][][] field = new double[nPointsZ][nPointsY][nPointsX];
+        for (int i = 0; i < nPointsZ; i++) {
+            for (int j = 0; j < nPointsY; j++) {
+                for (int k = 0; k < nPointsX; k++) {
+                    field[i][j][k] = values.get();
                 }
             }
-
-            fieldComponent.setField(field);
-        } catch (IOException ex) {
-            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
+        fieldComponent.setField(field);
 
         return fieldComponent;
     }
@@ -525,7 +581,7 @@ public abstract class FieldMap {
      * @throws URISyntaxException
      */
     protected final void saveFile1D(String path, String name, FieldComponent<double[]> fieldComponent) throws IOException, URISyntaxException {
-        File fieldMapfile = new File(new URL(new URL(path), name).toURI());
+        File fieldMapfile = new File(resolve(path, name));
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile, StandardCharsets.UTF_8));
 
@@ -545,7 +601,7 @@ public abstract class FieldMap {
      * @throws URISyntaxException
      */
     protected final void saveFile2D(String path, String name, FieldComponent<double[][]> fieldComponent) throws IOException, URISyntaxException {
-        File fieldMapfile = new File(new URL(new URL(path), name).toURI());
+        File fieldMapfile = new File(resolve(path, name));
         fieldMapfile.getParentFile().mkdirs();
         try (PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile, StandardCharsets.UTF_8))) {
             double zmax = fieldComponent.getMax()[0];
@@ -568,7 +624,7 @@ public abstract class FieldMap {
      * @throws URISyntaxException
      */
     protected final void saveFile3D(String path, String name, FieldComponent<double[][][]> fieldComponent) throws IOException, URISyntaxException {
-        File fieldMapfile = new File(new URL(new URL(path), name).toURI());
+        File fieldMapfile = new File(resolve(path, name));
         fieldMapfile.getParentFile().mkdirs();
         try (PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile, StandardCharsets.UTF_8))) {
 
@@ -578,7 +634,8 @@ public abstract class FieldMap {
             double ymin = fieldComponent.getMin()[2];
             double ymax = fieldComponent.getMax()[2];
             double[][][] field = fieldComponent.getField();
-            pw.format(Locale.US, "%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymin, ymax, field[0][0].length - 1, xmin, xmax, fieldComponent.getNorm());
+            // TraceWin header: "nz zmax", "nx xmin xmax", "ny ymin ymax", norm.
+            pw.format(Locale.US, "%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0][0].length - 1, xmin, xmax, field[0].length - 1, ymin, ymax, fieldComponent.getNorm());
             for (int i = 0; i < field.length; i++) {
                 for (int j = 0; j < field[0].length; j++) {
                     for (int k = 0; k < field[0][0].length; k++) {

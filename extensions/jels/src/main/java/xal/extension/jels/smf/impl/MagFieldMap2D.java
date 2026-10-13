@@ -79,7 +79,7 @@ public class MagFieldMap2D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        if (position < -1e-6 || position > length + 1e-6) {
+        if (isOutside(position)) {
             return null;
         }
 
